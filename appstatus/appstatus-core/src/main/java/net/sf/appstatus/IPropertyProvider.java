@@ -18,10 +18,12 @@ package net.sf.appstatus;
 import java.util.Map;
 
 /**
- * Interface used to inject properties in the status page. 
+ * Interface used to inject properties in the status page.
  * 
  * @author Nicolas Richeton
  */
 public interface IPropertyProvider {
 	Map<String, String> getProperties();
+
+	String getCategory();
 }
