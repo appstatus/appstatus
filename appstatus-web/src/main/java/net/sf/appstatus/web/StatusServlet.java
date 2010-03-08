@@ -140,14 +140,23 @@ public class StatusServlet extends HttpServlet {
 		os.write("</table>".getBytes());
 
 		os.write("<h2>Properties</h2>".getBytes());
-		Map<String, String> properties = StatusService.getInstance()
-				.getProperties();
+		Map<String, Map<String, String>> properties = StatusService
+				.getInstance().getProperties();
 		os.write("<table border='1'>".getBytes());
-		os.write("<tr><td></td><td>Name</td><td>Value</td></tr>".getBytes());
+		os
+				.write("<tr><td></td><td>Category</td><td>Name</td><td>Value</td></tr>"
+						.getBytes());
 
-		for (Entry<String, String> r : properties.entrySet()) {
-			generateRow(os, "prop", r.getKey(), r.getValue());
+		for (Entry<String, Map<String, String>> cat : properties.entrySet()) {
+
+			String category = cat.getKey();
+
+			for (Entry<String, String> r : cat.getValue().entrySet()) {
+				generateRow(os, "prop", category, r.getKey(), r.getValue());
+			}
+
 		}
+
 		os.write("</table>".getBytes());
 	}
 

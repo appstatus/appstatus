@@ -70,13 +70,13 @@ public class StatusService {
 						IStatusChecker check = (IStatusChecker) Class.forName(
 								clazz).newInstance();
 						probes.add(check);
-						logger.info("Registered status checker "+clazz);
+						logger.info("Registered status checker " + clazz);
 					} else if (name.startsWith("property")) {
 						String clazz = (String) p.get(name);
 						IPropertyProvider provider = (IPropertyProvider) Class
 								.forName(clazz).newInstance();
 						propertyProviders.add(provider);
-						logger.info("Registered property provider "+clazz);
+						logger.info("Registered property provider " + clazz);
 					}
 				}
 			}
@@ -97,13 +97,20 @@ public class StatusService {
 
 	}
 
-	public Map<String, String> getProperties() {
-
-		TreeMap<String, String> l = new TreeMap<String, String>();
+	public Map<String, Map<String, String>> getProperties() {
+		TreeMap<String, Map<String, String>> categories = new TreeMap<String, Map<String, String>>();
 
 		for (IPropertyProvider provider : propertyProviders) {
+			if (categories.get(provider.getCategory()) == null) {
+				categories.put(provider.getCategory(),
+						new TreeMap<String, String>());
+			}
+
+			Map<String, String> l = categories.get(provider.getCategory());
+
 			l.putAll(provider.getProperties());
 		}
-		return l;
+
+		return categories;
 	}
 }

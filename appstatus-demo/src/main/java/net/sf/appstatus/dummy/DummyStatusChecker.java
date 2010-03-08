@@ -15,11 +15,11 @@
  */
 package net.sf.appstatus.dummy;
 
-import net.sf.appstatus.IStatusChecker;
 import net.sf.appstatus.IStatusResult;
 import net.sf.appstatus.StatusResultImpl;
+import net.sf.appstatus.check.impl.AbstractHttpStatusChecker;
 
-public class CheckDummy implements IStatusChecker {
+public class DummyStatusChecker extends AbstractHttpStatusChecker {
 
 	public IStatusResult checkStatus() {
 

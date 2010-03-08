@@ -10,8 +10,7 @@
   <artifactId>appstatus-demo</artifactId>
   <packaging>war</packaging>
   <version>0.0.1-SNAPSHOT</version>
-  <name>status-demo Maven Webapp</name>
-  <url>http://maven.apache.org</url>
+  <name>App Status Demo Webapp</name>
   <dependencies>
     <dependency>
       <groupId>junit</groupId>
@@ -33,6 +32,7 @@
     	<scope>compile</scope>
     </dependency>
   </dependencies>
+  <inceptionYear>2010</inceptionYear>
   <build>
     <finalName>status-demo</finalName>
     <plugins>
