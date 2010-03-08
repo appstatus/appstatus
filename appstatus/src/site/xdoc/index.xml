@@ -18,6 +18,14 @@
 		
 		<p>Add maven dependencies</p>
 		<source><![CDATA[
+<repository>
+	<id>appstatus-repository</id>
+	<name>App Status snapshot repository</name>
+	<url>http://appstatus.sourceforge.net/maven2/snapshots</url>
+</repository>
+
+(...)
+
 <dependency>
     	<groupId>net.sf.appstatus </groupId>
     	<artifactId>appstatus-web</artifactId>
