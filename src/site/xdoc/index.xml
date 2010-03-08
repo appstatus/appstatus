@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document xmlns="http://maven.apache.org/XDOC/2.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/XDOC/2.0 http://maven.apache.org/xsd/xdoc-2.0.xsd">
+
+	<properties>
+		<title>Introduction</title>
+		<author email="nicolas.richeton@capgemini.com">Nicolas Richeton</author>
+	</properties>
+
+	<body>
+
+
+		<h1>Introduction</h1>
+
+		<p>The goal of this toolkit is to provide a quick way to set up a status page in a Java application</p>
+		
+		<h2>Quickstart for webapps</h2>
+		
+		<p>Add maven dependencies</p>
+		<source><![CDATA[
+<dependency>
+    	<groupId>net.sf.appstatus </groupId>
+    	<artifactId>appstatus-web</artifactId>
+    	<version>0.0.1-SNAPSHOT</version>
+    	<scope>compile</scope>
+</dependency>]]></source>
+
+		<p>Add servlet to web.xml :</p>
+		<source><![CDATA[
+<servlet>
+        <servlet-name>status</servlet-name>
+        <servlet-class>net.sf.appstatus.web.StatusServlet</servlet-class>
+</servlet>
+        
+<servlet-mapping>
+        <servlet-name>status</servlet-name>
+        <url-pattern>/status</url-pattern>
+</servlet-mapping>]]></source>
+		
+			<p>Create a test for your application (implementing IStatusChecker):</p>
+			
+		<source>
+public class GooglePingStatusChecker implements IStatusChecker {
+
+	public IStatusResult checkStatus() {
+
+		StatusResultImpl result = new StatusResultImpl();
+		result.setProbeName(getName());
+
+		try {
+			InetAddress address = InetAddress.getByName("www.google.com");
+
+			if (address.isReachable(2000)) {
+				result.setDescription("Google Access ok");
+				result.setCode(IStatusResult.OK);
+			}else {
+				throw new Exception( "Ping timeout (2000ms)");
+			}
+
+		} catch (Exception e) {
+			result.setCode(IStatusResult.ERROR);
+			result.setDescription("Google ping failed");
+			result
+					.setResolutionSteps("Ping failed. This means that ICMP messages are blocked by this host. (This may not be an issue) "
+							+ e.getMessage());
+			result.setFatal(false);
+		}
+
+		return result;
+	}
+
+	public String getName() {
+		return "Google Ping check";
+	}
+
+}
+		</source>
+
+<p>Register the test in /status-check.properties :</p>
+<source>
+check.google.ping=net.sf.appstatus.dummy.GooglePingStatusChecker
+</source>
+
+<p>Got to http://&lt;server&gt;/&lt;app-context&gt;/status :</p>
+
+<img src="images/appstatus-0.1-example.png" alt="Status page example" style="border: 1px solid black;"/>
+	</body>
+</document>
+  
+  
