@@ -31,11 +31,11 @@ public class GooglePingStatusChecker implements IStatusChecker {
 		try {
 			InetAddress address = InetAddress.getByName("www.google.com");
 
-			if (address.isReachable(5000)) {
+			if (address.isReachable(2000)) {
 				result.setDescription("Google Access ok");
 				result.setCode(IStatusResult.OK);
 			}else {
-				throw new Exception( "Ping timeout (5000ms)");
+				throw new Exception( "Ping timeout (2000ms)");
 			}
 
 		} catch (Exception e) {
