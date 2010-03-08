@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<project name="App Status Toolkit">
+	<bannerLeft>
+		<name>App Status Toolkit</name>
+
+	</bannerLeft>
+
+	<bannerRight>
+		<src>http://sflogo.sourceforge.net/sflogo.php?group_id=308682&amp;type=16
+		</src>
+		<href>http://sourceforge.net/projects/appstatus</href>
+		<alt>Get App Status Toolkit at SourceForge.net. Fast, secure and Free
+			Open Source software downloads</alt>
+	</bannerRight>
+
+	<body>
+
+		<menu name="App Status Toolkit">
+			<item name="Introduction" href="index.html" />
+		</menu>
+		<menu ref="modules" />
+		<menu ref="reports" />
+
+	</body>
+</project>

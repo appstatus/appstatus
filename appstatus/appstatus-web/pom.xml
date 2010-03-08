@@ -7,6 +7,7 @@
 	</parent>
   <groupId>net.sf.appstatus</groupId>
   <artifactId>appstatus-web</artifactId>
+  <name>App Status Web Page</name>
   <version>0.0.1-SNAPSHOT</version>
   <dependencies>
     <dependency>
