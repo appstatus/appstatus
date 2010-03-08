@@ -19,7 +19,7 @@ import net.sf.appstatus.IStatusResult;
 import net.sf.appstatus.StatusResultImpl;
 import net.sf.appstatus.check.impl.AbstractHttpStatusChecker;
 
-public class GoogleStatusChecker extends AbstractHttpStatusChecker {
+public class GoogleHttpStatusChecker extends AbstractHttpStatusChecker {
 
 	public IStatusResult checkStatus() {
 
@@ -42,7 +42,7 @@ public class GoogleStatusChecker extends AbstractHttpStatusChecker {
 	}
 
 	public String getName() {
-		return "Google check";
+		return "Google Http check";
 	}
 
 }
