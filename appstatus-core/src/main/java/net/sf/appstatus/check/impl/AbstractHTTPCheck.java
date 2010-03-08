@@ -13,19 +13,12 @@
  * limitations under the License. 
  * 
  */
-package net.sf.appstatus.dummy;
+package net.sf.appstatus.check.impl;
 
-import java.util.HashMap;
-import java.util.Map;
+import net.sf.appstatus.IStatusChecker;
+import net.sf.appstatus.IStatusResult;
 
-import net.sf.appstatus.IPropertyProvider;
+public abstract class AbstractHTTPCheck implements IStatusChecker {
 
-public class PropertyDummy implements IPropertyProvider {
-
-	public Map<String, String> getProperties() {
-		HashMap<String, String> hm = new HashMap<String,String>();
-		hm.put("version", "1.0-demo");
-		return hm;
-	}
-
+	
 }
