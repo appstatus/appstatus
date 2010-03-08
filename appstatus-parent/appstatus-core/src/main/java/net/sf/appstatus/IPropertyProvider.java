@@ -13,19 +13,15 @@
  * limitations under the License. 
  * 
  */
-package net.sf.appstatus.dummy;
+package net.sf.appstatus;
 
-import java.util.HashMap;
 import java.util.Map;
 
-import net.sf.appstatus.IPropertyProvider;
-
-public class PropertyDummy implements IPropertyProvider {
-
-	public Map<String, String> getProperties() {
-		HashMap<String, String> hm = new HashMap<String,String>();
-		hm.put("version", "1.0-demo");
-		return hm;
-	}
-
+/**
+ * Interface used to inject properties in the status page. 
+ * 
+ * @author Nicolas Richeton
+ */
+public interface IPropertyProvider {
+	Map<String, String> getProperties();
 }

@@ -13,19 +13,32 @@
  * limitations under the License. 
  * 
  */
-package net.sf.appstatus.dummy;
+package net.sf.appstatus;
 
-import java.util.HashMap;
-import java.util.Map;
+/**
+ * Status check result.
+ * 
+ * @author Nicolas Richeton
+ */
+public interface IStatusResult {
 
-import net.sf.appstatus.IPropertyProvider;
+	int OK = 0;
+	int ERROR = -1;
 
-public class PropertyDummy implements IPropertyProvider {
+	int getCode();
 
-	public Map<String, String> getProperties() {
-		HashMap<String, String> hm = new HashMap<String,String>();
-		hm.put("version", "1.0-demo");
-		return hm;
-	}
+	String getProbeName();
+
+	String getDescription();
+
+	/**
+	 * On error, should provide some advices on how to solve the issue. (Fix
+	 * values in some property file, ensure remote service is running).
+	 * 
+	 * @return
+	 */
+	String getResolutionSteps();
+
+	boolean isFatal();
 
 }
