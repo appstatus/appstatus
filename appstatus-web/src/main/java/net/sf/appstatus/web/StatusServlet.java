@@ -29,63 +29,22 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.commons.io.IOUtils;
-
 import net.sf.appstatus.IStatusResult;
 import net.sf.appstatus.StatusService;
 
+import org.apache.commons.io.IOUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 public class StatusServlet extends HttpServlet {
 
-	String allow = null;
+	private static Logger logger = LoggerFactory.getLogger(StatusService.class);
 	private static final long serialVersionUID = 3912325072098291029L;
-	private static final String STATUS_OK = "ok";
 	private static final String STATUS_ERROR = "error";
-	private static final String STATUS_WARN = "warn";
+	private static final String STATUS_OK = "ok";
 	private static final String STATUS_PROP = "prop";
-
-	@Override
-	public void init() throws ServletException {
-		super.init();
-		try {
-			InputStream is = StatusServlet.class
-					.getResourceAsStream("/status-web-conf.properties");
-
-			Properties p = new Properties();
-			p.load(is);
-
-			is.close();
-			allow = (String) p.get("ip.allow");
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-
-	}
-
-	/**
-	 * Serve icons
-	 * 
-	 * @param id
-	 * @param req
-	 * @param resp
-	 * @throws IOException
-	 */
-	protected void doGetResource(String id, HttpServletRequest req,
-			HttpServletResponse resp) throws IOException {
-		String location = null;
-		if ("ok".equals(id)) {
-			location = "/org/freedesktop/tango/22x22/status/weather-clear.png";
-		} else if ("warn".equals(id)) {
-			location = "/org/freedesktop/tango/22x22/status/weather-overcast.png";
-		} else if ("error".equals(id)) {
-			location = "/org/freedesktop/tango/22x22/status/weather-severe-alert.png";
-		} else if ("prop".equals(id)) {
-			location = "/org/freedesktop/tango/22x22/actions/format-justify-fill.png";
-		}
-
-		InputStream is = this.getClass().getResourceAsStream(location);
-		OutputStream os = resp.getOutputStream();
-		IOUtils.copy(is, os);
-	}
+	private static final String STATUS_WARN = "warn";
+	String allow = null;
 
 	/*
 	 * (non-Javadoc)
@@ -94,6 +53,7 @@ public class StatusServlet extends HttpServlet {
 	 * javax.servlet.http.HttpServlet#doGet(javax.servlet.http.HttpServletRequest
 	 * , javax.servlet.http.HttpServletResponse)
 	 */
+	@Override
 	protected void doGet(HttpServletRequest req, HttpServletResponse resp)
 			throws ServletException, IOException {
 
@@ -161,20 +121,29 @@ public class StatusServlet extends HttpServlet {
 	}
 
 	/**
-	 * Returns status icon id.
+	 * Serve icons
 	 * 
-	 * @param result
-	 * @return
+	 * @param id
+	 * @param req
+	 * @param resp
+	 * @throws IOException
 	 */
-	private String getStatus(IStatusResult result) {
+	protected void doGetResource(String id, HttpServletRequest req,
+			HttpServletResponse resp) throws IOException {
+		String location = null;
+		if ("ok".equals(id)) {
+			location = "/org/freedesktop/tango/22x22/status/weather-clear.png";
+		} else if ("warn".equals(id)) {
+			location = "/org/freedesktop/tango/22x22/status/weather-overcast.png";
+		} else if ("error".equals(id)) {
+			location = "/org/freedesktop/tango/22x22/status/weather-severe-alert.png";
+		} else if ("prop".equals(id)) {
+			location = "/org/freedesktop/tango/22x22/actions/format-justify-fill.png";
+		}
 
-		if (result.isFatal())
-			return "error";
-
-		if (result.getCode() == IStatusResult.OK)
-			return "ok";
-
-		return "warn";
+		InputStream is = this.getClass().getResourceAsStream(location);
+		OutputStream os = resp.getOutputStream();
+		IOUtils.copy(is, os);
 	}
 
 	/**
@@ -200,6 +169,50 @@ public class StatusServlet extends HttpServlet {
 
 		}
 		os.write("</tr>".getBytes());
+	}
+
+	/**
+	 * Returns status icon id.
+	 * 
+	 * @param result
+	 * @return
+	 */
+	private String getStatus(IStatusResult result) {
+
+		if (result.isFatal()) {
+			return "error";
+		}
+
+		if (result.getCode() == IStatusResult.OK) {
+			return "ok";
+		}
+
+		return "warn";
+	}
+
+	@Override
+	public void init() throws ServletException {
+		super.init();
+		try {
+			InputStream is = StatusServlet.class
+					.getResourceAsStream("/status-web-conf.properties");
+
+			if (is == null) {
+				logger
+						.warn("/status-web-conf.properties not found in classpath. Using default configuration");
+			} else {
+				Properties p = new Properties();
+				p.load(is);
+				is.close();
+				allow = (String) p.get("ip.allow");
+			}
+		} catch (Exception e) {
+			logger
+					.error(
+							"Error loading configuration from /status-web-conf.properties.",
+							e);
+		}
+
 	}
 
 }
