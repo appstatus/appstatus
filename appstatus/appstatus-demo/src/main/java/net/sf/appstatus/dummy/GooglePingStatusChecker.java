@@ -24,7 +24,6 @@ import net.sf.appstatus.StatusResultImpl;
 public class GooglePingStatusChecker implements IStatusChecker {
 
 	public IStatusResult checkStatus() {
-
 		StatusResultImpl result = new StatusResultImpl();
 		result.setProbeName(getName());
 
@@ -34,8 +33,8 @@ public class GooglePingStatusChecker implements IStatusChecker {
 			if (address.isReachable(2000)) {
 				result.setDescription("Google Access ok");
 				result.setCode(IStatusResult.OK);
-			}else {
-				throw new Exception( "Ping timeout (2000ms)");
+			} else {
+				throw new Exception("Ping timeout (2000ms)");
 			}
 
 		} catch (Exception e) {

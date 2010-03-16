@@ -23,7 +23,7 @@ import java.util.Map;
  * @author Nicolas Richeton
  */
 public interface IPropertyProvider {
-	Map<String, String> getProperties();
-
 	String getCategory();
+
+	Map<String, String> getProperties();
 }

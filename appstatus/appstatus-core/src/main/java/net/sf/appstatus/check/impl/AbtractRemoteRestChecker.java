@@ -16,10 +16,7 @@
 package net.sf.appstatus.check.impl;
 
 import net.sf.appstatus.IStatusChecker;
-import net.sf.appstatus.IStatusResult;
 
 public abstract class AbtractRemoteRestChecker implements IStatusChecker {
-
-	
 
 }

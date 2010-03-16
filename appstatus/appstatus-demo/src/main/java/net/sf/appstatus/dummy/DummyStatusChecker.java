@@ -22,7 +22,6 @@ import net.sf.appstatus.check.impl.AbstractHttpStatusChecker;
 public class DummyStatusChecker extends AbstractHttpStatusChecker {
 
 	public IStatusResult checkStatus() {
-
 		StatusResultImpl result = new StatusResultImpl();
 
 		result.setProbeName(getName());

@@ -29,10 +29,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class StatusService {
-	private static Logger logger = LoggerFactory.getLogger(StatusService.class);
 	private static final String CONFIG_LOCATION = "status-check.properties";
-
 	static StatusService instance = new StatusService();
+
+	private static Logger logger = LoggerFactory.getLogger(StatusService.class);
 	static List<IStatusChecker> probes;
 	static List<IPropertyProvider> propertyProviders;
 
@@ -110,7 +110,6 @@ public class StatusService {
 
 			l.putAll(provider.getProperties());
 		}
-
 		return categories;
 	}
 }

@@ -22,14 +22,14 @@ package net.sf.appstatus;
  */
 public interface IStatusResult {
 
-	int OK = 0;
 	int ERROR = -1;
+	int OK = 0;
 
 	int getCode();
 
-	String getProbeName();
-
 	String getDescription();
+
+	String getProbeName();
 
 	/**
 	 * On error, should provide some advices on how to solve the issue. (Fix
