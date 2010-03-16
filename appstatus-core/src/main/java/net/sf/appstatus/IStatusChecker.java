@@ -22,8 +22,8 @@ package net.sf.appstatus;
  */
 public interface IStatusChecker {
 
-	String getName();
-
 	IStatusResult checkStatus();
+
+	String getName();
 
 }

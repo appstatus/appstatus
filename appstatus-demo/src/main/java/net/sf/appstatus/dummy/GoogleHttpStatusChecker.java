@@ -22,7 +22,6 @@ import net.sf.appstatus.check.impl.AbstractHttpStatusChecker;
 public class GoogleHttpStatusChecker extends AbstractHttpStatusChecker {
 
 	public IStatusResult checkStatus() {
-
 		StatusResultImpl result = new StatusResultImpl();
 		result.setProbeName(getName());
 
@@ -34,7 +33,8 @@ public class GoogleHttpStatusChecker extends AbstractHttpStatusChecker {
 			result.setCode(IStatusResult.ERROR);
 			result.setDescription("Google access failed");
 			result
-					.setResolutionSteps("Your server does not have internet access : "+e.getMessage());
+					.setResolutionSteps("Your server does not have internet access : "
+							+ e.getMessage());
 			result.setFatal(true);
 		}
 

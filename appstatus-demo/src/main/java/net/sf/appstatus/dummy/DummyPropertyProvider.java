@@ -22,14 +22,14 @@ import net.sf.appstatus.IPropertyProvider;
 
 public class DummyPropertyProvider implements IPropertyProvider {
 
+	public String getCategory() {
+		return "Dummy";
+	}
+
 	public Map<String, String> getProperties() {
 		HashMap<String, String> hm = new HashMap<String, String>();
 		hm.put("version", "1.0-demo");
 		return hm;
-	}
-
-	public String getCategory() {
-		return "Dummy";
 	}
 
 }

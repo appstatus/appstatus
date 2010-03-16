@@ -112,7 +112,7 @@ public class StatusServlet extends HttpServlet {
 			String category = cat.getKey();
 
 			for (Entry<String, String> r : cat.getValue().entrySet()) {
-				generateRow(os, "prop", category, r.getKey(), r.getValue());
+				generateRow(os, STATUS_PROP, category, r.getKey(), r.getValue());
 			}
 
 		}
@@ -131,13 +131,13 @@ public class StatusServlet extends HttpServlet {
 	protected void doGetResource(String id, HttpServletRequest req,
 			HttpServletResponse resp) throws IOException {
 		String location = null;
-		if ("ok".equals(id)) {
+		if (STATUS_OK.equals(id)) {
 			location = "/org/freedesktop/tango/22x22/status/weather-clear.png";
-		} else if ("warn".equals(id)) {
+		} else if (STATUS_WARN.equals(id)) {
 			location = "/org/freedesktop/tango/22x22/status/weather-overcast.png";
-		} else if ("error".equals(id)) {
+		} else if (STATUS_ERROR.equals(id)) {
 			location = "/org/freedesktop/tango/22x22/status/weather-severe-alert.png";
-		} else if ("prop".equals(id)) {
+		} else if (STATUS_PROP.equals(id)) {
 			location = "/org/freedesktop/tango/22x22/actions/format-justify-fill.png";
 		}
 
@@ -180,14 +180,14 @@ public class StatusServlet extends HttpServlet {
 	private String getStatus(IStatusResult result) {
 
 		if (result.isFatal()) {
-			return "error";
+			return STATUS_ERROR;
 		}
 
 		if (result.getCode() == IStatusResult.OK) {
-			return "ok";
+			return STATUS_OK;
 		}
 
-		return "warn";
+		return STATUS_WARN;
 	}
 
 	@Override
