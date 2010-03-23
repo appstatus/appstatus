@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>net.sf.appstatus</groupId>
@@ -8,8 +9,8 @@
 	<inceptionYear>2010</inceptionYear>
 	<mailingLists>
 		<mailingList>
-			<post />
-			<archive />
+			<post/>
+			<archive/>
 			<name>appstatus-user</name>
 		</mailingList>
 	</mailingLists>
@@ -99,7 +100,8 @@
 		<module>appstatus-core</module>
 		<module>appstatus-web</module>
 		<module>appstatus-demo</module>
-	</modules>
+    <module>appstatus-jmx</module>
+  </modules>
 	<reporting>
 		<plugins>
 			<plugin>
