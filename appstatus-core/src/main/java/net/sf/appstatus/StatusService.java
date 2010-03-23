@@ -32,7 +32,8 @@ public class StatusService {
 	private static final String CONFIG_LOCATION = "status-check.properties";
 	static StatusService instance = new StatusService();
 
-	private static Logger logger = LoggerFactory.getLogger(StatusService.class);
+	private static final Logger logger = LoggerFactory
+			.getLogger(StatusService.class);
 	static List<IStatusChecker> probes;
 	static List<IPropertyProvider> propertyProviders;
 
@@ -46,16 +47,20 @@ public class StatusService {
 
 		try {
 			// Load and init all probes
-			Enumeration<URL> probesURLs;
+			Enumeration<URL> configFiles;
 
-			probesURLs = StatusService.class.getClassLoader().getResources(
+			configFiles = StatusService.class.getClassLoader().getResources(
 					CONFIG_LOCATION);
+
+			if (configFiles == null) {
+				return;
+			}
 
 			URL url = null;
 			Properties p = null;
 			InputStream is = null;
-			while (probesURLs.hasMoreElements()) {
-				url = probesURLs.nextElement();
+			while (configFiles.hasMoreElements()) {
+				url = configFiles.nextElement();
 
 				// Load plugin configuration
 				p = new Properties();
@@ -63,8 +68,10 @@ public class StatusService {
 				p.load(is);
 				is.close();
 
-				Set<String> keys = p.stringPropertyNames();
-				for (String name : keys) {
+				Set<Object> keys = p.keySet();
+				String name = null;
+				for (Object key : keys) {
+					name = (String) key;
 					if (name.startsWith("check")) {
 						String clazz = (String) p.get(name);
 						IStatusChecker check = (IStatusChecker) Class.forName(
