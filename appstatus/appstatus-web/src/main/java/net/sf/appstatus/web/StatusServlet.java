@@ -82,7 +82,10 @@ public class StatusServlet extends HttpServlet {
 			}
 		}
 
+		resp.setContentType("text/html");
+
 		ServletOutputStream os = resp.getOutputStream();
+		os.write("<html><body>".getBytes());
 		os.write("<h1>Status Page</h1>".getBytes());
 		os.write(("<p>Online:" + statusOk + "</p>").getBytes());
 		os.write(("<p>Code:" + statusCode + "</p>").getBytes());
@@ -118,6 +121,7 @@ public class StatusServlet extends HttpServlet {
 		}
 
 		os.write("</table>".getBytes());
+		os.write("</body></html>".getBytes());
 	}
 
 	/**
