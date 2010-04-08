@@ -30,15 +30,16 @@ import org.slf4j.LoggerFactory;
 
 public class StatusService {
 	private static final String CONFIG_LOCATION = "status-check.properties";
-	static StatusService instance = new StatusService();
 
 	private static final Logger logger = LoggerFactory
 			.getLogger(StatusService.class);
 	static List<IStatusChecker> probes;
+
 	static List<IPropertyProvider> propertyProviders;
+	private static StatusService zinstance = new StatusService();
 
 	public static StatusService getInstance() {
-		return instance;
+		return zinstance;
 	}
 
 	public StatusService() {
