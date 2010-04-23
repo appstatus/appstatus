@@ -40,11 +40,13 @@ public class StatusServlet extends HttpServlet {
 
 	private static Logger logger = LoggerFactory.getLogger(StatusService.class);
 	private static final long serialVersionUID = 3912325072098291029L;
+	private static StatusService status = null;
 	private static final String STATUS_ERROR = "error";
 	private static final String STATUS_OK = "ok";
 	private static final String STATUS_PROP = "prop";
 	private static final String STATUS_WARN = "warn";
-	String allow = null;
+	private String allow = null;
+	private boolean useSpring = false;
 
 	/*
 	 * (non-Javadoc)
@@ -70,7 +72,7 @@ public class StatusServlet extends HttpServlet {
 			return;
 		}
 
-		List<IStatusResult> results = StatusService.getInstance().checkAll();
+		List<IStatusResult> results = status.checkAll();
 		boolean statusOk = true;
 		int statusCode = 200;
 		for (IStatusResult r : results) {
@@ -103,8 +105,7 @@ public class StatusServlet extends HttpServlet {
 		os.write("</table>".getBytes());
 
 		os.write("<h2>Properties</h2>".getBytes());
-		Map<String, Map<String, String>> properties = StatusService
-				.getInstance().getProperties();
+		Map<String, Map<String, String>> properties = status.getProperties();
 		os.write("<table border='1'>".getBytes());
 		os
 				.write("<tr><td></td><td>Category</td><td>Name</td><td>Value</td></tr>"
@@ -209,6 +210,7 @@ public class StatusServlet extends HttpServlet {
 				p.load(is);
 				is.close();
 				allow = (String) p.get("ip.allow");
+				useSpring = Boolean.parseBoolean((String) p.get("useSpring"));
 			}
 		} catch (Exception e) {
 			logger
@@ -217,6 +219,14 @@ public class StatusServlet extends HttpServlet {
 							e);
 		}
 
-	}
+		status = new StatusService();
 
+		if (useSpring) {
+			status
+					.setObjectInstanciationListener(new SpringObjectInstanciationListener(
+							this.getServletContext()));
+		}
+
+		status.init();
+	}
 }
