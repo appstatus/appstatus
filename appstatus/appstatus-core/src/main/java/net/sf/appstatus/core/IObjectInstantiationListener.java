@@ -13,14 +13,22 @@
  * limitations under the License. 
  * 
  */
-package net.sf.appstatus.check.impl;
-
-import net.sf.appstatus.IPropertyProvider;
+package net.sf.appstatus.core;
 
 /**
+ * Object 
  * @author Nicolas Richeton
  * 
  */
-public abstract class AbstractPropertyProvider implements IPropertyProvider {
-	// Will contain some utility methods.
+public interface IObjectInstantiationListener {
+
+	/**
+	 * Try to instantiate the 'className' object. If object cannot be created,
+	 * the StatusService will try to create it by itself.
+	 * 
+	 * 
+	 * @param className
+	 * @return object instance or null.
+	 */
+	Object getInstance(String className);
 }
