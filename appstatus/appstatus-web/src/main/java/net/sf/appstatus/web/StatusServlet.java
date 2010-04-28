@@ -223,7 +223,7 @@ public class StatusServlet extends HttpServlet {
 
 		if (useSpring) {
 			status
-					.setObjectInstanciationListener(new SpringObjectInstanciationListener(
+					.setObjectInstanciationListener(new SpringObjectInstantiationListener(
 							this.getServletContext()));
 		}
 
