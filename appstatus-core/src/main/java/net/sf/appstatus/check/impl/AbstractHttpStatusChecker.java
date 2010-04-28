@@ -26,6 +26,10 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.BasicResponseHandler;
 import org.apache.http.impl.client.DefaultHttpClient;
 
+/**
+ * @author Nicolas Richeton
+ * 
+ */
 public abstract class AbstractHttpStatusChecker implements IStatusChecker {
 
 	protected String doHttpGet(String url) throws ClientProtocolException,

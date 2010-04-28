@@ -25,27 +25,81 @@ import java.util.Properties;
 import java.util.Set;
 import java.util.TreeMap;
 
+import net.sf.appstatus.core.IObjectInstantiationListener;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * @author Nicolas Richeton
+ * 
+ */
 public class StatusService {
 	private static final String CONFIG_LOCATION = "status-check.properties";
 
-	private static final Logger logger = LoggerFactory
-			.getLogger(StatusService.class);
-	static List<IStatusChecker> probes;
+	private static Logger logger = LoggerFactory.getLogger(StatusService.class);
 
-	static List<IPropertyProvider> propertyProviders;
-	private static StatusService zinstance = new StatusService();
+	private IObjectInstantiationListener objectInstanciationListener = null;
+	private final List<IStatusChecker> probes;
+	private final List<IPropertyProvider> propertyProviders;
 
-	public static StatusService getInstance() {
-		return zinstance;
-	}
-
+	/**
+	 * Status Service creator.
+	 */
 	public StatusService() {
+
 		probes = new ArrayList<IStatusChecker>();
 		propertyProviders = new ArrayList<IPropertyProvider>();
 
+	}
+
+	public List<IStatusResult> checkAll() {
+
+		ArrayList<IStatusResult> l = new ArrayList<IStatusResult>();
+
+		for (IStatusChecker check : probes) {
+			l.add(check.checkStatus());
+		}
+		return l;
+
+	}
+
+	private Object getInstance(String className) throws InstantiationException,
+			IllegalAccessException, ClassNotFoundException {
+		Object obj = null;
+
+		if (objectInstanciationListener != null) {
+			obj = objectInstanciationListener.getInstance(className);
+		}
+
+		if (obj != null) {
+			return obj;
+		}
+		return Class.forName(className).newInstance();
+
+	}
+
+	public IObjectInstantiationListener getObjectInstanciationListener() {
+		return objectInstanciationListener;
+	}
+
+	public Map<String, Map<String, String>> getProperties() {
+		TreeMap<String, Map<String, String>> categories = new TreeMap<String, Map<String, String>>();
+
+		for (IPropertyProvider provider : propertyProviders) {
+			if (categories.get(provider.getCategory()) == null) {
+				categories.put(provider.getCategory(),
+						new TreeMap<String, String>());
+			}
+
+			Map<String, String> l = categories.get(provider.getCategory());
+
+			l.putAll(provider.getProperties());
+		}
+		return categories;
+	}
+
+	public void init() {
 		try {
 			// Load and init all probes
 			Enumeration<URL> configFiles;
@@ -75,14 +129,12 @@ public class StatusService {
 					name = (String) key;
 					if (name.startsWith("check")) {
 						String clazz = (String) p.get(name);
-						IStatusChecker check = (IStatusChecker) Class.forName(
-								clazz).newInstance();
+						IStatusChecker check = (IStatusChecker) getInstance(clazz);
 						probes.add(check);
 						logger.info("Registered status checker " + clazz);
 					} else if (name.startsWith("property")) {
 						String clazz = (String) p.get(name);
-						IPropertyProvider provider = (IPropertyProvider) Class
-								.forName(clazz).newInstance();
+						IPropertyProvider provider = (IPropertyProvider) getInstance(clazz);
 						propertyProviders.add(provider);
 						logger.info("Registered property provider " + clazz);
 					}
@@ -94,30 +146,8 @@ public class StatusService {
 
 	}
 
-	public List<IStatusResult> checkAll() {
-
-		ArrayList<IStatusResult> l = new ArrayList<IStatusResult>();
-
-		for (IStatusChecker check : probes) {
-			l.add(check.checkStatus());
-		}
-		return l;
-
-	}
-
-	public Map<String, Map<String, String>> getProperties() {
-		TreeMap<String, Map<String, String>> categories = new TreeMap<String, Map<String, String>>();
-
-		for (IPropertyProvider provider : propertyProviders) {
-			if (categories.get(provider.getCategory()) == null) {
-				categories.put(provider.getCategory(),
-						new TreeMap<String, String>());
-			}
-
-			Map<String, String> l = categories.get(provider.getCategory());
-
-			l.putAll(provider.getProperties());
-		}
-		return categories;
+	public void setObjectInstanciationListener(
+			IObjectInstantiationListener objectInstanciationListener) {
+		this.objectInstanciationListener = objectInstanciationListener;
 	}
 }

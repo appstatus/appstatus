@@ -15,6 +15,12 @@
  */
 package net.sf.appstatus;
 
+/**
+ * Default Status check result.
+ * 
+ * @author Nicolas Richeton
+ * 
+ */
 public class StatusResultImpl implements IStatusResult {
 	private int code;
 	private String description;
