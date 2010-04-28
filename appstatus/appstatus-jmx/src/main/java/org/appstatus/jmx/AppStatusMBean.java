@@ -7,12 +7,18 @@ import net.sf.appstatus.IStatusResult;
 import net.sf.appstatus.StatusService;
 
 public class AppStatusMBean {
+	StatusService service = null;
+	
+	public AppStatusMBean() {
+		service = new StatusService();
+	}
+	
 
-	Map<String, Map<String, String>> getProperties() {
-		return StatusService.getInstance().getProperties();
+	public Map<String, Map<String, String>> getProperties() {
+		return service.getProperties();
 	}
 
 	public List<IStatusResult> getStatus() {
-		return StatusService.getInstance().checkAll();
+		return service.checkAll();
 	}
 }
