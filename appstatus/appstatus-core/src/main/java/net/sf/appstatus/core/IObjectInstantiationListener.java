@@ -16,7 +16,12 @@
 package net.sf.appstatus.core;
 
 /**
- * Object 
+ * Object instantiation listener.
+ * 
+ * <p>
+ * This allows to delegate object creation to a custom class. Can be used to
+ * create beans with spring instead of default Class#newInstance().
+ * 
  * @author Nicolas Richeton
  * 
  */
