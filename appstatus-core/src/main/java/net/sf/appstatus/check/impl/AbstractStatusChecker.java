@@ -49,7 +49,7 @@ public abstract class AbstractStatusChecker implements IStatusChecker {
 
 			break;
 		case FATAL:
-			result.setFatal(false);
+			result.setFatal(true);
 			result.setCode(IStatusResult.ERROR);
 			break;
 		default:
