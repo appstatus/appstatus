@@ -16,8 +16,8 @@
 package net.sf.appstatus.dummy;
 
 import net.sf.appstatus.IStatusResult;
-import net.sf.appstatus.StatusResultImpl;
 import net.sf.appstatus.check.impl.AbstractHttpStatusChecker;
+import net.sf.appstatus.check.impl.StatusResultImpl;
 
 public class DummyStatusChecker extends AbstractHttpStatusChecker {
 

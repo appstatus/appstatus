@@ -17,8 +17,6 @@ package net.sf.appstatus.check.impl;
 
 import java.io.IOException;
 
-import net.sf.appstatus.IStatusChecker;
-
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.ResponseHandler;
@@ -30,7 +28,7 @@ import org.apache.http.impl.client.DefaultHttpClient;
  * @author Nicolas Richeton
  * 
  */
-public abstract class AbstractHttpStatusChecker implements IStatusChecker {
+public abstract class AbstractHttpStatusChecker extends AbstractStatusChecker {
 
 	protected String doHttpGet(String url) throws ClientProtocolException,
 			IOException {

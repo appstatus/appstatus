@@ -16,26 +16,23 @@
 package net.sf.appstatus.dummy;
 
 import net.sf.appstatus.IStatusResult;
-import net.sf.appstatus.StatusResultImpl;
 import net.sf.appstatus.check.impl.AbstractHttpStatusChecker;
 
 public class GoogleHttpStatusChecker extends AbstractHttpStatusChecker {
 
 	public IStatusResult checkStatus() {
-		StatusResultImpl result = new StatusResultImpl();
-		result.setProbeName(getName());
+		IStatusResult result = null;
 
 		try {
 			this.doHttpGet("http://www.google.com");
+			result = createResult(OK);
 			result.setDescription("Google Access ok");
-			result.setCode(IStatusResult.OK);
 		} catch (Exception e) {
-			result.setCode(IStatusResult.ERROR);
+			result = createResult(FATAL);
 			result.setDescription("Google access failed");
 			result
 					.setResolutionSteps("Your server does not have internet access : "
 							+ e.getMessage());
-			result.setFatal(true);
 		}
 
 		return result;
