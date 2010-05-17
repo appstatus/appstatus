@@ -41,4 +41,7 @@ public interface IStatusResult {
 
 	boolean isFatal();
 
+	void setDescription(String description);
+
+	void setResolutionSteps(String resolutionSteps);
 }
