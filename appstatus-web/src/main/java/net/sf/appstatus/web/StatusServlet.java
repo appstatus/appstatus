@@ -85,6 +85,7 @@ public class StatusServlet extends HttpServlet {
 		}
 
 		resp.setContentType("text/html");
+		resp.setCharacterEncoding("UTF-8");
 
 		ServletOutputStream os = resp.getOutputStream();
 		os.write("<html><body>".getBytes());
