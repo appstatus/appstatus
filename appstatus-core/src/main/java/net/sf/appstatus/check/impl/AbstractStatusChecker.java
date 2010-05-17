@@ -16,11 +16,49 @@
 package net.sf.appstatus.check.impl;
 
 import net.sf.appstatus.IStatusChecker;
+import net.sf.appstatus.IStatusResult;
 
 /**
  * @author Nicolas Richeton
  * 
  */
 public abstract class AbstractStatusChecker implements IStatusChecker {
-	// Will contain some utility methods.
+
+	protected static final int FATAL = 2;
+	protected static final int OK = 0;
+	protected static final int WARN = 1;
+
+	/**
+	 * Create result. Details can then be added using
+	 * {@link IStatusResult#setDescription(String)} and
+	 * {@link IStatusResult#setResolutionSteps(String)}.
+	 * 
+	 * @param code
+	 *            {@link AbstractStatusChecker#OK} or
+	 *            {@link AbstractStatusChecker#FATAL}
+	 * @return IStatusResult object
+	 */
+	protected IStatusResult createResult(int code) {
+		StatusResultImpl result = new StatusResultImpl();
+		result.setProbeName(getName());
+
+		switch (code) {
+		case OK:
+			result.setCode(IStatusResult.OK);
+			result.setFatal(false);
+
+			break;
+		case FATAL:
+			result.setFatal(false);
+			result.setCode(IStatusResult.ERROR);
+			break;
+		default:
+			// WARN
+			result.setFatal(false);
+			result.setCode(IStatusResult.ERROR);
+			break;
+		}
+
+		return result;
+	}
 }

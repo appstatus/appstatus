@@ -13,7 +13,9 @@
  * limitations under the License. 
  * 
  */
-package net.sf.appstatus;
+package net.sf.appstatus.check.impl;
+
+import net.sf.appstatus.IStatusResult;
 
 /**
  * Default Status check result.
