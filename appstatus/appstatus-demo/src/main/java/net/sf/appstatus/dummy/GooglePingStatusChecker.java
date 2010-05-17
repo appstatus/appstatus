@@ -17,33 +17,32 @@ package net.sf.appstatus.dummy;
 
 import java.net.InetAddress;
 
-import net.sf.appstatus.IStatusChecker;
 import net.sf.appstatus.IStatusResult;
-import net.sf.appstatus.StatusResultImpl;
+import net.sf.appstatus.check.impl.AbstractStatusChecker;
 
-public class GooglePingStatusChecker implements IStatusChecker {
+public class GooglePingStatusChecker extends AbstractStatusChecker {
 
 	public IStatusResult checkStatus() {
-		StatusResultImpl result = new StatusResultImpl();
-		result.setProbeName(getName());
+		IStatusResult result = null;
 
 		try {
 			InetAddress address = InetAddress.getByName("www.google.com");
 
 			if (address.isReachable(2000)) {
+				result = createResult(OK);
 				result.setDescription("Google Access ok");
-				result.setCode(IStatusResult.OK);
+
 			} else {
 				throw new Exception("Ping timeout (2000ms)");
 			}
 
 		} catch (Exception e) {
-			result.setCode(IStatusResult.ERROR);
+			result = createResult(WARN);
 			result.setDescription("Google ping failed");
 			result
 					.setResolutionSteps("Ping failed. This means that ICMP messages are blocked by this host. (This may not be an issue) "
 							+ e.getMessage());
-			result.setFatal(false);
+
 		}
 
 		return result;
