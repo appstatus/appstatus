@@ -38,6 +38,7 @@ import org.slf4j.LoggerFactory;
 
 public class StatusServlet extends HttpServlet {
 
+	private static final String ENCODING = "UTF-8";
 	private static Logger logger = LoggerFactory.getLogger(StatusService.class);
 	private static final long serialVersionUID = 3912325072098291029L;
 	private static StatusService status = null;
@@ -67,7 +68,6 @@ public class StatusServlet extends HttpServlet {
 		}
 
 		if (req.getParameter("icon") != null) {
-
 			doGetResource(req.getParameter("icon"), req, resp);
 			return;
 		}
@@ -85,35 +85,35 @@ public class StatusServlet extends HttpServlet {
 		}
 
 		resp.setContentType("text/html");
-		resp.setCharacterEncoding("UTF-8");
+		resp.setCharacterEncoding(ENCODING);
 
 		ServletOutputStream os = resp.getOutputStream();
-		os.write("<html><body>".getBytes());
-		os.write("<h1>Status Page</h1>".getBytes());
-		os.write(("<p>Online:" + statusOk + "</p>").getBytes());
-		os.write(("<p>Code:" + statusCode + "</p>").getBytes());
 
-		os.write("<h2>Status</h2>".getBytes());
-		os.write("<table border='1'>".getBytes());
+		os.write("<html><body>".getBytes(ENCODING));
+		os.write("<h1>Status Page</h1>".getBytes(ENCODING));
+		os.write(("<p>Online:" + statusOk + "</p>").getBytes(ENCODING));
+		os.write(("<p>Code:" + statusCode + "</p>").getBytes(ENCODING));
+
+		os.write("<h2>Status</h2>".getBytes(ENCODING));
+		os.write("<table border='1'>".getBytes(ENCODING));
 		os
 				.write("<tr><td></td><td>Name</td><td>Description</td><td>Code</td><td>Resolution</td></tr>"
-						.getBytes());
+						.getBytes(ENCODING));
 
 		for (IStatusResult r : results) {
 			generateRow(os, getStatus(r), r.getProbeName(), r.getDescription(),
 					String.valueOf(r.getCode()), r.getResolutionSteps());
 		}
-		os.write("</table>".getBytes());
+		os.write("</table>".getBytes(ENCODING));
 
-		os.write("<h2>Properties</h2>".getBytes());
+		os.write("<h2>Properties</h2>".getBytes(ENCODING));
 		Map<String, Map<String, String>> properties = status.getProperties();
-		os.write("<table border='1'>".getBytes());
+		os.write("<table border='1'>".getBytes(ENCODING));
 		os
 				.write("<tr><td></td><td>Category</td><td>Name</td><td>Value</td></tr>"
-						.getBytes());
+						.getBytes(ENCODING));
 
 		for (Entry<String, Map<String, String>> cat : properties.entrySet()) {
-
 			String category = cat.getKey();
 
 			for (Entry<String, String> r : cat.getValue().entrySet()) {
@@ -122,8 +122,8 @@ public class StatusServlet extends HttpServlet {
 
 		}
 
-		os.write("</table>".getBytes());
-		os.write("</body></html>".getBytes());
+		os.write("</table>".getBytes(ENCODING));
+		os.write("</body></html>".getBytes(ENCODING));
 	}
 
 	/**
@@ -164,12 +164,13 @@ public class StatusServlet extends HttpServlet {
 			Object... cols) throws IOException {
 		os.write("<tr>".getBytes());
 
-		os.write(("<td><img src='?icon=" + status + "'></td>").getBytes());
+		os.write(("<td><img src='?icon=" + status + "'></td>")
+				.getBytes(ENCODING));
 
 		for (Object obj : cols) {
 			os.write("<td>".getBytes());
 			if (obj != null) {
-				os.write(obj.toString().getBytes());
+				os.write(obj.toString().getBytes(ENCODING));
 			}
 			os.write("</td>".getBytes());
 
