@@ -3,12 +3,12 @@
  	<parent>
 		<artifactId>appstatus-parent</artifactId>
 		<groupId>net.sf.appstatus</groupId>
-		<version>0.0.2-SNAPSHOT</version>
+		<version>0.0.2</version>
 	</parent>
 	 <groupId>net.sf.appstatus</groupId>
   <artifactId>appstatus-demo</artifactId>
   <packaging>war</packaging>
-  <version>0.0.2-SNAPSHOT</version>
+  <version>0.0.2</version>
   <name>App Status Demo Webapp</name>
   <dependencies>
     <dependency>
@@ -20,7 +20,7 @@
     <dependency>
     	<groupId>net.sf.appstatus </groupId>
     	<artifactId>appstatus-web</artifactId>
-    	<version>0.0.2-SNAPSHOT</version>
+    	<version>0.0.2</version>
     	<scope>compile</scope>
     </dependency>
     <dependency>
