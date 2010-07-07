@@ -40,72 +40,74 @@ import org.springframework.jmx.export.annotation.ManagedResource;
 @ManagedResource(objectName = "AppStatus:bean=ServicesStatusChecker")
 public class StatusJmx implements ApplicationContextAware {
 
-  private static StatusService statusService = null;
+	private static StatusService statusService = null;
 
-  private ApplicationContext applicationContext;
-  private final Logger logger = LoggerFactory.getLogger(StatusJmx.class);
+	private ApplicationContext applicationContext;
+	private final Logger logger = LoggerFactory.getLogger(StatusJmx.class);
 
-  private boolean useSpring = true;
+	private boolean useSpring = true;
 
-  @ManagedAttribute(description = "Status list", currencyTimeLimit = 15)
-  public Map<String, String> getStatus() {
-    Map<String, String> statusChecker = new HashMap<String, String>();
-    for (IStatusResult result : statusService.checkAll()) {
-      statusChecker.put(result.getProbeName(), formatCodeDisplay(result.getCode()));
-    }
-    return statusChecker;
-  }
+	@ManagedAttribute(description = "Status list", currencyTimeLimit = 15)
+	public Map<String, String> getStatus() {
+		Map<String, String> statusChecker = new HashMap<String, String>();
+		for (IStatusResult result : statusService.checkAll()) {
+			statusChecker.put(result.getProbeName(),
+					formatCodeDisplay(result.getCode()));
+		}
+		return statusChecker;
+	}
 
-  @ManagedAttribute(description = "Full status list : display return code, description and resolution steps.", currencyTimeLimit = 15)
-  public Map<String, List<String>> getFullStatus() {
-    Map<String, List<String>> statusChecker = new HashMap<String, List<String>>();
-    List<String> statusAttributs = null;
-    for (IStatusResult result : statusService.checkAll()) {
-      statusAttributs = new ArrayList<String>();
-      statusAttributs.add(formatCodeDisplay(result.getCode()));
-      statusAttributs.add(result.getDescription());
-      statusAttributs.add(result.getResolutionSteps());
-      statusChecker.put(result.getProbeName(), statusAttributs);
-    }
-    return statusChecker;
-  }
+	@ManagedAttribute(description = "Full status list : display return code, description and resolution steps.", currencyTimeLimit = 15)
+	public Map<String, List<String>> getFullStatus() {
+		Map<String, List<String>> statusChecker = new HashMap<String, List<String>>();
+		List<String> statusAttributs = null;
+		for (IStatusResult result : statusService.checkAll()) {
+			statusAttributs = new ArrayList<String>();
+			statusAttributs.add(formatCodeDisplay(result.getCode()));
+			statusAttributs.add(result.getDescription());
+			statusAttributs.add(result.getResolutionSteps());
+			statusChecker.put(result.getProbeName(), statusAttributs);
+		}
+		return statusChecker;
+	}
 
-  /**
-   * Human readable code format.
-   * 
-   * @param code
-   * @return the code from {@link IStatusResult} or the int code if not found
-   */
-  protected String formatCodeDisplay(int code) {
-    String codeDisplay = "";
-    switch (code) {
-    case (IStatusResult.ERROR):
-      codeDisplay = "ERROR";
-      break;
-    case (IStatusResult.OK):
-      codeDisplay = "OK";
-      break;
-    default:
-      codeDisplay = Integer.toString(code);
-    }
-    return codeDisplay;
-  }
+	/**
+	 * Human readable code format.
+	 * 
+	 * @param code
+	 * @return the code from {@link IStatusResult} or the int code if not found
+	 */
+	protected String formatCodeDisplay(int code) {
+		String codeDisplay = "";
+		switch (code) {
+		case (IStatusResult.ERROR):
+			codeDisplay = "ERROR";
+			break;
+		case (IStatusResult.OK):
+			codeDisplay = "OK";
+			break;
+		default:
+			codeDisplay = Integer.toString(code);
+		}
+		return codeDisplay;
+	}
 
-  /**
-   * Load configuration from /status-jmx-conf.properties file.<br/>
-   * If not found look for Spring beans.
-   */
-  public void init() {
-    statusService = new StatusService();
+	/**
+	 * Load configuration from /status-jmx-conf.properties file.<br/>
+	 * If not found look for Spring beans.
+	 */
+	public void init() {
+		statusService = new StatusService();
 
-    if (useSpring) {
-      statusService.setObjectInstanciationListener(new SpringBeanInstantiationListener(this.applicationContext));
-    }
+		statusService
+				.setObjectInstanciationListener(new SpringBeanInstantiationListener(
+						this.applicationContext));
 
-    statusService.init();
-  }
+		statusService.init();
+	}
 
-  public void setApplicationContext(ApplicationContext springApplicationContext) throws BeansException {
-    this.applicationContext = springApplicationContext;
-  }
+	public void setApplicationContext(
+			ApplicationContext springApplicationContext) throws BeansException {
+		this.applicationContext = springApplicationContext;
+	}
 }
