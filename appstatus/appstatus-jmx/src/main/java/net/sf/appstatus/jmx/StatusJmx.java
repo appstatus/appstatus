@@ -96,21 +96,6 @@ public class StatusJmx implements ApplicationContextAware {
    * If not found look for Spring beans.
    */
   public void init() {
-    try {
-      InputStream is = StatusJmx.class.getResourceAsStream("/status-jmx-conf.properties");
-
-      if (is == null) {
-        logger.warn("/status-jmx-conf.properties not found in classpath. Using default configuration");
-      } else {
-        Properties p = new Properties();
-        p.load(is);
-        is.close();
-        useSpring = Boolean.parseBoolean((String) p.get("useSpring"));
-      }
-    } catch (Exception e) {
-      logger.error("Error loading configuration from /status-jmx-conf.properties.", e);
-    }
-
     statusService = new StatusService();
 
     if (useSpring) {
