@@ -13,15 +13,16 @@
 			Open Source software downloads</alt>
 	</bannerRight>
 
-	<links>
+	
+    
+	<body>
+<links>
       <item name="Maven repo" href="http://appstatus.sourceforge.net/maven2/repository/" />
       <item name="Change log" href="https://sourceforge.net/apps/mantisbt/appstatus/changelog_page.php"/>
       <item name="Roadmap" href="https://sourceforge.net/apps/mantisbt/appstatus/roadmap_page.php"/>
       <item name="Stats (ohloh)" href="https://www.ohloh.net/p/appstatus"/>
     </links>
     
-	<body>
-
 		<menu name="App Status Toolkit">
 			<item name="Introduction" href="index.html" />
 		</menu>
