@@ -20,8 +20,8 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.List;
 import java.util.Map;
-import java.util.Properties;
 import java.util.Map.Entry;
+import java.util.Properties;
 
 import javax.servlet.ServletException;
 import javax.servlet.ServletOutputStream;
@@ -47,109 +47,42 @@ public class StatusServlet extends HttpServlet {
 	private static final String STATUS_PROP = "prop";
 	private static final String STATUS_WARN = "warn";
 	private String allow = null;
+	private final String styleSheet = "<style type=\"text/css\" media=\"screen\">"
+			+ "table { font-size: 80%; }"
+			+ "table ,th, td {  border: 1px solid black; border-collapse:collapse;}"
+			+ "th { background-color: #DDDDDD; }" + "</style>";
 	private boolean useSpring = false;
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * javax.servlet.http.HttpServlet#doGet(javax.servlet.http.HttpServletRequest
-	 * , javax.servlet.http.HttpServletResponse)
-	 */
 	@Override
-	protected void doGet(HttpServletRequest req, HttpServletResponse resp)
-			throws ServletException, IOException {
+	public void init() throws ServletException {
+		super.init();
+		try {
+			InputStream is = StatusServlet.class
+					.getResourceAsStream("/status-web-conf.properties");
 
-		if (allow != null) {
-			if (!req.getRemoteAddr().equals(allow)) {
-				resp.sendError(401, "IP not authorized");
-				return;
+			if (is == null) {
+				logger.warn("/status-web-conf.properties not found in classpath. Using default configuration");
+			} else {
+				Properties p = new Properties();
+				p.load(is);
+				is.close();
+				allow = (String) p.get("ip.allow");
+				useSpring = Boolean.parseBoolean((String) p.get("useSpring"));
 			}
+		} catch (Exception e) {
+			logger.error(
+					"Error loading configuration from /status-web-conf.properties.",
+					e);
 		}
 
-		if (req.getParameter("icon") != null) {
-			doGetResource(req.getParameter("icon"), req, resp);
-			return;
+		status = new StatusService();
+
+		if (useSpring) {
+			status.setObjectInstanciationListener(new SpringObjectInstantiationListener(
+					this.getServletContext()));
 		}
 
-		List<IStatusResult> results = status.checkAll();
-		boolean statusOk = true;
-		int statusCode = 200;
-		for (IStatusResult r : results) {
-			if (r.isFatal()) {
-				resp.setStatus(500);
-				statusCode = 500;
-				statusOk = false;
-				break;
-			}
-		}
-
-		resp.setContentType("text/html");
-		resp.setCharacterEncoding(ENCODING);
-
-		ServletOutputStream os = resp.getOutputStream();
-
-		os.write("<html><body>".getBytes(ENCODING));
-		os.write("<h1>Status Page</h1>".getBytes(ENCODING));
-		os.write(("<p>Online:" + statusOk + "</p>").getBytes(ENCODING));
-		os.write(("<p>Code:" + statusCode + "</p>").getBytes(ENCODING));
-
-		os.write("<h2>Status</h2>".getBytes(ENCODING));
-		os.write("<table border='1'>".getBytes(ENCODING));
-		os
-				.write("<tr><td></td><td>Name</td><td>Description</td><td>Code</td><td>Resolution</td></tr>"
-						.getBytes(ENCODING));
-
-		for (IStatusResult r : results) {
-			generateRow(os, getStatus(r), r.getProbeName(), r.getDescription(),
-					String.valueOf(r.getCode()), r.getResolutionSteps());
-		}
-		os.write("</table>".getBytes(ENCODING));
-
-		os.write("<h2>Properties</h2>".getBytes(ENCODING));
-		Map<String, Map<String, String>> properties = status.getProperties();
-		os.write("<table border='1'>".getBytes(ENCODING));
-		os
-				.write("<tr><td></td><td>Category</td><td>Name</td><td>Value</td></tr>"
-						.getBytes(ENCODING));
-
-		for (Entry<String, Map<String, String>> cat : properties.entrySet()) {
-			String category = cat.getKey();
-
-			for (Entry<String, String> r : cat.getValue().entrySet()) {
-				generateRow(os, STATUS_PROP, category, r.getKey(), r.getValue());
-			}
-
-		}
-
-		os.write("</table>".getBytes(ENCODING));
-		os.write("</body></html>".getBytes(ENCODING));
-	}
-
-	/**
-	 * Serve icons
-	 * 
-	 * @param id
-	 * @param req
-	 * @param resp
-	 * @throws IOException
-	 */
-	protected void doGetResource(String id, HttpServletRequest req,
-			HttpServletResponse resp) throws IOException {
-		String location = null;
-		if (STATUS_OK.equals(id)) {
-			location = "/org/freedesktop/tango/22x22/status/weather-clear.png";
-		} else if (STATUS_WARN.equals(id)) {
-			location = "/org/freedesktop/tango/22x22/status/weather-overcast.png";
-		} else if (STATUS_ERROR.equals(id)) {
-			location = "/org/freedesktop/tango/22x22/status/weather-severe-alert.png";
-		} else if (STATUS_PROP.equals(id)) {
-			location = "/org/freedesktop/tango/22x22/actions/format-justify-fill.png";
-		}
-
-		InputStream is = this.getClass().getResourceAsStream(location);
-		OutputStream os = resp.getOutputStream();
-		IOUtils.copy(is, os);
+		status.init();
 	}
 
 	/**
@@ -197,38 +130,106 @@ public class StatusServlet extends HttpServlet {
 		return STATUS_WARN;
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * javax.servlet.http.HttpServlet#doGet(javax.servlet.http.HttpServletRequest
+	 * , javax.servlet.http.HttpServletResponse)
+	 */
 	@Override
-	public void init() throws ServletException {
-		super.init();
-		try {
-			InputStream is = StatusServlet.class
-					.getResourceAsStream("/status-web-conf.properties");
+	protected void doGet(HttpServletRequest req, HttpServletResponse resp)
+			throws ServletException, IOException {
 
-			if (is == null) {
-				logger
-						.warn("/status-web-conf.properties not found in classpath. Using default configuration");
-			} else {
-				Properties p = new Properties();
-				p.load(is);
-				is.close();
-				allow = (String) p.get("ip.allow");
-				useSpring = Boolean.parseBoolean((String) p.get("useSpring"));
+		if (allow != null) {
+			if (!req.getRemoteAddr().equals(allow)) {
+				resp.sendError(401, "IP not authorized");
+				return;
 			}
-		} catch (Exception e) {
-			logger
-					.error(
-							"Error loading configuration from /status-web-conf.properties.",
-							e);
 		}
 
-		status = new StatusService();
-
-		if (useSpring) {
-			status
-					.setObjectInstanciationListener(new SpringObjectInstantiationListener(
-							this.getServletContext()));
+		if (req.getParameter("icon") != null) {
+			doGetResource(req.getParameter("icon"), req, resp);
+			return;
 		}
 
-		status.init();
+		List<IStatusResult> results = status.checkAll();
+		boolean statusOk = true;
+		int statusCode = 200;
+		for (IStatusResult r : results) {
+			if (r.isFatal()) {
+				resp.setStatus(500);
+				statusCode = 500;
+				statusOk = false;
+				break;
+			}
+		}
+
+		resp.setContentType("text/html");
+		resp.setCharacterEncoding(ENCODING);
+
+		ServletOutputStream os = resp.getOutputStream();
+
+		os.write("<html><head".getBytes(ENCODING));
+		os.write(styleSheet.getBytes(ENCODING));
+		os.write("<body>".getBytes(ENCODING));
+		os.write("<h1>Status Page</h1>".getBytes(ENCODING));
+		os.write(("<p>Online:" + statusOk + "</p>").getBytes(ENCODING));
+		os.write(("<p>Code:" + statusCode + "</p>").getBytes(ENCODING));
+
+		os.write("<h2>Status</h2>".getBytes(ENCODING));
+		os.write("<table>".getBytes(ENCODING));
+		os.write("<tr><th></th><th>Name</th><th>Description</th><th>Code</th><th>Resolution</th></tr>"
+				.getBytes(ENCODING));
+
+		for (IStatusResult r : results) {
+			generateRow(os, getStatus(r), r.getProbeName(), r.getDescription(),
+					String.valueOf(r.getCode()), r.getResolutionSteps());
+		}
+		os.write("</table>".getBytes(ENCODING));
+
+		os.write("<h2>Properties</h2>".getBytes(ENCODING));
+		Map<String, Map<String, String>> properties = status.getProperties();
+		os.write("<table>".getBytes(ENCODING));
+		os.write("<tr><th></th><th>Category</th><th>Name</th><th>Value</th></tr>"
+				.getBytes(ENCODING));
+
+		for (Entry<String, Map<String, String>> cat : properties.entrySet()) {
+			String category = cat.getKey();
+
+			for (Entry<String, String> r : cat.getValue().entrySet()) {
+				generateRow(os, STATUS_PROP, category, r.getKey(), r.getValue());
+			}
+
+		}
+
+		os.write("</table>".getBytes(ENCODING));
+		os.write("</body></html>".getBytes(ENCODING));
+	}
+
+	/**
+	 * Serve icons
+	 * 
+	 * @param id
+	 * @param req
+	 * @param resp
+	 * @throws IOException
+	 */
+	protected void doGetResource(String id, HttpServletRequest req,
+			HttpServletResponse resp) throws IOException {
+		String location = null;
+		if (STATUS_OK.equals(id)) {
+			location = "/org/freedesktop/tango/22x22/status/weather-clear.png";
+		} else if (STATUS_WARN.equals(id)) {
+			location = "/org/freedesktop/tango/22x22/status/weather-overcast.png";
+		} else if (STATUS_ERROR.equals(id)) {
+			location = "/org/freedesktop/tango/22x22/status/weather-severe-alert.png";
+		} else if (STATUS_PROP.equals(id)) {
+			location = "/org/freedesktop/tango/22x22/actions/format-justify-fill.png";
+		}
+
+		InputStream is = this.getClass().getResourceAsStream(location);
+		OutputStream os = resp.getOutputStream();
+		IOUtils.copy(is, os);
 	}
 }
