@@ -9,8 +9,7 @@
   <groupId>net.sf.appstatus</groupId>
   <artifactId>appstatus-jmx</artifactId>
   <version>0.0.3-SNAPSHOT</version>
-  <name>appstatus-jmx</name>
-  <url>http://maven.apache.org</url>
+  <name>JMX Endpoint</name>
   <dependencies>
     <dependency>
       <groupId>junit</groupId>
