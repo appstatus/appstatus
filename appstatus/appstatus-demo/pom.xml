@@ -8,8 +8,8 @@
 	 <groupId>net.sf.appstatus</groupId>
   <artifactId>appstatus-demo</artifactId>
   <packaging>war</packaging>
+  <name>Demo Webapp</name>
   <version>0.0.3-SNAPSHOT</version>
-  <name>App Status Demo Webapp</name>
   <dependencies>
     <dependency>
       <groupId>junit</groupId>
