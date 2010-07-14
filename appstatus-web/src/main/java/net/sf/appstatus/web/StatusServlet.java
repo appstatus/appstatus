@@ -23,12 +23,14 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Properties;
 
+import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import net.sf.appstatus.IServletContextProvider;
 import net.sf.appstatus.IStatusResult;
 import net.sf.appstatus.StatusService;
 
@@ -52,83 +54,6 @@ public class StatusServlet extends HttpServlet {
 			+ "table ,th, td {  border: 1px solid black; border-collapse:collapse;}"
 			+ "th { background-color: #DDDDDD; }" + "</style>";
 	private boolean useSpring = false;
-
-	@Override
-	public void init() throws ServletException {
-		super.init();
-		try {
-			InputStream is = StatusServlet.class
-					.getResourceAsStream("/status-web-conf.properties");
-
-			if (is == null) {
-				logger.warn("/status-web-conf.properties not found in classpath. Using default configuration");
-			} else {
-				Properties p = new Properties();
-				p.load(is);
-				is.close();
-				allow = (String) p.get("ip.allow");
-				useSpring = Boolean.parseBoolean((String) p.get("useSpring"));
-			}
-		} catch (Exception e) {
-			logger.error(
-					"Error loading configuration from /status-web-conf.properties.",
-					e);
-		}
-
-		status = new StatusService();
-
-		if (useSpring) {
-			status.setObjectInstanciationListener(new SpringObjectInstantiationListener(
-					this.getServletContext()));
-		}
-
-		status.init();
-	}
-
-	/**
-	 * Outputs one table row
-	 * 
-	 * @param os
-	 * @param status
-	 * @param cols
-	 * @throws IOException
-	 */
-	private void generateRow(ServletOutputStream os, String status,
-			Object... cols) throws IOException {
-		os.write("<tr>".getBytes());
-
-		os.write(("<td><img src='?icon=" + status + "'></td>")
-				.getBytes(ENCODING));
-
-		for (Object obj : cols) {
-			os.write("<td>".getBytes());
-			if (obj != null) {
-				os.write(obj.toString().getBytes(ENCODING));
-			}
-			os.write("</td>".getBytes());
-
-		}
-		os.write("</tr>".getBytes());
-	}
-
-	/**
-	 * Returns status icon id.
-	 * 
-	 * @param result
-	 * @return
-	 */
-	private String getStatus(IStatusResult result) {
-
-		if (result.isFatal()) {
-			return STATUS_ERROR;
-		}
-
-		if (result.getCode() == IStatusResult.OK) {
-			return STATUS_OK;
-		}
-
-		return STATUS_WARN;
-	}
 
 	/*
 	 * (non-Javadoc)
@@ -231,5 +156,87 @@ public class StatusServlet extends HttpServlet {
 		InputStream is = this.getClass().getResourceAsStream(location);
 		OutputStream os = resp.getOutputStream();
 		IOUtils.copy(is, os);
+	}
+
+	/**
+	 * Outputs one table row
+	 * 
+	 * @param os
+	 * @param status
+	 * @param cols
+	 * @throws IOException
+	 */
+	private void generateRow(ServletOutputStream os, String status,
+			Object... cols) throws IOException {
+		os.write("<tr>".getBytes());
+
+		os.write(("<td><img src='?icon=" + status + "'></td>")
+				.getBytes(ENCODING));
+
+		for (Object obj : cols) {
+			os.write("<td>".getBytes());
+			if (obj != null) {
+				os.write(obj.toString().getBytes(ENCODING));
+			}
+			os.write("</td>".getBytes());
+
+		}
+		os.write("</tr>".getBytes());
+	}
+
+	/**
+	 * Returns status icon id.
+	 * 
+	 * @param result
+	 * @return
+	 */
+	private String getStatus(IStatusResult result) {
+
+		if (result.isFatal()) {
+			return STATUS_ERROR;
+		}
+
+		if (result.getCode() == IStatusResult.OK) {
+			return STATUS_OK;
+		}
+
+		return STATUS_WARN;
+	}
+
+	@Override
+	public void init() throws ServletException {
+		super.init();
+		try {
+			InputStream is = StatusServlet.class
+					.getResourceAsStream("/status-web-conf.properties");
+
+			if (is == null) {
+				logger.warn("/status-web-conf.properties not found in classpath. Using default configuration");
+			} else {
+				Properties p = new Properties();
+				p.load(is);
+				is.close();
+				allow = (String) p.get("ip.allow");
+				useSpring = Boolean.parseBoolean((String) p.get("useSpring"));
+			}
+		} catch (Exception e) {
+			logger.error(
+					"Error loading configuration from /status-web-conf.properties.",
+					e);
+		}
+
+		status = new StatusService();
+
+		if (useSpring) {
+			status.setObjectInstanciationListener(new SpringObjectInstantiationListener(
+					this.getServletContext()));
+		}
+
+		status.setServletContextProvider(new IServletContextProvider() {
+			public ServletContext getServletContext() {
+				return StatusServlet.this.getServletContext();
+			}
+		});
+		status.init();
 	}
 }

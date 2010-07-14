@@ -42,6 +42,7 @@ public class StatusService {
 	private IObjectInstantiationListener objectInstanciationListener = null;
 	private final List<IStatusChecker> probes;
 	private final List<IPropertyProvider> propertyProviders;
+	private IServletContextProvider servletContextProvider = null;
 
 	/**
 	 * Status Service creator.
@@ -99,6 +100,10 @@ public class StatusService {
 		return categories;
 	}
 
+	public IServletContextProvider getServletContext() {
+		return servletContextProvider;
+	}
+
 	public void init() {
 		try {
 			// Load and init all probes
@@ -130,12 +135,22 @@ public class StatusService {
 					if (name.startsWith("check")) {
 						String clazz = (String) p.get(name);
 						IStatusChecker check = (IStatusChecker) getInstance(clazz);
+						if (check instanceof IServletContextAware) {
+							((IServletContextAware) check)
+									.setServletContext(servletContextProvider
+											.getServletContext());
+						}
 						probes.add(check);
 						logger.info("Registered status checker " + clazz);
 					} else if (name.startsWith("property")) {
 						String clazz = (String) p.get(name);
 						IPropertyProvider provider = (IPropertyProvider) getInstance(clazz);
 						propertyProviders.add(provider);
+						if (provider instanceof IServletContextAware) {
+							((IServletContextAware) provider)
+									.setServletContext(servletContextProvider
+											.getServletContext());
+						}
 						logger.info("Registered property provider " + clazz);
 					}
 				}
@@ -149,5 +164,9 @@ public class StatusService {
 	public void setObjectInstanciationListener(
 			IObjectInstantiationListener objectInstanciationListener) {
 		this.objectInstanciationListener = objectInstanciationListener;
+	}
+
+	public void setServletContextProvider(IServletContextProvider servletContext) {
+		this.servletContextProvider = servletContext;
 	}
 }
