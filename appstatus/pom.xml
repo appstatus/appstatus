@@ -100,8 +100,8 @@
 		<module>appstatus-core</module>
 		<module>appstatus-web</module>
 		<module>appstatus-demo</module>
-    <module>appstatus-jmx</module>
-  </modules>
+		<module>appstatus-jmx</module>
+	</modules>
 	<reporting>
 		<plugins>
 			<plugin>
