@@ -24,8 +24,6 @@ import net.sf.appstatus.IServletContextProvider;
 import net.sf.appstatus.IStatusResult;
 import net.sf.appstatus.StatusService;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
@@ -45,10 +43,6 @@ public class StatusJmx implements ApplicationContextAware, ServletContextAware {
   private static StatusService statusService = null;
 
   private ApplicationContext applicationContext;
-
-  private final Logger logger = LoggerFactory.getLogger(StatusJmx.class);
-
-  private boolean useSpring = true;
 
   private ServletContext servletContext;
 
