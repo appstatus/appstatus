@@ -40,7 +40,7 @@ import org.springframework.web.context.ServletContextAware;
 @ManagedResource(objectName = "AppStatus:bean=ServicesStatusChecker")
 public class StatusJmx implements ApplicationContextAware, ServletContextAware {
 
-  private static StatusService statusService = null;
+  private StatusService statusService = null;
 
   private ApplicationContext applicationContext;
 
@@ -108,14 +108,12 @@ public class StatusJmx implements ApplicationContextAware, ServletContextAware {
 
     statusService.setObjectInstanciationListener(new SpringBeanInstantiationListener(this.applicationContext));
 
-    if (this.statusService.getServletContext() == null) {
-      this.statusService.setServletContextProvider(new IServletContextProvider() {
+    this.statusService.setServletContextProvider(new IServletContextProvider() {
 
-        public ServletContext getServletContext() {
-          return StatusJmx.this.servletContext;
-        }
-      });
-    }
+      public ServletContext getServletContext() {
+        return StatusJmx.this.servletContext;
+      }
+    });
 
     statusService.init();
   }
