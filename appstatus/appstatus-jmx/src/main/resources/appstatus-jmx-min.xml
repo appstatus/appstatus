@@ -12,5 +12,7 @@
 	<!-- Declare and initialize the main bean -->
 	<!-- cf. appstatus-jmx-full.xml for full declaration -->
   	<bean id="jmxStatus" class="net.sf.appstatus.jmx.StatusJmx" init-method="init"/>
+  	
+  	<bean id="warMavenVersionProvider" class="net.sf.appstatus.check.impl.WarMavenVersionProvider" />
   
 </beans>
