@@ -1,17 +1,15 @@
 /*
- * Copyright 2010 Capgemini
- * Licensed under the Apache License, Version 2.0 (the "License"); 
- * you may not use this file except in compliance with the License. 
- * You may obtain a copy of the License at 
+ * Copyright 2010 Capgemini Licensed under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
  * 
- * http://www.apache.org/licenses/LICENSE-2.0 
+ * http://www.apache.org/licenses/LICENSE-2.0
  * 
- * Unless required by applicable law or agreed to in writing, software 
- * distributed under the License is distributed on an "AS IS" BASIS, 
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. 
- * See the License for the specific language governing permissions and 
- * limitations under the License. 
- * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
  */
 package net.sf.appstatus;
 
@@ -35,138 +33,133 @@ import org.slf4j.LoggerFactory;
  * 
  */
 public class StatusService {
-	private static final String CONFIG_LOCATION = "status-check.properties";
+  private static final String CONFIG_LOCATION = "status-check.properties";
 
-	private static Logger logger = LoggerFactory.getLogger(StatusService.class);
+  private static Logger logger = LoggerFactory.getLogger(StatusService.class);
 
-	private IObjectInstantiationListener objectInstanciationListener = null;
-	private final List<IStatusChecker> probes;
-	private final List<IPropertyProvider> propertyProviders;
-	private IServletContextProvider servletContextProvider = null;
+  private IObjectInstantiationListener objectInstanciationListener = null;
+  private final List<IStatusChecker> probes;
+  private final List<IPropertyProvider> propertyProviders;
+  private IServletContextProvider servletContextProvider = null;
 
-	/**
-	 * Status Service creator.
-	 */
-	public StatusService() {
+  /**
+   * Status Service creator.
+   */
+  public StatusService() {
 
-		probes = new ArrayList<IStatusChecker>();
-		propertyProviders = new ArrayList<IPropertyProvider>();
+    probes = new ArrayList<IStatusChecker>();
+    propertyProviders = new ArrayList<IPropertyProvider>();
 
-	}
+  }
 
-	public List<IStatusResult> checkAll() {
+  public List<IStatusResult> checkAll() {
 
-		ArrayList<IStatusResult> l = new ArrayList<IStatusResult>();
+    ArrayList<IStatusResult> l = new ArrayList<IStatusResult>();
 
-		for (IStatusChecker check : probes) {
-			l.add(check.checkStatus());
-		}
-		return l;
+    for (IStatusChecker check : probes) {
+      l.add(check.checkStatus());
+    }
+    return l;
 
-	}
+  }
 
-	private Object getInstance(String className) throws InstantiationException,
-			IllegalAccessException, ClassNotFoundException {
-		Object obj = null;
+  public IObjectInstantiationListener getObjectInstanciationListener() {
+    return objectInstanciationListener;
+  }
 
-		if (objectInstanciationListener != null) {
-			obj = objectInstanciationListener.getInstance(className);
-		}
+  public Map<String, Map<String, String>> getProperties() {
+    TreeMap<String, Map<String, String>> categories = new TreeMap<String, Map<String, String>>();
 
-		if (obj != null) {
-			return obj;
-		}
-		return Class.forName(className).newInstance();
+    for (IPropertyProvider provider : propertyProviders) {
+      if (categories.get(provider.getCategory()) == null) {
+        categories.put(provider.getCategory(), new TreeMap<String, String>());
+      }
 
-	}
+      Map<String, String> l = categories.get(provider.getCategory());
 
-	public IObjectInstantiationListener getObjectInstanciationListener() {
-		return objectInstanciationListener;
-	}
+      l.putAll(provider.getProperties());
+    }
+    return categories;
+  }
 
-	public Map<String, Map<String, String>> getProperties() {
-		TreeMap<String, Map<String, String>> categories = new TreeMap<String, Map<String, String>>();
+  public IServletContextProvider getServletContext() {
+    return servletContextProvider;
+  }
 
-		for (IPropertyProvider provider : propertyProviders) {
-			if (categories.get(provider.getCategory()) == null) {
-				categories.put(provider.getCategory(),
-						new TreeMap<String, String>());
-			}
+  public void init() {
+    try {
+      // Load and init all probes
+      Enumeration<URL> configFiles;
 
-			Map<String, String> l = categories.get(provider.getCategory());
+      configFiles = StatusService.class.getClassLoader().getResources(CONFIG_LOCATION);
 
-			l.putAll(provider.getProperties());
-		}
-		return categories;
-	}
+      if (configFiles == null) {
+        return;
+      }
 
-	public IServletContextProvider getServletContext() {
-		return servletContextProvider;
-	}
+      URL url = null;
+      Properties p = null;
+      InputStream is = null;
+      while (configFiles.hasMoreElements()) {
+        url = configFiles.nextElement();
 
-	public void init() {
-		try {
-			// Load and init all probes
-			Enumeration<URL> configFiles;
+        // Load plugin configuration
+        p = new Properties();
+        is = url.openStream();
+        p.load(is);
+        is.close();
 
-			configFiles = StatusService.class.getClassLoader().getResources(
-					CONFIG_LOCATION);
+        Set<Object> keys = p.keySet();
+        String name = null;
+        for (Object key : keys) {
+          name = (String) key;
+          if (name.startsWith("check")) {
+            String clazz = (String) p.get(name);
+            IStatusChecker check = (IStatusChecker) getInstance(clazz);
+            if (check instanceof IServletContextAware) {
+              ((IServletContextAware) check).setServletContext(servletContextProvider.getServletContext());
+            }
+            probes.add(check);
+            logger.info("Registered status checker " + clazz);
+          } else if (name.startsWith("property")) {
+            String clazz = (String) p.get(name);
+            IPropertyProvider provider = (IPropertyProvider) getInstance(clazz);
+            propertyProviders.add(provider);
+            if (provider instanceof IServletContextAware && servletContextProvider != null) {
+              ((IServletContextAware) provider).setServletContext(servletContextProvider.getServletContext());
+            }
+            // else : guess is if we don't have the servlet context now, we will
+            // later.
+            logger.info("Registered property provider " + clazz);
+          }
+        }
+      }
+    } catch (Exception e) {
+      logger.error("Initialization error", e);
+    }
 
-			if (configFiles == null) {
-				return;
-			}
+  }
 
-			URL url = null;
-			Properties p = null;
-			InputStream is = null;
-			while (configFiles.hasMoreElements()) {
-				url = configFiles.nextElement();
+  public void setObjectInstanciationListener(IObjectInstantiationListener objectInstanciationListener) {
+    this.objectInstanciationListener = objectInstanciationListener;
+  }
 
-				// Load plugin configuration
-				p = new Properties();
-				is = url.openStream();
-				p.load(is);
-				is.close();
+  public void setServletContextProvider(IServletContextProvider servletContext) {
+    this.servletContextProvider = servletContext;
+  }
 
-				Set<Object> keys = p.keySet();
-				String name = null;
-				for (Object key : keys) {
-					name = (String) key;
-					if (name.startsWith("check")) {
-						String clazz = (String) p.get(name);
-						IStatusChecker check = (IStatusChecker) getInstance(clazz);
-						if (check instanceof IServletContextAware) {
-							((IServletContextAware) check)
-									.setServletContext(servletContextProvider
-											.getServletContext());
-						}
-						probes.add(check);
-						logger.info("Registered status checker " + clazz);
-					} else if (name.startsWith("property")) {
-						String clazz = (String) p.get(name);
-						IPropertyProvider provider = (IPropertyProvider) getInstance(clazz);
-						propertyProviders.add(provider);
-						if (provider instanceof IServletContextAware) {
-							((IServletContextAware) provider)
-									.setServletContext(servletContextProvider
-											.getServletContext());
-						}
-						logger.info("Registered property provider " + clazz);
-					}
-				}
-			}
-		} catch (Exception e) {
-			logger.error("Initialization error", e);
-		}
+  private Object getInstance(String className) throws InstantiationException, IllegalAccessException,
+      ClassNotFoundException {
+    Object obj = null;
 
-	}
+    if (objectInstanciationListener != null) {
+      obj = objectInstanciationListener.getInstance(className);
+    }
 
-	public void setObjectInstanciationListener(
-			IObjectInstantiationListener objectInstanciationListener) {
-		this.objectInstanciationListener = objectInstanciationListener;
-	}
+    if (obj != null) {
+      return obj;
+    }
+    return Class.forName(className).newInstance();
 
-	public void setServletContextProvider(IServletContextProvider servletContext) {
-		this.servletContextProvider = servletContext;
-	}
+  }
 }

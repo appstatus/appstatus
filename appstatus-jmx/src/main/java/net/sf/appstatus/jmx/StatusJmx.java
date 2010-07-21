@@ -18,6 +18,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.servlet.ServletContext;
+
+import net.sf.appstatus.IServletContextProvider;
 import net.sf.appstatus.IStatusResult;
 import net.sf.appstatus.StatusService;
 
@@ -28,6 +31,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.jmx.export.annotation.ManagedAttribute;
 import org.springframework.jmx.export.annotation.ManagedResource;
+import org.springframework.web.context.ServletContextAware;
 
 /**
  * JMX exposure of StatusChecker beans.
@@ -36,14 +40,21 @@ import org.springframework.jmx.export.annotation.ManagedResource;
  * 
  */
 @ManagedResource(objectName = "AppStatus:bean=ServicesStatusChecker")
-public class StatusJmx implements ApplicationContextAware {
+public class StatusJmx implements ApplicationContextAware, ServletContextAware {
 
   private static StatusService statusService = null;
 
   private ApplicationContext applicationContext;
+
   private final Logger logger = LoggerFactory.getLogger(StatusJmx.class);
 
   private boolean useSpring = true;
+
+  private ServletContext servletContext;
+
+  public void setServletContext(ServletContext servletContext) {
+    this.servletContext = servletContext;
+  }
 
   @ManagedAttribute(description = "Status list", currencyTimeLimit = 15)
   public Map<String, String> getStatus() {
@@ -102,6 +113,15 @@ public class StatusJmx implements ApplicationContextAware {
     statusService = new StatusService();
 
     statusService.setObjectInstanciationListener(new SpringBeanInstantiationListener(this.applicationContext));
+
+    if (this.statusService.getServletContext() == null) {
+      this.statusService.setServletContextProvider(new IServletContextProvider() {
+
+        public ServletContext getServletContext() {
+          return StatusJmx.this.servletContext;
+        }
+      });
+    }
 
     statusService.init();
   }
