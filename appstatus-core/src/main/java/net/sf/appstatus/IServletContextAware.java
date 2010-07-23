@@ -25,6 +25,5 @@ import javax.servlet.ServletContext;
  * 
  */
 public interface IServletContextAware {
-
 	void setServletContext(ServletContext servletContext);
 }

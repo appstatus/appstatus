@@ -21,9 +21,7 @@ package net.sf.appstatus;
  * @author Nicolas Richeton
  */
 public interface IStatusChecker {
-
 	IStatusResult checkStatus();
 
 	String getName();
-
 }
