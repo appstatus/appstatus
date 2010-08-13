@@ -33,7 +33,8 @@ import org.slf4j.LoggerFactory;
  */
 public class WarMavenVersionProvider extends AbstractPropertyProvider implements IServletContextAware {
 
-  private static final String ARTIFACT_ID = "artifactId";
+  private static final String NOT_AVAILABLE = "Not available";
+private static final String ARTIFACT_ID = "artifactId";
   private static final String CATEGORY = "maven";
   private static final String GROUP_ID = "groupId";
   private static Logger logger = LoggerFactory.getLogger(WarMavenVersionProvider.class);
@@ -73,9 +74,9 @@ public class WarMavenVersionProvider extends AbstractPropertyProvider implements
         logger.warn("Error getting maven information from /META-INF/maven/*", e);
       }
       if (pomProperties == null) {
-        prop.put(VERSION, "Not available");
-        prop.put(GROUP_ID, "Not available");
-        prop.put(ARTIFACT_ID, "Not available");
+        prop.put(VERSION, NOT_AVAILABLE);
+        prop.put(GROUP_ID, NOT_AVAILABLE);
+        prop.put(ARTIFACT_ID, NOT_AVAILABLE);
       } else {
         prop.put(VERSION, pomProperties.getProperty(VERSION));
         prop.put(GROUP_ID, pomProperties.getProperty(GROUP_ID));
