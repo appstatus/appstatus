@@ -16,7 +16,7 @@
 package net.sf.appstatus.monitor.resource;
 
 import java.util.Date;
-
+import java.util.Map;
 
 /**
  * Scheduled job detail.
@@ -31,5 +31,12 @@ public interface IScheduledJobDetail extends IJobDetail {
 	 * @return next fire time
 	 */
 	Date getNextFireTime();
+
+	/**
+	 * Return the job parameters map.
+	 * 
+	 * @return job parameters map
+	 */
+	Map<String, String> getParameters();
 
 }
