@@ -13,7 +13,7 @@
  * limitations under the License. 
  * 
  */
-package net.sf.appstatus.samples;
+package net.sf.appstatus.samples.batch;
 
 /**
  * Value Object
