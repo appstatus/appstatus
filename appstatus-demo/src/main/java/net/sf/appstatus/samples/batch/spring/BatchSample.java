@@ -13,31 +13,47 @@
  * limitations under the License. 
  * 
  */
-package net.sf.appstatus.samples.batch;
-
-import java.util.List;
-
-import org.springframework.batch.item.ItemWriter;
+package net.sf.appstatus.samples.batch.spring;
 
 /**
- * Write received data
+ * Value Object
  * 
  * @author VPENET
  * 
  */
+public class BatchSample {
 
-public class BatchSampleConsoleWriter implements ItemWriter<BatchSample> {
-	/**
-	 * Write data in console
-	 * 
-	 * @param List
-	 *            of sample data
-	 * 
-	 */
-	public void write(List<? extends BatchSample> samples) throws Exception {
-		for (BatchSample sample : samples) {
-			System.out.println(sample.toString());
-		}
+	private Long id;
+	private String name;
+
+	public BatchSample() {
+	}
+
+	public BatchSample(Long id, String name) {
+		super();
+		this.id = id;
+		this.name = name;
+	}
+
+	public Long getId() {
+		return id;
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public void setId(Long id) {
+		this.id = id;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	@Override
+	public String toString() {
+		return "BatchSample:id=" + id + ",name=" + name;
 	}
 
 }

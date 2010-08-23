@@ -13,7 +13,7 @@
  * limitations under the License. 
  * 
  */
-package net.sf.appstatus.samples.batch;
+package net.sf.appstatus.samples.batch.spring;
 
 import java.util.ArrayList;
 import java.util.List;
