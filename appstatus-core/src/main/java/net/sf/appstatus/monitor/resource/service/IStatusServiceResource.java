@@ -13,33 +13,29 @@
  * limitations under the License. 
  * 
  */
-package net.sf.appstatus.monitor.resource;
+package net.sf.appstatus.monitor.resource.service;
+
+import net.sf.appstatus.monitor.resource.IStatusResource;
 
 /**
- * Job detail informations.
  * 
  * @author Guillaume Mary
  * 
  */
-public interface IJobDetail {
-	/**
-	 * Return the job description.
-	 * 
-	 * @return job description
-	 */
-	String getDescription();
+public interface IStatusServiceResource extends IStatusResource {
 
 	/**
-	 * Return the job group.
+	 * Return the average flow of the service resource.
 	 * 
-	 * @return job group.
+	 * @return the average flow in request by second
 	 */
-	String getGroup();
+	int getAverageFlow();
 
 	/**
-	 * Return the job name.
+	 * Return the average response time of the service resource.
 	 * 
-	 * @return job name
+	 * @return the average response time in millisecond
 	 */
-	String getName();
+	long getAverageResponseTime();
+
 }

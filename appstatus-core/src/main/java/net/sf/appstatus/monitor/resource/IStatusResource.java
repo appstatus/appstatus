@@ -16,7 +16,6 @@
 package net.sf.appstatus.monitor.resource;
 
 import net.sf.appstatus.IStatusResult;
-import net.sf.appstatus.monitor.IStatusResourceMonitor;
 
 /**
  * Describe the status of a generic resource.
@@ -25,13 +24,6 @@ import net.sf.appstatus.monitor.IStatusResourceMonitor;
  * 
  */
 public interface IStatusResource {
-
-	/**
-	 * Return the resource monitor.
-	 * 
-	 * @return the resource monitor
-	 */
-	IStatusResourceMonitor getMonitor();
 
 	/**
 	 * Return the resource name.
@@ -53,4 +45,11 @@ public interface IStatusResource {
 	 * @return the resource type
 	 */
 	String getType();
+
+	/**
+	 * Return the resource unique identifier
+	 * 
+	 * @return
+	 */
+	String getUid();
 }

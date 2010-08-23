@@ -18,9 +18,9 @@ package net.sf.appstatus.monitor;
 import java.util.List;
 import java.util.Set;
 
-import net.sf.appstatus.monitor.resource.IScheduledJobDetail;
-import net.sf.appstatus.monitor.resource.IStatusExecutedJobResource;
-import net.sf.appstatus.monitor.resource.IStatusJobRessource;
+import net.sf.appstatus.monitor.resource.batch.IScheduledJobDetail;
+import net.sf.appstatus.monitor.resource.batch.IStatusExecutedJobResource;
+import net.sf.appstatus.monitor.resource.batch.IStatusJobRessource;
 
 /**
  * Interface which describe the monitor of an application status.

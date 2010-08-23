@@ -13,7 +13,7 @@
  * limitations under the License. 
  * 
  */
-package net.sf.appstatus.monitor.resource;
+package net.sf.appstatus.monitor.resource.batch;
 
 import java.util.Date;
 import java.util.Map;
@@ -24,7 +24,7 @@ import java.util.Map;
  * @author Guillaume Mary
  * 
  */
-public interface IScheduledJobDetail extends IJobDetail {
+public interface IScheduledJobDetail {
 	/**
 	 * Returns the next time at which the Job is scheduled to fire.
 	 * 

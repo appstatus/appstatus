@@ -13,27 +13,26 @@
  * limitations under the License. 
  * 
  */
-package net.sf.appstatus.monitor.resource;
+package net.sf.appstatus.agent.batch.impl.log;
+
+import net.sf.appstatus.agent.batch.IJobProgressMonitorAgent;
+import net.sf.appstatus.agent.batch.impl.AbstractJobProgressMonitorAgentFactory;
 
 /**
+ * Log progress monitor agent factory.
  * 
  * @author Guillaume Mary
  * 
  */
-public interface IStatusServiceResource extends IStatusResource {
+public class LogJobProgressMonitorAgentFactory extends
+		AbstractJobProgressMonitorAgentFactory {
 
 	/**
-	 * Return the average flow of the service resource.
-	 * 
-	 * @return the average flow in request by second
+	 * {@inheritDoc}
 	 */
-	int getAverageFlow();
-
-	/**
-	 * Return the average response time of the service resource.
-	 * 
-	 * @return the average response time in millisecond
-	 */
-	long getAverageResponseTime();
+	@Override
+	protected IJobProgressMonitorAgent createNewInstance(String executionId) {
+		return new LogJobProgressMonitorAgent(executionId);
+	}
 
 }

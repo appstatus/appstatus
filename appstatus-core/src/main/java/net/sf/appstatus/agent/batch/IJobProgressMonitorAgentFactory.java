@@ -13,36 +13,22 @@
  * limitations under the License. 
  * 
  */
-package net.sf.appstatus.monitor.resource;
-
-import java.util.Date;
+package net.sf.appstatus.agent.batch;
 
 /**
- * Job resource status.
+ * Job progress monitor factory.
  * 
  * @author Guillaume Mary
  * 
  */
-public interface IStatusJobRessource extends IStatusResource {
-	/**
-	 * Return the job's execution end date.
-	 * 
-	 * @return execution end date
-	 */
-	Date getEndDate();
+public interface IJobProgressMonitorAgentFactory {
 
 	/**
-	 * Return the progress status.
+	 * Return a new job progress monitor agent.
 	 * 
-	 * @return progress status
+	 * @param executionId
+	 *            job execution id
+	 * @return job progress monitor agent
 	 */
-	double getProgressStatus();
-
-	/**
-	 * Return the job's execution start date.
-	 * 
-	 * @return execution start date
-	 */
-	Date getStartDate();
-
+	abstract IJobProgressMonitorAgent getAgent(String executionId);
 }
