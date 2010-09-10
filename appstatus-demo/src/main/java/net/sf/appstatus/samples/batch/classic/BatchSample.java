@@ -20,8 +20,7 @@ import java.util.List;
 import java.util.UUID;
 
 import net.sf.appstatus.agent.batch.IJobProgressMonitorAgent;
-import net.sf.appstatus.agent.batch.IJobProgressMonitorAgentFactory;
-import net.sf.appstatus.agent.batch.impl.log.LogJobProgressMonitorAgentFactory;
+import net.sf.appstatus.agent.batch.JobProgressMonitorAgentFactory;
 
 /**
  * Classic sample batch.
@@ -31,8 +30,6 @@ import net.sf.appstatus.agent.batch.impl.log.LogJobProgressMonitorAgentFactory;
  */
 public class BatchSample {
 
-	private static IJobProgressMonitorAgentFactory monitorFactory;
-
 	/**
 	 * Sample batch.
 	 * 
@@ -40,13 +37,13 @@ public class BatchSample {
 	 *            batch args
 	 */
 	public static void main(String[] args) {
-		// init the factory
-		monitorFactory = new LogJobProgressMonitorAgentFactory();
+		// retrieve the job monitor
+		IJobProgressMonitorAgent jobMonitor = JobProgressMonitorAgentFactory
+				.getAgent(UUID.randomUUID().toString());
 
 		// start the job
-		IJobProgressMonitorAgent jobMonitor = monitorFactory.getAgent(UUID
-				.randomUUID().toString());
 		jobMonitor.beginTask("sample", "SampleGroup", "A batch sample", 2);
+
 		// call step 1 (process 100 items)
 		List<String> items = step1(jobMonitor.createSubTask(1));
 
@@ -72,7 +69,9 @@ public class BatchSample {
 		for (int i = 0; i < 100; i++) {
 			item = "item" + i;
 			stepMonitor.setCurrentItem(item);
-			if (i % 5 == 0) {
+			if (i == 15 || i == 30) {
+
+			} else if (i % 5 == 0) {
 				stepMonitor.reject(item, "Test the reject feature");
 			} else {
 				items.add(item);

@@ -101,6 +101,8 @@
 		<module>appstatus-web</module>
 		<module>appstatus-demo</module>
 		<module>appstatus-jmx</module>
+		<module>appstatus-log</module>
+		<module>appstatus-nop</module>
 	</modules>
 	<reporting>
 		<plugins>

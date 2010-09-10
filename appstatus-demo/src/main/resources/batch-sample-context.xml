@@ -17,18 +17,15 @@
 		<property name="transactionManager" ref="transactionManager" />
 	</bean>
 	
-	<bean id="jobMonitorFactory" class="net.sf.appstatus.agent.batch.impl.log.LogJobProgressMonitorAgentFactory"></bean>
-
 	<bean id="transactionManager"
 		class="org.springframework.batch.support.transaction.ResourcelessTransactionManager">
 	</bean>
 
 	<bean id="sampleJobMonitorAgentListener"
-		class="net.sf.appstatus.agent.batch.impl.SpringJobMonitorAgentExecutionListener">
+		class="net.sf.appstatus.agent.batch.helpers.SpringJobMonitorAgentExecutionListener">
 		<property name="name" value="sample"></property>
 		<property name="description" value="A batch sample"></property>
 		<property name="group" value="SampleGroup"></property>
-		<property name="jobMonitorFactory" ref="jobMonitorFactory"></property>
 	</bean>
 	
 	<batch:job id="sample" job-repository="jobRepository">
