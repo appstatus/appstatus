@@ -13,26 +13,30 @@
  * limitations under the License. 
  * 
  */
-package net.sf.appstatus.agent.batch.impl.log;
+package net.sf.appstatus.agent.service.helpers;
 
-import net.sf.appstatus.agent.batch.IJobProgressMonitorAgent;
-import net.sf.appstatus.agent.batch.impl.AbstractJobProgressMonitorAgentFactory;
+import net.sf.appstatus.agent.service.IServiceMonitorAgent;
+import net.sf.appstatus.agent.service.IServiceMonitorAgentFactory;
 
 /**
- * Log progress monitor agent factory.
+ * Return the unique instance of the {@link NOPServiceMonitorAgent}
  * 
  * @author Guillaume Mary
  * 
  */
-public class LogJobProgressMonitorAgentFactory extends
-		AbstractJobProgressMonitorAgentFactory {
+public class NOPServiceMonitorAgentFactory implements
+		IServiceMonitorAgentFactory {
+	/**
+	 * Default constructor.
+	 */
+	public NOPServiceMonitorAgentFactory() {
+	}
 
 	/**
 	 * {@inheritDoc}
 	 */
-	@Override
-	protected IJobProgressMonitorAgent createNewInstance(String executionId) {
-		return new LogJobProgressMonitorAgent(executionId);
+	public IServiceMonitorAgent getAgent() {
+		return NOPServiceMonitorAgent.NOP_SERVICE_MONITOR_AGENT;
 	}
 
 }

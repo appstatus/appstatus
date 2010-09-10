@@ -13,7 +13,7 @@
  * limitations under the License. 
  * 
  */
-package net.sf.appstatus.agent;
+package net.sf.appstatus.agent.service;
 
 /**
  * Service monitor agent interface.
@@ -28,7 +28,7 @@ public interface IServiceMonitorAgent {
 	 * 
 	 * @return call id
 	 */
-	String beginCall();
+	String beginCall(String serviceName, Object[] parameters);
 
 	/**
 	 * Notify the end of a call to a service.

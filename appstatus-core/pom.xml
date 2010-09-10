@@ -38,4 +38,28 @@
 			<version>2.1.2.RELEASE</version>
 		</dependency>
 	</dependencies>
+
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-antrun-plugin</artifactId>
+				<executions>
+					<execution>
+						<phase>process-classes</phase>
+						<goals>
+							<goal>run</goal>
+						</goals>
+					</execution>
+				</executions>
+				<configuration>
+					<tasks>
+						<echo>Removing appstatus-core's dummy StaticServiceMonitorAgentFactoryBinder and StaticJobProgressMonitorAgentFactoryBinder</echo>
+						<delete dir="target/classes/net/sf/appstatus/agent/service/impl" />
+						<delete dir="target/classes/net/sf/appstatus/agent/batch/impl" />
+					</tasks>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
 </project>

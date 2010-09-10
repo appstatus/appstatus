@@ -58,6 +58,13 @@ public interface IJobProgressMonitorAgent {
 	void done();
 
 	/**
+	 * Retrieve the total amount of work for this task.
+	 * 
+	 * @return the total amount of work
+	 */
+	int getTotalWork();
+
+	/**
 	 * Send a message during the task execution.
 	 * 
 	 * @param message
@@ -92,6 +99,14 @@ public interface IJobProgressMonitorAgent {
 	 *            current processed item
 	 */
 	void setCurrentItem(Object item);
+
+	/**
+	 * Set the total work amount.
+	 * 
+	 * @param totalWork
+	 *            total work.
+	 */
+	void setTotalWork(int totalWork);
 
 	/**
 	 * Notify the processing of items.

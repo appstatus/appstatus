@@ -13,17 +13,18 @@
  * limitations under the License. 
  * 
  */
-package net.sf.appstatus.agent.batch.impl;
+package net.sf.appstatus.agent.batch.helpers;
 
 import java.util.List;
 
 import net.sf.appstatus.agent.batch.IJobProgressMonitorAgent;
-import net.sf.appstatus.agent.batch.IJobProgressMonitorAgentFactory;
+import net.sf.appstatus.agent.batch.JobProgressMonitorAgentFactory;
 
 import org.springframework.batch.core.ExitStatus;
 import org.springframework.batch.core.JobExecution;
 import org.springframework.batch.core.StepExecution;
 import org.springframework.batch.core.annotation.AfterJob;
+import org.springframework.batch.core.annotation.AfterRead;
 import org.springframework.batch.core.annotation.AfterStep;
 import org.springframework.batch.core.annotation.AfterWrite;
 import org.springframework.batch.core.annotation.BeforeJob;
@@ -59,11 +60,6 @@ public class SpringJobMonitorAgentExecutionListener {
 	private IJobProgressMonitorAgent jobMonitor;
 
 	/**
-	 * Job progress monitor factory.
-	 */
-	private IJobProgressMonitorAgentFactory jobMonitorFactory;
-
-	/**
 	 * Job name.
 	 */
 	private String name;
@@ -87,6 +83,20 @@ public class SpringJobMonitorAgentExecutionListener {
 	@AfterJob
 	public void afterJob(JobExecution jobExecution) {
 		jobMonitor.done();
+	}
+
+	@AfterRead
+	public void afterRead(Object item) {
+		if (item != null) {
+			// increment item read
+			int totalWork = stepMonitor.getTotalWork();
+			if (totalWork == IJobProgressMonitorAgent.UNKNOW) {
+				totalWork = 1;
+			} else {
+				totalWork++;
+			}
+			stepMonitor.setTotalWork(totalWork);
+		}
 	}
 
 	/**
@@ -121,8 +131,8 @@ public class SpringJobMonitorAgentExecutionListener {
 	 */
 	@BeforeJob
 	public void beforeJob(JobExecution jobExecution) {
-		jobMonitor = jobMonitorFactory.getAgent(jobExecution.getJobId()
-				.toString());
+		jobMonitor = JobProgressMonitorAgentFactory.getAgent(jobExecution
+				.getJobId().toString());
 		jobMonitor.beginTask(name, group, description, totalWork);
 	}
 
@@ -233,17 +243,6 @@ public class SpringJobMonitorAgentExecutionListener {
 	 */
 	public void setGroup(String group) {
 		this.group = group;
-	}
-
-	/**
-	 * Set the job monitor factory.
-	 * 
-	 * @param jobMonitorFactory
-	 *            factory
-	 */
-	public void setJobMonitorFactory(
-			IJobProgressMonitorAgentFactory jobMonitorFactory) {
-		this.jobMonitorFactory = jobMonitorFactory;
 	}
 
 	/**
