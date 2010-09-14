@@ -18,6 +18,7 @@ package net.sf.appstatus.web;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.UnsupportedEncodingException;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -33,6 +34,9 @@ import javax.servlet.http.HttpServletResponse;
 import net.sf.appstatus.IServletContextProvider;
 import net.sf.appstatus.IStatusResult;
 import net.sf.appstatus.StatusService;
+import net.sf.appstatus.monitor.resource.IStatusResource;
+import net.sf.appstatus.monitor.resource.ResourceType;
+import net.sf.appstatus.monitor.resource.service.IStatusServiceResource;
 
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
@@ -78,16 +82,12 @@ public class StatusServlet extends HttpServlet {
 			return;
 		}
 
-		List<IStatusResult> results = status.checkAll();
 		boolean statusOk = true;
 		int statusCode = 200;
-		for (IStatusResult r : results) {
-			if (r.isFatal()) {
-				resp.setStatus(500);
-				statusCode = 500;
-				statusOk = false;
-				break;
-			}
+		if (status.getStatus() == IStatusResult.ERROR) {
+			resp.setStatus(500);
+			statusCode = 500;
+			statusOk = false;
 		}
 
 		resp.setContentType("text/html");
@@ -102,33 +102,12 @@ public class StatusServlet extends HttpServlet {
 		os.write(("<p>Online:" + statusOk + "</p>").getBytes(ENCODING));
 		os.write(("<p>Code:" + statusCode + "</p>").getBytes(ENCODING));
 
-		os.write("<h2>Status</h2>".getBytes(ENCODING));
-		os.write("<table>".getBytes(ENCODING));
-		os.write("<tr><th></th><th>Name</th><th>Description</th><th>Code</th><th>Resolution</th></tr>"
-				.getBytes(ENCODING));
+		generateConfiguration(os);
 
-		for (IStatusResult r : results) {
-			generateRow(os, getStatus(r), r.getProbeName(), r.getDescription(),
-					String.valueOf(r.getCode()), r.getResolutionSteps());
-		}
-		os.write("</table>".getBytes(ENCODING));
+		generateResourcesStatus(os);
 
-		os.write("<h2>Properties</h2>".getBytes(ENCODING));
-		Map<String, Map<String, String>> properties = status.getProperties();
-		os.write("<table>".getBytes(ENCODING));
-		os.write("<tr><th></th><th>Category</th><th>Name</th><th>Value</th></tr>"
-				.getBytes(ENCODING));
+		generateServiceResourcesStatus(os);
 
-		for (Entry<String, Map<String, String>> cat : properties.entrySet()) {
-			String category = cat.getKey();
-
-			for (Entry<String, String> r : cat.getValue().entrySet()) {
-				generateRow(os, STATUS_PROP, category, r.getKey(), r.getValue());
-			}
-
-		}
-
-		os.write("</table>".getBytes(ENCODING));
 		os.write("</body></html>".getBytes(ENCODING));
 	}
 
@@ -158,6 +137,43 @@ public class StatusServlet extends HttpServlet {
 		IOUtils.copy(is, os);
 	}
 
+	private void generateConfiguration(ServletOutputStream os)
+			throws IOException, UnsupportedEncodingException {
+		os.write("<h2>Configuration</h2>".getBytes(ENCODING));
+		Map<String, Map<String, String>> properties = status.getConfiguration();
+		os.write("<table>".getBytes(ENCODING));
+		os.write("<tr><th></th><th>Category</th><th>Name</th><th>Value</th></tr>"
+				.getBytes(ENCODING));
+
+		for (Entry<String, Map<String, String>> cat : properties.entrySet()) {
+			String category = cat.getKey();
+
+			for (Entry<String, String> r : cat.getValue().entrySet()) {
+				generateRow(os, STATUS_PROP, category, r.getKey(), r.getValue());
+			}
+
+		}
+		os.write("</table>".getBytes(ENCODING));
+	}
+
+	private void generateResourcesStatus(ServletOutputStream os)
+			throws IOException, UnsupportedEncodingException {
+		os.write("<h2>Resource Status</h2>".getBytes(ENCODING));
+		os.write("<table>".getBytes(ENCODING));
+		os.write("<tr><th></th><th>Name</th><th>Description</th><th>Code</th><th>Resolution</th></tr>"
+				.getBytes(ENCODING));
+
+		for (IStatusResource resource : status.getMonitoredResourcesStatus()) {
+			if (resource.getType().equals(ResourceType.DEFAULT.getLabel())) {
+				IStatusResult r = resource.getStatus();
+				generateRow(os, getStatus(r), resource.getName(),
+						r.getDescription(), String.valueOf(r.getCode()),
+						r.getResolutionSteps());
+			}
+		}
+		os.write("</table>".getBytes(ENCODING));
+	}
+
 	/**
 	 * Outputs one table row
 	 * 
@@ -182,6 +198,47 @@ public class StatusServlet extends HttpServlet {
 
 		}
 		os.write("</tr>".getBytes());
+	}
+
+	private void generateServiceResourcesStatus(ServletOutputStream os)
+			throws IOException, UnsupportedEncodingException {
+		os.write("<h2>Service Status</h2>".getBytes(ENCODING));
+		os.write("<table>".getBytes(ENCODING));
+		os.write("<tr><th></th><th>Name</th><th>Description</th><th>Code</th><th>Resolution</th><th>Statistics</th></tr>"
+				.getBytes(ENCODING));
+
+		for (IStatusResource resource : status.getMonitoredResourcesStatus()) {
+			if (resource.getType().equals(ResourceType.SERVICE.getLabel())) {
+				IStatusResult r = resource.getStatus();
+				generateRow(
+						os,
+						getStatus(r),
+						resource.getName(),
+						r.getDescription(),
+						String.valueOf(r.getCode()),
+						r.getResolutionSteps(),
+						generateServiceResourceStatistics((IStatusServiceResource) resource));
+			}
+		}
+		os.write("</table>".getBytes(ENCODING));
+	}
+
+	private String generateServiceResourceStatistics(
+			IStatusServiceResource resource) {
+		StringBuilder statistics = new StringBuilder();
+		statistics.append("<table>");
+		statistics
+				.append("<tr><th>Operation</th><th>Average Response Time (s)</th><th>Average request flow (req/s)</th></tr>");
+		List<String> operations = resource.getOperationNames();
+		for (String operation : operations) {
+			statistics.append("<tr><td>").append(operation).append("</td><td>")
+					.append(resource.getAverageResponseTime(operation))
+					.append("</td><td>")
+					.append(resource.getAverageFlow(operation))
+					.append("</td></tr>");
+		}
+		statistics.append("</table>");
+		return statistics.toString();
 	}
 
 	/**
