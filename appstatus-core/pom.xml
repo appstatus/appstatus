@@ -54,9 +54,10 @@
 				</executions>
 				<configuration>
 					<tasks>
-						<echo>Removing appstatus-core's dummy StaticServiceMonitorAgentFactoryBinder and StaticJobProgressMonitorAgentFactoryBinder</echo>
+						<echo>Removing appstatus-core's dummy StaticServiceMonitorAgentFactoryBinder, StaticJobProgressMonitorAgentFactoryBinder and StaticServiceMonitorStatisticsProviderFactoryBinder</echo>
 						<delete dir="target/classes/net/sf/appstatus/agent/service/impl" />
 						<delete dir="target/classes/net/sf/appstatus/agent/batch/impl" />
+						<delete dir="target/classes/net/sf/appstatus/monitor/resource/service/statistics/impl" />
 					</tasks>
 				</configuration>
 			</plugin>

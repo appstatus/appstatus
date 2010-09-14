@@ -26,7 +26,9 @@ public interface IServiceMonitorAgentFactory {
 	/**
 	 * Get a service monitor agent.
 	 * 
+	 * @param serviceName
+	 *            name of the service
 	 * @return a service monitor agent
 	 */
-	IServiceMonitorAgent getAgent();
+	IServiceMonitorAgent getAgent(String serviceName);
 }

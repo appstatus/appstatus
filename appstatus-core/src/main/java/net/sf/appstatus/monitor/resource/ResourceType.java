@@ -13,30 +13,29 @@
  * limitations under the License. 
  * 
  */
-package net.sf.appstatus.agent.service.helpers;
-
-import net.sf.appstatus.agent.service.IServiceMonitorAgent;
-import net.sf.appstatus.agent.service.IServiceMonitorAgentFactory;
+package net.sf.appstatus.monitor.resource;
 
 /**
- * Return the unique instance of the {@link NOPServiceMonitorAgent}
+ * Enumeration of the resource types
  * 
  * @author Guillaume Mary
  * 
  */
-public class NOPServiceMonitorAgentFactory implements
-		IServiceMonitorAgentFactory {
-	/**
-	 * Default constructor.
-	 */
-	public NOPServiceMonitorAgentFactory() {
+public enum ResourceType {
+	SERVICE("service"), JOB("job"), DEFAULT("resource");
+
+	private String label;
+
+	private ResourceType(String label) {
+		this.label = label;
 	}
 
 	/**
-	 * {@inheritDoc}
+	 * Return the resource type label.
+	 * 
+	 * @return resource type label
 	 */
-	public IServiceMonitorAgent getAgent(String serviceName) {
-		return NOPServiceMonitorAgent.NOP_SERVICE_MONITOR_AGENT;
+	public String getLabel() {
+		return this.label;
 	}
-
 }

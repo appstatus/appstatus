@@ -26,15 +26,21 @@ public interface IServiceMonitorAgent {
 	/**
 	 * Notify the beginning of a call to a service.
 	 * 
+	 * @param operationName
+	 *            operation name
+	 * @param parameters
+	 *            operation parameters
 	 * @return call id
 	 */
-	String beginCall(String serviceName, Object[] parameters);
+	String beginCall(String operationName, Object[] parameters);
 
 	/**
 	 * Notify the end of a call to a service.
 	 * 
-	 * @param id
+	 * @param operationName
+	 *            operation name
+	 * @param executionId
 	 *            call id
 	 */
-	void endCall(String id);
+	void endCall(String operationName, String executionId);
 }

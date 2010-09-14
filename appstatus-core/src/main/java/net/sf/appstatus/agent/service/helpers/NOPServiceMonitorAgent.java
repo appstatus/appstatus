@@ -48,7 +48,7 @@ public class NOPServiceMonitorAgent implements IServiceMonitorAgent {
 	/**
 	 * A NOP implementation
 	 */
-	public void endCall(String id) {
+	public void endCall(String operationName, String executionId) {
 		// NOP
 	}
 

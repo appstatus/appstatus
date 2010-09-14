@@ -13,19 +13,17 @@
  * limitations under the License. 
  * 
  */
-package net.sf.appstatus.monitor.resource.service;
+package net.sf.appstatus.monitor.resource.service.statistics;
 
 import java.util.List;
 
-import net.sf.appstatus.monitor.resource.IStatusResource;
-
 /**
+ * Service statistics provider interface.
  * 
  * @author Guillaume Mary
  * 
  */
-public interface IStatusServiceResource extends IStatusResource {
-
+public interface IServiceMonitorStatisticsProvider {
 	/**
 	 * Return the average flow of the service resource.
 	 * 
@@ -50,5 +48,4 @@ public interface IStatusServiceResource extends IStatusResource {
 	 * @return operation names
 	 */
 	List<String> getOperationNames();
-
 }

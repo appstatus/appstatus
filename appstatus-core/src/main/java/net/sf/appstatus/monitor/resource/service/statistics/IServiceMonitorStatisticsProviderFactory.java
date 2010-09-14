@@ -13,30 +13,22 @@
  * limitations under the License. 
  * 
  */
-package net.sf.appstatus.agent.service.helpers;
-
-import net.sf.appstatus.agent.service.IServiceMonitorAgent;
-import net.sf.appstatus.agent.service.IServiceMonitorAgentFactory;
+package net.sf.appstatus.monitor.resource.service.statistics;
 
 /**
- * Return the unique instance of the {@link NOPServiceMonitorAgent}
+ * Service statistics provider factory.
  * 
  * @author Guillaume Mary
  * 
  */
-public class NOPServiceMonitorAgentFactory implements
-		IServiceMonitorAgentFactory {
-	/**
-	 * Default constructor.
-	 */
-	public NOPServiceMonitorAgentFactory() {
-	}
+public interface IServiceMonitorStatisticsProviderFactory {
 
 	/**
-	 * {@inheritDoc}
+	 * Retrieve the service statistics provider for the specified service.
+	 * 
+	 * @param serviceName
+	 *            service name
+	 * @return service statistics provider
 	 */
-	public IServiceMonitorAgent getAgent(String serviceName) {
-		return NOPServiceMonitorAgent.NOP_SERVICE_MONITOR_AGENT;
-	}
-
+	IServiceMonitorStatisticsProvider getProvider(String serviceName);
 }

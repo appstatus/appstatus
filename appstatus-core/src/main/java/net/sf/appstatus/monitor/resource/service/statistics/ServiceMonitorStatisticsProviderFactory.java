@@ -13,7 +13,7 @@
  * limitations under the License. 
  * 
  */
-package net.sf.appstatus.agent.service;
+package net.sf.appstatus.monitor.resource.service.statistics;
 
 import java.io.IOException;
 import java.net.URL;
@@ -21,19 +21,19 @@ import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
 
-import net.sf.appstatus.agent.service.helpers.NOPServiceMonitorAgentFactory;
-import net.sf.appstatus.agent.service.impl.StaticServiceMonitorAgentFactoryBinder;
+import net.sf.appstatus.monitor.resource.service.statistics.helpers.NOPServiceMonitorStatisticsProviderFactory;
+import net.sf.appstatus.monitor.resource.service.statistics.impl.StaticServiceMonitorStatisticsProviderFactoryBinder;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Service Monitor Agent factory.
+ * Service Monitor Statistics Provider factory.
  * 
  * @author Guillaume Mary
  * 
  */
-public final class ServiceMonitorAgentFactory {
+public final class ServiceMonitorStatisticsProviderFactory {
 
 	static final int UNINITIALIZED = 0;
 	static final int ONGOING_INITILIZATION = 1;
@@ -42,30 +42,30 @@ public final class ServiceMonitorAgentFactory {
 	static final int NOP_FALLBACK_INITILIZATION = 4;
 	static int INITIALIZATION_STATE = UNINITIALIZED;
 
-	static NOPServiceMonitorAgentFactory NOP_FALLBACK_FACTORY = new NOPServiceMonitorAgentFactory();
-	static NOPServiceMonitorAgentFactory TEMP_FACTORY = new NOPServiceMonitorAgentFactory();
+	static NOPServiceMonitorStatisticsProviderFactory NOP_FALLBACK_FACTORY = new NOPServiceMonitorStatisticsProviderFactory();
+	static NOPServiceMonitorStatisticsProviderFactory TEMP_FACTORY = new NOPServiceMonitorStatisticsProviderFactory();
 
-	private static String STATIC_SERVICE_MONITOR_AGENT_FACTORY_BINDER_PATH = "net/sf/appstatus/agent/service/impl/StaticServiceMonitorAgentFactoryBinder.class";
+	private static String STATIC_SERVICE_MONITOR_STATISTICS_PROVIDER_FACTORY_BINDER_PATH = "net/sf/appstatus/monitor/resource/service/statistics/impl/StaticServiceMonitorStatisticsProviderFactoryBinder.class";
 
-	static final String UNSUCCESSFUL_INIT_MSG = "net.sf.appstatus.agent.service.ServiceMonitorAgentFactory could not be successfully initialized.";
+	static final String UNSUCCESSFUL_INIT_MSG = "net.sf.appstatus.monitor.resource.service.statistics.ServiceMonitorStatisticsProviderFactory could not be successfully initialized.";
 
 	private static Logger log = LoggerFactory
-			.getLogger(ServiceMonitorAgentFactory.class);
+			.getLogger(ServiceMonitorStatisticsProviderFactory.class);
 
 	/**
-	 * Bind the service monitor factory.
+	 * Bind the service statistics provider factory.
 	 */
 	private final static void bind() {
 		try {
 			// the next line does the binding
-			StaticServiceMonitorAgentFactoryBinder.getSingleton();
+			StaticServiceMonitorStatisticsProviderFactoryBinder.getSingleton();
 			INITIALIZATION_STATE = SUCCESSFUL_INITILIZATION;
 		} catch (NoClassDefFoundError ncde) {
 			String msg = ncde.getMessage();
 			if (msg != null
-					&& msg.indexOf("net/sf/appstatus/agent/service/impl/StaticServiceMonitorAgentFactoryBinder") != -1) {
+					&& msg.indexOf("net/sf/appstatus/monitor/resource/service/statistics/impl/StaticServiceMonitorStatisticsProviderFactoryBinder") != -1) {
 				INITIALIZATION_STATE = NOP_FALLBACK_INITILIZATION;
-				log.info("Failed to load class \"net.sf.appstatus.agent.service.impl.StaticServiceMonitorAgentFactoryBinder\".");
+				log.info("Failed to load class \"net.sf.appstatus.monitor.resource.service.statistics.impl.StaticServiceMonitorStatisticsProviderFactoryBinder\".");
 				log.info("Defaulting to no-operation (NOP) logger implementation");
 			} else {
 				failedBinding(ncde);
@@ -74,7 +74,7 @@ public final class ServiceMonitorAgentFactory {
 		} catch (java.lang.NoSuchMethodError nsme) {
 			String msg = nsme.getMessage();
 			if (msg != null
-					&& msg.indexOf("net.sf.appstatus.agent.service.impl.StaticServiceMonitorAgentFactoryBinder.getSingleton()") != -1) {
+					&& msg.indexOf("net.sf.appstatus.agent.service.impl.StaticServiceMonitorStatisticsProviderFactoryBinder.getSingleton()") != -1) {
 				INITIALIZATION_STATE = FAILED_INITILIZATION;
 				log.error("appstatus-core is incompatible with this binding.");
 				log.error("Upgrade your binding");
@@ -99,25 +99,16 @@ public final class ServiceMonitorAgentFactory {
 	}
 
 	/**
-	 * Return a new {@link IServiceMonitorAgent} instance.
-	 * 
-	 * @return a new {@link IServiceMonitorAgent} instance
-	 */
-	public static IServiceMonitorAgent getAgent(String serviceName) {
-		IServiceMonitorAgentFactory monitorFactory = getIServiceMonitorAgentFactory();
-		return monitorFactory.getAgent(serviceName);
-	}
-
-	/**
-	 * Return the {@link IServiceMonitorAgentFactory} instance in use.
+	 * Return the {@link IServiceMonitorStatisticsProviderFactory} instance in
+	 * use.
 	 * 
 	 * <p>
-	 * IServiceMonitorAgentFactory instance is bound with this class at compile
-	 * time.
+	 * IServiceMonitorStatisticsProviderFactory instance is bound with this
+	 * class at compile time.
 	 * 
-	 * @return the IServiceMonitorAgentFactory instance in use
+	 * @return the IServiceMonitorStatisticsProviderFactory instance in use
 	 */
-	public static IServiceMonitorAgentFactory getIServiceMonitorAgentFactory() {
+	public static IServiceMonitorStatisticsProviderFactory getIServiceMonitorStatisticsProviderFactory() {
 		if (INITIALIZATION_STATE == UNINITIALIZED) {
 			INITIALIZATION_STATE = ONGOING_INITILIZATION;
 			performInitialization();
@@ -125,8 +116,9 @@ public final class ServiceMonitorAgentFactory {
 		}
 		switch (INITIALIZATION_STATE) {
 		case SUCCESSFUL_INITILIZATION:
-			return StaticServiceMonitorAgentFactoryBinder.getSingleton()
-					.getServiceMonitorAgentFactory();
+			return StaticServiceMonitorStatisticsProviderFactoryBinder
+					.getSingleton()
+					.getServiceMonitorStatisticsProviderFactory();
 		case NOP_FALLBACK_INITILIZATION:
 			return NOP_FALLBACK_FACTORY;
 		case FAILED_INITILIZATION:
@@ -135,6 +127,17 @@ public final class ServiceMonitorAgentFactory {
 			return TEMP_FACTORY;
 		}
 		throw new IllegalStateException("Unreachable code");
+	}
+
+	/**
+	 * Return a new {@link IServiceMonitorStatisticsProvider} instance.
+	 * 
+	 * @return a new {@link IServiceMonitorStatisticsProvider} instance
+	 */
+	public static IServiceMonitorStatisticsProvider getProvider(
+			String serviceName) {
+		IServiceMonitorStatisticsProviderFactory monitorFactory = getIServiceMonitorStatisticsProviderFactory();
+		return monitorFactory.getProvider(serviceName);
 	}
 
 	private final static void performInitialization() {
@@ -147,15 +150,15 @@ public final class ServiceMonitorAgentFactory {
 	 */
 	private static void singleImplementationSanityCheck() {
 		try {
-			ClassLoader serviceMonitorAgentFactoryClassLoader = ServiceMonitorAgentFactory.class
+			ClassLoader serviceMonitorStatisticsProviderFactoryClassLoader = ServiceMonitorStatisticsProviderFactory.class
 					.getClassLoader();
 			Enumeration<URL> paths;
-			if (serviceMonitorAgentFactoryClassLoader == null) {
+			if (serviceMonitorStatisticsProviderFactoryClassLoader == null) {
 				paths = ClassLoader
-						.getSystemResources(STATIC_SERVICE_MONITOR_AGENT_FACTORY_BINDER_PATH);
+						.getSystemResources(STATIC_SERVICE_MONITOR_STATISTICS_PROVIDER_FACTORY_BINDER_PATH);
 			} else {
-				paths = serviceMonitorAgentFactoryClassLoader
-						.getResources(STATIC_SERVICE_MONITOR_AGENT_FACTORY_BINDER_PATH);
+				paths = serviceMonitorStatisticsProviderFactoryClassLoader
+						.getResources(STATIC_SERVICE_MONITOR_STATISTICS_PROVIDER_FACTORY_BINDER_PATH);
 			}
 			List<URL> implementationList = new ArrayList<URL>();
 			while (paths.hasMoreElements()) {
@@ -163,7 +166,7 @@ public final class ServiceMonitorAgentFactory {
 				implementationList.add(path);
 			}
 			if (implementationList.size() > 1) {
-				log.error("Class path contains multiple Service Monitor Agent bindings.");
+				log.error("Class path contains multiple Service Monitor Statistics Provider bindings.");
 				for (int i = 0; i < implementationList.size(); i++) {
 					log.error("Found binding in [" + implementationList.get(i)
 							+ "]");
@@ -177,7 +180,7 @@ public final class ServiceMonitorAgentFactory {
 	/**
 	 * Default constructor.
 	 */
-	private ServiceMonitorAgentFactory() {
+	private ServiceMonitorStatisticsProviderFactory() {
 		// prevent instantiation
 	}
 
