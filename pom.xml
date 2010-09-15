@@ -103,6 +103,7 @@
 		<module>appstatus-jmx</module>
 		<module>appstatus-nop</module>
 		<module>appstatus-log</module>
+		<module>appstatus-mem</module>
 	</modules>
 	<reporting>
 		<plugins>
