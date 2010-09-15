@@ -15,7 +15,6 @@
  */
 package net.sf.appstatus.monitor.resource.service.statistics.impl;
 
-import net.sf.appstatus.agent.service.IServiceMonitorAgentFactory;
 import net.sf.appstatus.agent.service.impl.MemServiceMonitorAgentFactory;
 import net.sf.appstatus.monitor.resource.service.statistics.IServiceMonitorStatisticsProviderFactory;
 import net.sf.appstatus.monitor.resource.service.statistics.spi.IServiceMonitorStatisticsProviderFactoryBinder;
