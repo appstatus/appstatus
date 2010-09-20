@@ -15,8 +15,8 @@
  */
 package net.sf.appstatus.samples.service;
 
-import net.sf.appstatus.agent.service.IServiceMonitorAgent;
-import net.sf.appstatus.agent.service.ServiceMonitorAgentFactory;
+import net.sf.appstatus.agent.service.IServiceAgent;
+import net.sf.appstatus.agent.service.ServiceAgentFactory;
 
 /**
  * Main sample service call class.
@@ -24,10 +24,7 @@ import net.sf.appstatus.agent.service.ServiceMonitorAgentFactory;
  * @author Guillaume Mary
  * 
  */
-public class ServiceSampleCall {
-
-	private static IServiceMonitorAgent monitor = ServiceMonitorAgentFactory
-			.getAgent(ServiceSample.class.getName());
+public class ServiceSampleCall implements Runnable {
 
 	/**
 	 * Sample service call.
@@ -36,10 +33,23 @@ public class ServiceSampleCall {
 	 *            no args
 	 */
 	public static void main(String[] args) {
+		ServiceSampleCall sampleCall = new ServiceSampleCall();
+		sampleCall.run();
+	}
+
+	private void generateServiceCall() {
+		IServiceAgent monitor = ServiceAgentFactory
+				.getAgent(ServiceSample.class.getName());
 		ServiceSample service = new ServiceSample();
 		String id = monitor.beginCall("myService", null);
 		// call the service
 		service.myService();
 		monitor.endCall("myService", id);
+	}
+
+	public void run() {
+		for (int i = 0; i < 100; i++) {
+			generateServiceCall();
+		}
 	}
 }

@@ -19,8 +19,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-import net.sf.appstatus.agent.batch.IJobProgressMonitorAgent;
-import net.sf.appstatus.agent.batch.JobProgressMonitorAgentFactory;
+import net.sf.appstatus.agent.batch.IJobProgressAgent;
+import net.sf.appstatus.agent.batch.JobProgressAgentFactory;
 
 /**
  * Classic sample batch.
@@ -28,7 +28,7 @@ import net.sf.appstatus.agent.batch.JobProgressMonitorAgentFactory;
  * @author Guillaume Mary
  * 
  */
-public class BatchSample {
+public class BatchSample implements Runnable {
 
 	/**
 	 * Sample batch.
@@ -37,21 +37,8 @@ public class BatchSample {
 	 *            batch args
 	 */
 	public static void main(String[] args) {
-		// retrieve the job monitor
-		IJobProgressMonitorAgent jobMonitor = JobProgressMonitorAgentFactory
-				.getAgent(UUID.randomUUID().toString());
-
-		// start the job
-		jobMonitor.beginTask("sample", "SampleGroup", "A batch sample", 2);
-
-		// call step 1 (process 100 items)
-		List<String> items = step1(jobMonitor.createSubTask(1));
-
-		// call step 2
-		step2(items, jobMonitor.createSubTask(1));
-
-		// end the job
-		jobMonitor.done();
+		BatchSample batch = new BatchSample();
+		batch.run();
 	}
 
 	/**
@@ -61,7 +48,7 @@ public class BatchSample {
 	 *            step monitor
 	 * @return items
 	 */
-	private static List<String> step1(IJobProgressMonitorAgent stepMonitor) {
+	private static List<String> step1(IJobProgressAgent stepMonitor) {
 		stepMonitor.beginTask("step1", "SampleGroup", "Create the item list",
 				100);
 		List<String> items = new ArrayList<String>();
@@ -69,13 +56,16 @@ public class BatchSample {
 		for (int i = 0; i < 100; i++) {
 			item = "item" + i;
 			stepMonitor.setCurrentItem(item);
-			if (i == 15 || i == 30) {
-
-			} else if (i % 5 == 0) {
-				stepMonitor.reject(item, "Test the reject feature");
+			if (i % 5 == 0) {
+				stepMonitor.reject(item, "Test the reject feature", null);
 			} else {
-				items.add(item);
-				stepMonitor.message(item + " item added");
+				try {
+					Thread.sleep(i * 100);
+					items.add(item);
+					stepMonitor.message(item + " item added");
+				} catch (InterruptedException e) {
+					stepMonitor.reject(item, e.getMessage(), null);
+				}
 			}
 			stepMonitor.worked(1);
 		}
@@ -91,8 +81,7 @@ public class BatchSample {
 	 * @param stepMonitor
 	 *            step monitor
 	 */
-	private static void step2(List<String> items,
-			IJobProgressMonitorAgent stepMonitor) {
+	private static void step2(List<String> items, IJobProgressAgent stepMonitor) {
 		stepMonitor.beginTask("step2", "SampleGroup",
 				"Write the items in the console output.", items.size());
 		for (String item : items) {
@@ -101,5 +90,23 @@ public class BatchSample {
 			stepMonitor.worked(1);
 		}
 		stepMonitor.done();
+	}
+
+	public void run() {
+		// retrieve the job monitor
+		IJobProgressAgent jobMonitor = JobProgressAgentFactory.getAgent(UUID
+				.randomUUID().toString());
+
+		// start the job
+		jobMonitor.beginTask("sample", "SampleGroup", "A batch sample", 2);
+
+		// call step 1 (process 100 items)
+		List<String> items = step1(jobMonitor.createSubTask(1));
+
+		// call step 2
+		step2(items, jobMonitor.createSubTask(1));
+
+		// end the job
+		jobMonitor.done();
 	}
 }

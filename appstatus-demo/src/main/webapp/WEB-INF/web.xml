@@ -13,6 +13,16 @@
 		<servlet-name>servicesample</servlet-name>
 		<servlet-class>net.sf.appstatus.samples.service.SampleServiceCallServlet</servlet-class>
 	</servlet>
+	
+	<servlet>
+		<servlet-name>classicbatchsample</servlet-name>
+		<servlet-class>net.sf.appstatus.samples.batch.classic.LaunchClassicBatchSampleServlet</servlet-class>
+	</servlet>
+
+	<servlet-mapping>
+		<servlet-name>classicbatchsample</servlet-name>
+		<url-pattern>/classicbatchsample</url-pattern>
+	</servlet-mapping>
 
 	<servlet-mapping>
 		<servlet-name>status</servlet-name>

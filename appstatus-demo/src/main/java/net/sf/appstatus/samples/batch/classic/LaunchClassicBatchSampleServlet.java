@@ -13,7 +13,7 @@
  * limitations under the License. 
  * 
  */
-package net.sf.appstatus.samples.service;
+package net.sf.appstatus.samples.batch.classic;
 
 import java.io.IOException;
 import java.util.concurrent.ExecutorService;
@@ -31,7 +31,7 @@ import javax.servlet.http.HttpServletResponse;
  * @author Guillaume Mary
  * 
  */
-public class SampleServiceCallServlet extends HttpServlet {
+public class LaunchClassicBatchSampleServlet extends HttpServlet {
 
 	private static final String ENCODING = "UTF-8";
 
@@ -51,8 +51,9 @@ public class SampleServiceCallServlet extends HttpServlet {
 	protected void doGet(HttpServletRequest req, HttpServletResponse resp)
 			throws ServletException, IOException {
 
+		// launch the batch
 		ExecutorService executorService = Executors.newCachedThreadPool();
-		executorService.execute(new ServiceSampleCall());
+		executorService.execute(new BatchSample());
 
 		ServletOutputStream os = resp.getOutputStream();
 
