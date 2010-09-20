@@ -15,23 +15,23 @@
  */
 package net.sf.appstatus.agent.batch.impl;
 
-import net.sf.appstatus.agent.batch.IJobProgressMonitorAgent;
+import net.sf.appstatus.agent.batch.IJobProgressAgent;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Log job progress monitor agent.
+ * Log job progress agent.
  * 
  * @author Guillaume Mary
  * 
  */
-public class LogJobProgressMonitorAgent implements IJobProgressMonitorAgent {
+public class LogJobProgressAgent implements IJobProgressAgent {
 
 	private static final long DEFAULT_WRITING_DELAY = 5000;
 
 	private static Logger logger = LoggerFactory
-			.getLogger(LogJobProgressMonitorAgent.class);
+			.getLogger(LogJobProgressAgent.class);
 
 	private final String executionId;
 
@@ -43,7 +43,7 @@ public class LogJobProgressMonitorAgent implements IJobProgressMonitorAgent {
 
 	private String name;
 
-	private IJobProgressMonitorAgent parent;
+	private IJobProgressAgent parent;
 
 	private int parentWork;
 
@@ -63,7 +63,7 @@ public class LogJobProgressMonitorAgent implements IJobProgressMonitorAgent {
 	 * @param executionId
 	 *            job execution id
 	 */
-	public LogJobProgressMonitorAgent(String executionId) {
+	public LogJobProgressAgent(String executionId) {
 		this.executionId = executionId;
 	}
 
@@ -77,8 +77,8 @@ public class LogJobProgressMonitorAgent implements IJobProgressMonitorAgent {
 	 * @param parentWork
 	 *            parent amount of work
 	 */
-	private LogJobProgressMonitorAgent(String executionId,
-			IJobProgressMonitorAgent parent, int parentWork) {
+	private LogJobProgressAgent(String executionId,
+			IJobProgressAgent parent, int parentWork) {
 		this.executionId = executionId;
 		this.parent = parent;
 		this.parentWork = parentWork;
@@ -101,8 +101,8 @@ public class LogJobProgressMonitorAgent implements IJobProgressMonitorAgent {
 	/**
 	 * {@inheritDoc}
 	 */
-	public IJobProgressMonitorAgent createSubTask(int work) {
-		return new LogJobProgressMonitorAgent(executionId, this, work);
+	public IJobProgressAgent createSubTask(int work) {
+		return new LogJobProgressAgent(executionId, this, work);
 	}
 
 	/**
@@ -154,7 +154,7 @@ public class LogJobProgressMonitorAgent implements IJobProgressMonitorAgent {
 	/**
 	 * {@inheritDoc}
 	 */
-	public void reject(Object item, String reason) {
+	public void reject(Object item, String reason, String idMethodName) {
 		rejected++;
 		logger.info("Task <{}> rejected item : {}. reason : {}", new Object[] {
 				name, item, reason });
@@ -163,7 +163,7 @@ public class LogJobProgressMonitorAgent implements IJobProgressMonitorAgent {
 	/**
 	 * {@inheritDoc}
 	 */
-	public void reject(Object[] items, String reason) {
+	public void reject(Object[] items, String reason, String idMethodName) {
 		rejected = rejected + items.length;
 		logger.info("Task <{}> rejected items : {}. reason : {}", new Object[] {
 				name, items, reason });

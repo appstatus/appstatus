@@ -15,22 +15,22 @@
  */
 package net.sf.appstatus.agent.service.impl;
 
-import net.sf.appstatus.agent.service.IServiceMonitorAgent;
-import net.sf.appstatus.agent.service.IServiceMonitorAgentFactory;
+import net.sf.appstatus.agent.service.IServiceAgent;
+import net.sf.appstatus.agent.service.IServiceAgentFactory;
 
 /**
- * {@link IServiceMonitorAgent} factory which deliver {@link LogServiceMonitorAgent}.
+ * {@link IServiceAgent} factory which deliver {@link LogServiceAgent}.
  * @author Guillaume Mary
  *
  */
-public class LogServiceMonitorAgentFactory implements
-		IServiceMonitorAgentFactory {
+public class LogServiceAgentFactory implements
+		IServiceAgentFactory {
 	
 	/**
 	 * {@inheritDoc}
 	 */
-	public IServiceMonitorAgent getAgent(String serviceName) {
-		return new LogServiceMonitorAgent(serviceName);
+	public IServiceAgent getAgent(String serviceName) {
+		return new LogServiceAgent(serviceName);
 	}
 
 }

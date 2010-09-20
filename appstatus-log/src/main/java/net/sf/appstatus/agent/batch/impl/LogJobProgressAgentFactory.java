@@ -18,8 +18,8 @@ package net.sf.appstatus.agent.batch.impl;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import net.sf.appstatus.agent.batch.IJobProgressMonitorAgent;
-import net.sf.appstatus.agent.batch.IJobProgressMonitorAgentFactory;
+import net.sf.appstatus.agent.batch.IJobProgressAgent;
+import net.sf.appstatus.agent.batch.IJobProgressAgentFactory;
 
 /**
  * Log progress monitor agent factory.
@@ -27,22 +27,22 @@ import net.sf.appstatus.agent.batch.IJobProgressMonitorAgentFactory;
  * @author Guillaume Mary
  * 
  */
-public class LogJobProgressMonitorAgentFactory implements IJobProgressMonitorAgentFactory {
+public class LogJobProgressAgentFactory implements IJobProgressAgentFactory {
 	
 	/**
 	 * Agents map
 	 */
-	private static Map<String, IJobProgressMonitorAgent> agents = new ConcurrentHashMap<String, IJobProgressMonitorAgent>();
+	private static Map<String, IJobProgressAgent> agents = new ConcurrentHashMap<String, IJobProgressAgent>();
 	
 	/**
 	 * {@inheritDoc}
 	 */
-	public IJobProgressMonitorAgent getAgent(String executionId) {
-		IJobProgressMonitorAgent agent = null;
+	public IJobProgressAgent getAgent(String executionId) {
+		IJobProgressAgent agent = null;
 		if (agents.containsKey(executionId)) {
 			agent = agents.get(executionId);
 		} else {
-			agent = new LogJobProgressMonitorAgent(executionId);
+			agent = new LogJobProgressAgent(executionId);
 			agents.put(executionId, agent);
 		}
 		return agent;

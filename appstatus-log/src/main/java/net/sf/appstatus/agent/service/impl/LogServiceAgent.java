@@ -17,20 +17,20 @@ package net.sf.appstatus.agent.service.impl;
 
 import java.util.UUID;
 
-import net.sf.appstatus.agent.service.IServiceMonitorAgent;
+import net.sf.appstatus.agent.service.IServiceAgent;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Service monitor agent who logs the operation calls.
+ * Service agent who logs the operation calls.
  * @author Guillaume Mary
  *
  */
-public class LogServiceMonitorAgent implements IServiceMonitorAgent {
+public class LogServiceAgent implements IServiceAgent {
 
 	private static Logger log = LoggerFactory
-			.getLogger(LogServiceMonitorAgent.class);
+			.getLogger(LogServiceAgent.class);
 
 	private String executionId;
 
@@ -40,7 +40,7 @@ public class LogServiceMonitorAgent implements IServiceMonitorAgent {
 	 * Default constructor.
 	 * @param serviceName
 	 */
-	public LogServiceMonitorAgent(String serviceName) {
+	public LogServiceAgent(String serviceName) {
 		this.serviceName = serviceName;
 	}
 	
