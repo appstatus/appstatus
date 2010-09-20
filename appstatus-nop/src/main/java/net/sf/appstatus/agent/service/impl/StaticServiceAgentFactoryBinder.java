@@ -15,55 +15,55 @@
  */
 package net.sf.appstatus.agent.service.impl;
 
-import net.sf.appstatus.agent.service.IServiceMonitorAgentFactory;
-import net.sf.appstatus.agent.service.helpers.NOPServiceMonitorAgentFactory;
-import net.sf.appstatus.agent.service.spi.IServiceMonitorAgentFactoryBinder;
+import net.sf.appstatus.agent.service.IServiceAgentFactory;
+import net.sf.appstatus.agent.service.helpers.NOPServiceAgentFactory;
+import net.sf.appstatus.agent.service.spi.IServiceAgentFactoryBinder;
 
 /**
  * Static binder for the NOP monitor.
  * @author Guillaume Mary
  *
  */
-public class StaticServiceMonitorAgentFactoryBinder implements
-		IServiceMonitorAgentFactoryBinder {
+public class StaticServiceAgentFactoryBinder implements
+		IServiceAgentFactoryBinder {
 
 	/**
 	 * The unique instance of this class.
 	 * 
 	 */
-	private static final StaticServiceMonitorAgentFactoryBinder SINGLETON = new StaticServiceMonitorAgentFactoryBinder();
+	private static final StaticServiceAgentFactoryBinder SINGLETON = new StaticServiceAgentFactoryBinder();
 
 	/**
 	 * Return the singleton of this class.
 	 * 
 	 * @return the StaticServiceMonitorAgentFactoryBinder singleton
 	 */
-	public static final StaticServiceMonitorAgentFactoryBinder getSingleton() {
+	public static final StaticServiceAgentFactoryBinder getSingleton() {
 		return SINGLETON;
 	}
 	
 	
-	private static final String serviceMonitorAgentFactoryClassStr = NOPServiceMonitorAgentFactory.class
+	private static final String serviceAgentFactoryClassStr = NOPServiceAgentFactory.class
 			.getName();
 	
 	/**
 	 * {@inheritDoc}
 	 */
-	public IServiceMonitorAgentFactory getServiceMonitorAgentFactory() {
-		return serviceMonitorAgentFactory;
+	public IServiceAgentFactory getServiceAgentFactory() {
+		return serviceAgentFactory;
 	}
 	
 	/**
 	 * {@inheritDoc}
 	 */
-	public String getServiceMonitorAgentFactoryStr() {
-		return serviceMonitorAgentFactoryClassStr;
+	public String getServiceAgentFactoryStr() {
+		return serviceAgentFactoryClassStr;
 	}
 	
-	private final IServiceMonitorAgentFactory serviceMonitorAgentFactory;
+	private final IServiceAgentFactory serviceAgentFactory;
 	
-	private StaticServiceMonitorAgentFactoryBinder() {
-		serviceMonitorAgentFactory = new NOPServiceMonitorAgentFactory();
+	private StaticServiceAgentFactoryBinder() {
+		serviceAgentFactory = new NOPServiceAgentFactory();
 	}
 
 }
