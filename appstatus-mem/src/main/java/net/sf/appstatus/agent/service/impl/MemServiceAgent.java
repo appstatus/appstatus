@@ -15,12 +15,10 @@
  */
 package net.sf.appstatus.agent.service.impl;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Observable;
 import java.util.UUID;
 
-import net.sf.appstatus.agent.service.IServiceMonitorAgent;
-import net.sf.appstatus.monitor.resource.service.statistics.IServiceMonitorStatisticsProvider;
+import net.sf.appstatus.agent.service.IServiceAgent;
 import net.sf.ehcache.Cache;
 import net.sf.ehcache.CacheManager;
 import net.sf.ehcache.Element;
@@ -33,23 +31,21 @@ import org.slf4j.LoggerFactory;
  * @author Guillaume Mary
  *
  */
-public class MemServiceMonitorAgent implements IServiceMonitorAgent, IServiceMonitorStatisticsProvider {
+public class MemServiceAgent extends Observable implements IServiceAgent {
 	
 	/**
 	 * Logger.
 	 */
 	private static Logger log = LoggerFactory
-			.getLogger(MemServiceMonitorAgent.class);
+			.getLogger(MemServiceAgent.class);
 
 	private String serviceName;
 
-	private static List<String> operationNames = new ArrayList<String>();
-	
 	/**
 	 * Default constructor.
 	 * @param serviceName
 	 */
-	public MemServiceMonitorAgent(String serviceName) {
+	public MemServiceAgent(String serviceName) {
 		this.serviceName = serviceName;
 	}
 	
@@ -59,11 +55,6 @@ public class MemServiceMonitorAgent implements IServiceMonitorAgent, IServiceMon
 	public String beginCall(String operationName, Object[] parameters) {
 		// retrieve the cache
 		Cache cache = getCache(operationName);
-
-		// eventually add the operation to the list
-		if (!operationNames.contains(operationName)) {
-			operationNames.add(operationName);
-		}
 
 		// generate an execution id
 		String executionId = UUID.randomUUID().toString();
@@ -105,6 +96,8 @@ public class MemServiceMonitorAgent implements IServiceMonitorAgent, IServiceMon
 		ServiceMonitoringData data = (ServiceMonitoringData) elt.getValue();
 		data.setEndCallTimestamp(System.currentTimeMillis());
 		cache.put(elt);
+		setChanged();
+		notifyObservers(operationName);
 		log.info("End of the service call <{}.{} ({})>", new Object[] {
 				serviceName, operationName, executionId });
 	}
@@ -116,72 +109,4 @@ public class MemServiceMonitorAgent implements IServiceMonitorAgent, IServiceMon
 	public String getName() {
 		return serviceName;
 	}
-	
-	/**
-	 * {@inheritDoc}
-	 */
-	public float getAverageFlow(String operationName) {
-		Cache cache = CacheManager.getInstance().getCache(
-				serviceName + "." + operationName);
-		if (cache != null) {
-			List<ServiceMonitoringData> datas = getOperationCallsData(cache);
-			long period = cache.getCacheConfiguration().getTimeToLiveSeconds();
-			return (float) datas.size() / period;
-		}
-		return 0;
-	}
-	
-	/**
-	 * Get all the non expired calls data.
-	 * @param cache the cache
-	 * @return the all non expired calls data
-	 */
-	private List<ServiceMonitoringData> getOperationCallsData(Cache cache) {
-		List<ServiceMonitoringData> datas = new ArrayList<ServiceMonitoringData>();
-		// retrieve the operation calls that are not expired
-		@SuppressWarnings("unchecked")
-		List<Object> keys = cache.getKeysWithExpiryCheck();
-		for (Object key : keys) {
-			Element elt = cache.get(key);
-			if (elt != null && !elt.isExpired()) {
-				datas.add((ServiceMonitoringData) elt.getValue());
-			}
-		}
-		return datas;
-	}
-	
-	/**
-	 * {@inheritDoc}
-	 */
-	public float getAverageResponseTime(String operationName) {
-		Cache cache = CacheManager.getInstance().getCache(
-				serviceName + "." + operationName);
-		if (cache != null) {
-			List<ServiceMonitoringData> datas = getOperationCallsData(cache);
-			int nbCalls = 0;
-			long totalResponseTime = 0;
-			float averageResponseTime = 0;
-			if (!datas.isEmpty()){
-				for (ServiceMonitoringData data : datas) {
-					if (data.getEndCallTimestamp()!=0 && data.getStartCallTimestamp()!=0){
-						totalResponseTime = totalResponseTime + (data.getEndCallTimestamp() - data.getStartCallTimestamp());
-						nbCalls++;
-					}
-				}
-				if (totalResponseTime!=0){
-					averageResponseTime = (float) nbCalls/totalResponseTime;
-				}
-			}
-			return averageResponseTime;
-		}
-		return 0;
-	}
-	
-	/**
-	 * {@inheritDoc}
-	 */
-	public List<String> getOperationNames() {
-		return operationNames;
-	}
-
 }
