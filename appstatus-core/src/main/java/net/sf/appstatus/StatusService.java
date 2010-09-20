@@ -31,7 +31,8 @@ import net.sf.appstatus.monitor.resource.IStatusResource;
 import net.sf.appstatus.monitor.resource.ResourceType;
 import net.sf.appstatus.monitor.resource.batch.IScheduledJobDetail;
 import net.sf.appstatus.monitor.resource.batch.IStatusExecutedJobResource;
-import net.sf.appstatus.monitor.resource.batch.IStatusJobRessource;
+import net.sf.appstatus.monitor.resource.batch.IStatusJobResource;
+import net.sf.appstatus.monitor.resource.batch.impl.StatusJobResource;
 import net.sf.appstatus.monitor.resource.impl.StatusResource;
 import net.sf.appstatus.monitor.resource.service.IStatusServiceResource;
 import net.sf.appstatus.monitor.resource.service.impl.StatusServiceResource;
@@ -119,7 +120,7 @@ public class StatusService implements IStatusApplicationResourceMonitor {
 		return resourceName;
 	}
 
-	public Set<IStatusJobRessource> getRunningJobsStatus() {
+	public Set<IStatusJobResource> getRunningJobsStatus() {
 		// TODO Auto-generated method stub
 		return null;
 	}
@@ -174,8 +175,8 @@ public class StatusService implements IStatusApplicationResourceMonitor {
 									.setServletContext(servletContextProvider
 											.getServletContext());
 						}
-						String realName = name.substring("resource.check"
-								.length() + 1);
+						String realName = name.substring("resource.check."
+								.length());
 						IStatusResource resource = new StatusResource(realName,
 								ResourceType.DEFAULT.getLabel(), check);
 						monitoredResources.add(resource);
@@ -198,8 +199,8 @@ public class StatusService implements IStatusApplicationResourceMonitor {
 						logger.info("Registered property provider " + clazz);
 					} else if (name.startsWith("service.class")) {
 						String clazz = (String) p.get(name);
-						String realName = name.substring("service.class"
-								.length() + 1);
+						String realName = name.substring("service.class."
+								.length());
 						IStatusServiceResource resource = new StatusServiceResource(
 								clazz, realName);
 						mapResource.put(realName, resource);
@@ -207,8 +208,8 @@ public class StatusService implements IStatusApplicationResourceMonitor {
 								"Registered service resource : {}, class={}",
 								realName, clazz);
 					} else if (name.startsWith("service.check")) {
-						String realName = name.substring("service.check"
-								.length() + 1);
+						String realName = name.substring("service.check."
+								.length());
 						String clazz = (String) p.get(name);
 						if (mapResource.containsKey(realName)) {
 							IStatusChecker check = (IStatusChecker) getInstance(clazz);
@@ -229,6 +230,14 @@ public class StatusService implements IStatusApplicationResourceMonitor {
 									"A checker ({}) is configured for an unregistered service ({}). This configuration is discarded.",
 									clazz, realName);
 						}
+					} else if (name.startsWith("batch.name")) {
+						String jobName = (String) p.get(name);
+						String uid = name.substring("batch.name.".length());
+						IStatusJobResource resource = new StatusJobResource(
+								uid, jobName);
+						mapResource.put(uid, resource);
+						logger.info("Registered batch resource : {}, name={}",
+								uid, jobName);
 					}
 					// add all the registered resource
 					monitoredResources.addAll(mapResource.values());

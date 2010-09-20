@@ -20,7 +20,7 @@ import java.util.Set;
 
 import net.sf.appstatus.monitor.resource.batch.IScheduledJobDetail;
 import net.sf.appstatus.monitor.resource.batch.IStatusExecutedJobResource;
-import net.sf.appstatus.monitor.resource.batch.IStatusJobRessource;
+import net.sf.appstatus.monitor.resource.batch.IStatusJobResource;
 
 /**
  * Interface which describe the monitor of an application status.
@@ -50,5 +50,5 @@ public interface IStatusApplicationResourceMonitor extends
 	 * 
 	 * @return running jobs status
 	 */
-	Set<IStatusJobRessource> getRunningJobsStatus();
+	Set<IStatusJobResource> getRunningJobsStatus();
 }

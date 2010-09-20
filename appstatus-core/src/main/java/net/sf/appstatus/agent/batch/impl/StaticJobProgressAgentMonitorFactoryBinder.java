@@ -13,10 +13,10 @@
  * limitations under the License. 
  * 
  */
-package net.sf.appstatus.monitor.resource.service.statistics.impl;
+package net.sf.appstatus.agent.batch.impl;
 
-import net.sf.appstatus.monitor.resource.service.statistics.IServiceMonitorStatisticsProviderFactory;
-import net.sf.appstatus.monitor.resource.service.statistics.spi.IServiceMonitorStatisticsProviderFactoryBinder;
+import net.sf.appstatus.agent.batch.IJobProgressAgentMonitorFactory;
+import net.sf.appstatus.agent.batch.spi.IJobProgressAgentMonitorFactoryBinder;
 
 /**
  * Dummy binder use to compile. Should be excluded.
@@ -24,25 +24,25 @@ import net.sf.appstatus.monitor.resource.service.statistics.spi.IServiceMonitorS
  * @author Guillaume Mary
  * 
  */
-public class StaticServiceMonitorStatisticsProviderFactoryBinder implements
-		IServiceMonitorStatisticsProviderFactoryBinder {
+public class StaticJobProgressAgentMonitorFactoryBinder implements
+		IJobProgressAgentMonitorFactoryBinder {
 
 	/**
 	 * The unique instance of this class.
 	 * 
 	 */
-	private static final StaticServiceMonitorStatisticsProviderFactoryBinder SINGLETON = new StaticServiceMonitorStatisticsProviderFactoryBinder();
+	private static final StaticJobProgressAgentMonitorFactoryBinder SINGLETON = new StaticJobProgressAgentMonitorFactoryBinder();
 
 	/**
 	 * Return the singleton of this class.
 	 * 
-	 * @return the StaticServiceMonitorStatisticsProviderFactoryBinder singleton
+	 * @return the StaticJobProgressAgentMonitorFactoryBinder singleton
 	 */
-	public static final StaticServiceMonitorStatisticsProviderFactoryBinder getSingleton() {
+	public static final StaticJobProgressAgentMonitorFactoryBinder getSingleton() {
 		return SINGLETON;
 	}
 
-	private StaticServiceMonitorStatisticsProviderFactoryBinder() {
+	private StaticJobProgressAgentMonitorFactoryBinder() {
 		throw new UnsupportedOperationException(
 				"This code should have never made it into the jar");
 	}
@@ -50,7 +50,7 @@ public class StaticServiceMonitorStatisticsProviderFactoryBinder implements
 	/**
 	 * {@inheritDoc}
 	 */
-	public IServiceMonitorStatisticsProviderFactory getServiceMonitorStatisticsProviderFactory() {
+	public IJobProgressAgentMonitorFactory getJobProgressAgentMonitorFactory() {
 		throw new UnsupportedOperationException(
 				"This code should never make it into the jar");
 	}
@@ -58,7 +58,7 @@ public class StaticServiceMonitorStatisticsProviderFactoryBinder implements
 	/**
 	 * {@inheritDoc}
 	 */
-	public String getServiceMonitorStatisticsProviderFactoryStr() {
+	public String getJobProgressAgentMonitorFactoryStr() {
 		throw new UnsupportedOperationException(
 				"This code should never make it into the jar");
 	}

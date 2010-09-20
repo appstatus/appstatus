@@ -13,20 +13,22 @@
  * limitations under the License. 
  * 
  */
-package net.sf.appstatus.monitor.resource.batch;
-
+package net.sf.appstatus.agent.batch;
 
 /**
+ * Job progress agent factory.
  * 
  * @author Guillaume Mary
  * 
  */
-public interface IStatusExecutedJobResource extends IStatusJobResource {
+public interface IJobProgressAgentFactory {
 
 	/**
-	 * Return the execution summary.
+	 * Return a new job progress agent.
 	 * 
-	 * @return execution summary
+	 * @param executionId
+	 *            job execution id
+	 * @return job progress agent
 	 */
-	String getSummary();
+	IJobProgressAgent getAgent(String executionId);
 }

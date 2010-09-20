@@ -17,8 +17,8 @@ package net.sf.appstatus.agent.batch.helpers;
 
 import java.util.List;
 
-import net.sf.appstatus.agent.batch.IJobProgressMonitorAgent;
-import net.sf.appstatus.agent.batch.JobProgressMonitorAgentFactory;
+import net.sf.appstatus.agent.batch.IJobProgressAgent;
+import net.sf.appstatus.agent.batch.JobProgressAgentFactory;
 
 import org.springframework.batch.core.ExitStatus;
 import org.springframework.batch.core.JobExecution;
@@ -42,7 +42,7 @@ import org.springframework.batch.core.annotation.OnWriteError;
  * @author Guillaume Mary
  * 
  */
-public class SpringJobMonitorAgentExecutionListener {
+public class SpringJobProgressAgentListener {
 
 	/**
 	 * Job description.
@@ -57,7 +57,7 @@ public class SpringJobMonitorAgentExecutionListener {
 	/**
 	 * The current job monitor.
 	 */
-	private IJobProgressMonitorAgent jobMonitor;
+	private IJobProgressAgent jobMonitor;
 
 	/**
 	 * Job name.
@@ -67,12 +67,12 @@ public class SpringJobMonitorAgentExecutionListener {
 	/**
 	 * Job step monitor.
 	 */
-	private IJobProgressMonitorAgent stepMonitor = null;
+	private IJobProgressAgent stepMonitor = null;
 
 	/**
 	 * Total work, usually the number of steps.
 	 */
-	int totalWork = IJobProgressMonitorAgent.UNKNOW;
+	int totalWork = IJobProgressAgent.UNKNOW;
 
 	/**
 	 * After job execution callback method.
@@ -90,7 +90,7 @@ public class SpringJobMonitorAgentExecutionListener {
 		if (item != null) {
 			// increment item read
 			int totalWork = stepMonitor.getTotalWork();
-			if (totalWork == IJobProgressMonitorAgent.UNKNOW) {
+			if (totalWork == IJobProgressAgent.UNKNOW) {
 				totalWork = 1;
 			} else {
 				totalWork++;
@@ -131,8 +131,8 @@ public class SpringJobMonitorAgentExecutionListener {
 	 */
 	@BeforeJob
 	public void beforeJob(JobExecution jobExecution) {
-		jobMonitor = JobProgressMonitorAgentFactory.getAgent(jobExecution
-				.getJobId().toString());
+		jobMonitor = JobProgressAgentFactory.getAgent(jobExecution.getJobId()
+				.toString());
 		jobMonitor.beginTask(name, group, description, totalWork);
 	}
 
@@ -146,7 +146,7 @@ public class SpringJobMonitorAgentExecutionListener {
 	public void beforeStep(StepExecution stepExecution) {
 		stepMonitor = jobMonitor.createSubTask(1);
 		stepMonitor.beginTask(stepExecution.getStepName(), group,
-				stepExecution.getSummary(), IJobProgressMonitorAgent.UNKNOW);
+				stepExecution.getSummary(), IJobProgressAgent.UNKNOW);
 	}
 
 	/**
@@ -184,7 +184,7 @@ public class SpringJobMonitorAgentExecutionListener {
 	 */
 	@OnSkipInProcess
 	public void onSkipInProcess(Object item, Throwable cause) {
-		stepMonitor.reject(item, cause.getLocalizedMessage());
+		stepMonitor.reject(item, cause.getLocalizedMessage(), null);
 	}
 
 	/**
@@ -195,7 +195,7 @@ public class SpringJobMonitorAgentExecutionListener {
 	 */
 	@OnSkipInRead
 	public void onSkipInRead(Throwable cause) {
-		stepMonitor.reject(null, cause.getLocalizedMessage());
+		stepMonitor.reject(null, cause.getLocalizedMessage(), null);
 	}
 
 	/**
@@ -208,7 +208,7 @@ public class SpringJobMonitorAgentExecutionListener {
 	 */
 	@OnSkipInWrite
 	public void onSkipInWrite(Object item, Throwable cause) {
-		stepMonitor.reject(item, cause.getLocalizedMessage());
+		stepMonitor.reject(item, cause.getLocalizedMessage(), null);
 	}
 
 	/**

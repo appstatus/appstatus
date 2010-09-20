@@ -13,17 +13,18 @@
  * limitations under the License. 
  * 
  */
-package net.sf.appstatus.monitor.resource.service.statistics;
+package net.sf.appstatus.agent.service;
 
 import java.util.List;
+import java.util.Observer;
 
 /**
- * Service statistics provider interface.
+ * Service agent monitor interface.
  * 
  * @author Guillaume Mary
  * 
  */
-public interface IServiceMonitorStatisticsProvider {
+public interface IServiceAgentMonitor extends Observer {
 	/**
 	 * Return the average flow of the service resource.
 	 * 

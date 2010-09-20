@@ -13,33 +13,34 @@
  * limitations under the License. 
  * 
  */
-package net.sf.appstatus.monitor.resource.batch;
+package net.sf.appstatus.agent.service;
 
 /**
- * Step detail informations.
+ * Service agent interface.
  * 
  * @author Guillaume Mary
  * 
  */
-public interface IStepDetail {
-	/**
-	 * Return the step description.
-	 * 
-	 * @return step description
-	 */
-	String getDescription();
+public interface IServiceAgent {
 
 	/**
-	 * Return the step group.
+	 * Notify the beginning of a call to a service.
 	 * 
-	 * @return step group.
+	 * @param operationName
+	 *            operation name
+	 * @param parameters
+	 *            operation parameters
+	 * @return call id
 	 */
-	String getGroup();
+	String beginCall(String operationName, Object[] parameters);
 
 	/**
-	 * Return the step name.
+	 * Notify the end of a call to a service.
 	 * 
-	 * @return step name
+	 * @param operationName
+	 *            operation name
+	 * @param executionId
+	 *            call id
 	 */
-	String getName();
+	void endCall(String operationName, String executionId);
 }

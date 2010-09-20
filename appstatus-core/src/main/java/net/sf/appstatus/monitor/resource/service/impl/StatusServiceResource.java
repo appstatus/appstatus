@@ -19,10 +19,10 @@ import java.util.List;
 
 import net.sf.appstatus.IStatusChecker;
 import net.sf.appstatus.IStatusResult;
+import net.sf.appstatus.agent.service.IServiceAgentMonitor;
+import net.sf.appstatus.agent.service.ServiceAgentMonitorFactory;
 import net.sf.appstatus.monitor.resource.ResourceType;
 import net.sf.appstatus.monitor.resource.service.IStatusServiceResource;
-import net.sf.appstatus.monitor.resource.service.statistics.IServiceMonitorStatisticsProvider;
-import net.sf.appstatus.monitor.resource.service.statistics.ServiceMonitorStatisticsProviderFactory;
 
 /**
  * Implementation of {@link IStatusServiceResource}
@@ -34,7 +34,7 @@ public class StatusServiceResource implements IStatusServiceResource {
 
 	private IStatusChecker statusChecker;
 
-	private IServiceMonitorStatisticsProvider statisticsProvider;
+	private IServiceAgentMonitor serviceAgentMonitor;
 
 	private final String name;
 
@@ -51,41 +51,60 @@ public class StatusServiceResource implements IStatusServiceResource {
 	public StatusServiceResource(String uid, String name) {
 		this.uid = uid;
 		this.name = name;
-		this.statisticsProvider = ServiceMonitorStatisticsProviderFactory
-				.getProvider(uid);
+		this.serviceAgentMonitor = ServiceAgentMonitorFactory.getMonitor(uid);
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	public float getAverageFlow(String operationName) {
-		return statisticsProvider.getAverageFlow(operationName);
+		return serviceAgentMonitor.getAverageFlow(operationName);
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	public float getAverageResponseTime(String operationName) {
-		return statisticsProvider.getAverageResponseTime(operationName);
+		return serviceAgentMonitor.getAverageResponseTime(operationName);
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	public String getName() {
 		return this.name;
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	public List<String> getOperationNames() {
-		return statisticsProvider.getOperationNames();
+		return serviceAgentMonitor.getOperationNames();
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	public IStatusResult getStatus() {
 		return statusChecker.checkStatus();
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	public String getType() {
 		return ResourceType.SERVICE.getLabel();
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	public String getUid() {
 		return uid;
 	}
 
-	public void setStatisticsProvider(
-			IServiceMonitorStatisticsProvider statisticsProvider) {
-		this.statisticsProvider = statisticsProvider;
+	public void setServiceAgentMonitor(IServiceAgentMonitor statisticsProvider) {
+		this.serviceAgentMonitor = statisticsProvider;
 	}
 
 	public void setStatusChecker(IStatusChecker statusChecker) {

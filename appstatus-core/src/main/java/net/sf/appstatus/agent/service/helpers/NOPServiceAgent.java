@@ -15,27 +15,27 @@
  */
 package net.sf.appstatus.agent.service.helpers;
 
-import net.sf.appstatus.agent.service.IServiceMonitorAgent;
+import net.sf.appstatus.agent.service.IServiceAgent;
 
 /**
- * A direct NOP (no operation) implementation of {@link IServiceMonitorAgent}.
+ * A direct NOP (no operation) implementation of {@link IServiceAgent}.
  * 
  * @author Guillaume Mary
  * 
  */
-public class NOPServiceMonitorAgent implements IServiceMonitorAgent {
+public class NOPServiceAgent implements IServiceAgent {
 
 	/**
-	 * The unique instance of NOPServiceMonitorAgent.
+	 * The unique instance of NOPServiceAgent.
 	 */
-	public static final NOPServiceMonitorAgent NOP_SERVICE_MONITOR_AGENT = new NOPServiceMonitorAgent();
+	public static final NOPServiceAgent NOP_SERVICE_AGENT = new NOPServiceAgent();
 
 	/**
-	 * There is no point in creating multiple instances of
-	 * NOPServiceMonitorAgent, except by derived classes, hence the protected
-	 * access for the constructor.
+	 * There is no point in creating multiple instances of NOPServiceAgent,
+	 * except by derived classes, hence the protected access for the
+	 * constructor.
 	 */
-	protected NOPServiceMonitorAgent() {
+	protected NOPServiceAgent() {
 	}
 
 	/**

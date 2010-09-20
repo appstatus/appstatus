@@ -13,30 +13,30 @@
  * limitations under the License. 
  * 
  */
-package net.sf.appstatus.monitor.resource.service.statistics.helpers;
+package net.sf.appstatus.agent.batch.helpers;
 
-import net.sf.appstatus.monitor.resource.service.statistics.IServiceMonitorStatisticsProvider;
-import net.sf.appstatus.monitor.resource.service.statistics.IServiceMonitorStatisticsProviderFactory;
+import net.sf.appstatus.agent.batch.IJobProgressAgent;
+import net.sf.appstatus.agent.batch.IJobProgressAgentFactory;
 
 /**
- * Return the unique instance of the {@link NOPServiceMonitorStatisticsProvider}
+ * Return the unique instance of the {@link NOPJobProgressAgent}
  * 
  * @author Guillaume Mary
  * 
  */
-public class NOPServiceMonitorStatisticsProviderFactory implements
-		IServiceMonitorStatisticsProviderFactory {
+public class NOPJobProgressAgentFactory implements
+		IJobProgressAgentFactory {
 	/**
 	 * Default constructor.
 	 */
-	public NOPServiceMonitorStatisticsProviderFactory() {
+	public NOPJobProgressAgentFactory() {
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
-	public IServiceMonitorStatisticsProvider getProvider(String serviceName) {
-		return NOPServiceMonitorStatisticsProvider.NOP_SERVICE_MONITOR_AGENT;
+	public IJobProgressAgent getAgent(String executionId) {
+		return NOPJobProgressAgent.NOP_JOB_PROGRESS_AGENT;
 	}
 
 }

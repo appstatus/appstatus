@@ -15,8 +15,8 @@
  */
 package net.sf.appstatus.agent.service.impl;
 
-import net.sf.appstatus.agent.service.IServiceMonitorAgentFactory;
-import net.sf.appstatus.agent.service.spi.IServiceMonitorAgentFactoryBinder;
+import net.sf.appstatus.agent.service.IServiceAgentFactory;
+import net.sf.appstatus.agent.service.spi.IServiceAgentFactoryBinder;
 
 /**
  * Dummy binder use to compile. Should be excluded.
@@ -24,25 +24,25 @@ import net.sf.appstatus.agent.service.spi.IServiceMonitorAgentFactoryBinder;
  * @author Guillaume Mary
  * 
  */
-public class StaticServiceMonitorAgentFactoryBinder implements
-		IServiceMonitorAgentFactoryBinder {
+public class StaticServiceAgentFactoryBinder implements
+		IServiceAgentFactoryBinder {
 
 	/**
 	 * The unique instance of this class.
 	 * 
 	 */
-	private static final StaticServiceMonitorAgentFactoryBinder SINGLETON = new StaticServiceMonitorAgentFactoryBinder();
+	private static final StaticServiceAgentFactoryBinder SINGLETON = new StaticServiceAgentFactoryBinder();
 
 	/**
 	 * Return the singleton of this class.
 	 * 
-	 * @return the StaticServiceMonitorAgentFactoryBinder singleton
+	 * @return the StaticServiceAgentFactoryBinder singleton
 	 */
-	public static final StaticServiceMonitorAgentFactoryBinder getSingleton() {
+	public static final StaticServiceAgentFactoryBinder getSingleton() {
 		return SINGLETON;
 	}
 
-	private StaticServiceMonitorAgentFactoryBinder() {
+	private StaticServiceAgentFactoryBinder() {
 		throw new UnsupportedOperationException(
 				"This code should have never made it into the jar");
 	}
@@ -50,7 +50,7 @@ public class StaticServiceMonitorAgentFactoryBinder implements
 	/**
 	 * {@inheritDoc}
 	 */
-	public IServiceMonitorAgentFactory getServiceMonitorAgentFactory() {
+	public IServiceAgentFactory getServiceAgentFactory() {
 		throw new UnsupportedOperationException(
 				"This code should never make it into the jar");
 	}
@@ -58,7 +58,7 @@ public class StaticServiceMonitorAgentFactoryBinder implements
 	/**
 	 * {@inheritDoc}
 	 */
-	public String getServiceMonitorAgentFactoryStr() {
+	public String getServiceAgentFactoryStr() {
 		throw new UnsupportedOperationException(
 				"This code should never make it into the jar");
 	}

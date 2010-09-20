@@ -21,7 +21,7 @@ package net.sf.appstatus.agent.batch;
  * @author Guillaume Mary
  * 
  */
-public interface IJobProgressMonitorAgent {
+public interface IJobProgressAgent {
 
 	/**
 	 * Unknow amount of work.
@@ -50,7 +50,7 @@ public interface IJobProgressMonitorAgent {
 	 *            work units of the task done by the subtask
 	 * @return sub task progress monitor
 	 */
-	IJobProgressMonitorAgent createSubTask(int work);
+	IJobProgressAgent createSubTask(int work);
 
 	/**
 	 * Set the task is done.
@@ -79,8 +79,10 @@ public interface IJobProgressMonitorAgent {
 	 *            rejected item
 	 * @param reason
 	 *            the reason
+	 * @param idMethodName
+	 *            name of the method we can use to retrieve the item's id
 	 */
-	void reject(Object item, String reason);
+	void reject(Object item, String reason, String idMethodName);
 
 	/**
 	 * Reject a set of items during the task processing.
@@ -89,8 +91,10 @@ public interface IJobProgressMonitorAgent {
 	 *            set of items rejected
 	 * @param reason
 	 *            the reason
+	 * @param idMethodName
+	 *            name of the method we can use to retrieve the item's id
 	 */
-	void reject(Object[] items, String reason);
+	void reject(Object[] items, String reason, String idMethodName);
 
 	/**
 	 * Set the current item which are processed.

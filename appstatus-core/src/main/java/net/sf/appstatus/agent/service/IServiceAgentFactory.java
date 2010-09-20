@@ -16,19 +16,19 @@
 package net.sf.appstatus.agent.service;
 
 /**
- * Service monitor agent factory.
+ * Service agent factory.
  * 
  * @author Guillaume Mary
  * 
  */
-public interface IServiceMonitorAgentFactory {
+public interface IServiceAgentFactory {
 
 	/**
-	 * Get a service monitor agent.
+	 * Get a service agent.
 	 * 
 	 * @param serviceName
 	 *            name of the service
-	 * @return a service monitor agent
+	 * @return a service agent
 	 */
-	IServiceMonitorAgent getAgent(String serviceName);
+	IServiceAgent getAgent(String serviceName);
 }

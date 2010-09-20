@@ -13,22 +13,22 @@
  * limitations under the License. 
  * 
  */
-package net.sf.appstatus.agent.batch;
+package net.sf.appstatus.agent.service;
 
 /**
- * Job progress monitor factory.
+ * Service agent monitor factory.
  * 
  * @author Guillaume Mary
  * 
  */
-public interface IJobProgressMonitorAgentFactory {
+public interface IServiceAgentMonitorFactory {
 
 	/**
-	 * Return a new job progress monitor agent.
+	 * Retrieve the service agent monitor for the specified service.
 	 * 
-	 * @param executionId
-	 *            job execution id
-	 * @return job progress monitor agent
+	 * @param serviceName
+	 *            service name
+	 * @return service agent monitor
 	 */
-	abstract IJobProgressMonitorAgent getAgent(String executionId);
+	IServiceAgentMonitor getMonitor(String serviceName);
 }

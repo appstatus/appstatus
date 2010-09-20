@@ -13,7 +13,7 @@
  * limitations under the License. 
  * 
  */
-package net.sf.appstatus.agent.service;
+package net.sf.appstatus.agent.batch;
 
 import java.io.IOException;
 import java.net.URL;
@@ -21,19 +21,19 @@ import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
 
-import net.sf.appstatus.agent.service.helpers.NOPServiceMonitorAgentFactory;
-import net.sf.appstatus.agent.service.impl.StaticServiceMonitorAgentFactoryBinder;
+import net.sf.appstatus.agent.batch.helpers.NOPJobProgressAgentFactory;
+import net.sf.appstatus.agent.batch.impl.StaticJobProgressAgentFactoryBinder;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Service Monitor Agent factory.
+ * Job progress agent factory.
  * 
  * @author Guillaume Mary
  * 
  */
-public final class ServiceMonitorAgentFactory {
+public final class JobProgressAgentFactory {
 
 	static final int UNINITIALIZED = 0;
 	static final int ONGOING_INITILIZATION = 1;
@@ -42,31 +42,31 @@ public final class ServiceMonitorAgentFactory {
 	static final int NOP_FALLBACK_INITILIZATION = 4;
 	static int INITIALIZATION_STATE = UNINITIALIZED;
 
-	static NOPServiceMonitorAgentFactory NOP_FALLBACK_FACTORY = new NOPServiceMonitorAgentFactory();
-	static NOPServiceMonitorAgentFactory TEMP_FACTORY = new NOPServiceMonitorAgentFactory();
+	static NOPJobProgressAgentFactory NOP_FALLBACK_FACTORY = new NOPJobProgressAgentFactory();
+	static NOPJobProgressAgentFactory TEMP_FACTORY = new NOPJobProgressAgentFactory();
 
-	private static String STATIC_SERVICE_MONITOR_AGENT_FACTORY_BINDER_PATH = "net/sf/appstatus/agent/service/impl/StaticServiceMonitorAgentFactoryBinder.class";
+	private static String STATIC_JOB_PROGRESS_AGENT_FACTORY_BINDER_PATH = "net/sf/appstatus/agent/batch/impl/StaticJobProgressAgentFactoryBinder.class";
 
-	static final String UNSUCCESSFUL_INIT_MSG = "net.sf.appstatus.agent.service.ServiceMonitorAgentFactory could not be successfully initialized.";
+	static final String UNSUCCESSFUL_INIT_MSG = "net.sf.appstatus.agent.batch.JobProgressAgentFactory could not be successfully initialized.";
 
 	private static Logger log = LoggerFactory
-			.getLogger(ServiceMonitorAgentFactory.class);
+			.getLogger(JobProgressAgentFactory.class);
 
 	/**
-	 * Bind the service monitor factory.
+	 * Bind the job progress factory.
 	 */
 	private final static void bind() {
 		try {
 			// the next line does the binding
-			StaticServiceMonitorAgentFactoryBinder.getSingleton();
+			StaticJobProgressAgentFactoryBinder.getSingleton();
 			INITIALIZATION_STATE = SUCCESSFUL_INITILIZATION;
 		} catch (NoClassDefFoundError ncde) {
 			String msg = ncde.getMessage();
 			if (msg != null
-					&& msg.indexOf("net/sf/appstatus/agent/service/impl/StaticServiceMonitorAgentFactoryBinder") != -1) {
+					&& msg.indexOf("net/sf/appstatus/agent/batch/impl/StaticJobProgressAgentFactoryBinder") != -1) {
 				INITIALIZATION_STATE = NOP_FALLBACK_INITILIZATION;
-				log.info("Failed to load class \"net.sf.appstatus.agent.service.impl.StaticServiceMonitorAgentFactoryBinder\".");
-				log.info("Defaulting to no-operation (NOP) logger implementation");
+				log.error("Failed to load class \"net.sf.appstatus.agent.batch.impl.StaticJobProgressAgentFactoryBinder\".");
+				log.error("Defaulting to no-operation (NOP) logger implementation");
 			} else {
 				failedBinding(ncde);
 				throw ncde;
@@ -74,7 +74,7 @@ public final class ServiceMonitorAgentFactory {
 		} catch (java.lang.NoSuchMethodError nsme) {
 			String msg = nsme.getMessage();
 			if (msg != null
-					&& msg.indexOf("net.sf.appstatus.agent.service.impl.StaticServiceMonitorAgentFactoryBinder.getSingleton()") != -1) {
+					&& msg.indexOf("net.sf.appstatus.agent.batch.impl.StaticJobProgressAgentFactoryBinder.getSingleton()") != -1) {
 				INITIALIZATION_STATE = FAILED_INITILIZATION;
 				log.error("appstatus-core is incompatible with this binding.");
 				log.error("Upgrade your binding");
@@ -95,29 +95,29 @@ public final class ServiceMonitorAgentFactory {
 	 */
 	static void failedBinding(Throwable t) {
 		INITIALIZATION_STATE = FAILED_INITILIZATION;
-		log.error("Failed to instantiate Service Monitor Agent Factory", t);
+		log.error("Failed to instantiate Job Progress Agent Factory", t);
 	}
 
 	/**
-	 * Return a new {@link IServiceMonitorAgent} instance.
+	 * Return a new {@link IJobProgressAgent} instance.
 	 * 
-	 * @return a new {@link IServiceMonitorAgent} instance
+	 * @return a new {@link IJobProgressAgent} instance
 	 */
-	public static IServiceMonitorAgent getAgent(String serviceName) {
-		IServiceMonitorAgentFactory monitorFactory = getIServiceMonitorAgentFactory();
-		return monitorFactory.getAgent(serviceName);
+	public static IJobProgressAgent getAgent(String executionId) {
+		IJobProgressAgentFactory monitorFactory = getIJobProgressAgentFactory();
+		return monitorFactory.getAgent(executionId);
 	}
 
 	/**
-	 * Return the {@link IServiceMonitorAgentFactory} instance in use.
+	 * Return the {@link IJobProgressAgentFactory} instance in use.
 	 * 
 	 * <p>
-	 * IServiceMonitorAgentFactory instance is bound with this class at compile
+	 * IJobProgressAgentFactory instance is bound with this class at compile
 	 * time.
 	 * 
-	 * @return the IServiceMonitorAgentFactory instance in use
+	 * @return the IJobProgressAgentFactory instance in use
 	 */
-	public static IServiceMonitorAgentFactory getIServiceMonitorAgentFactory() {
+	public static IJobProgressAgentFactory getIJobProgressAgentFactory() {
 		if (INITIALIZATION_STATE == UNINITIALIZED) {
 			INITIALIZATION_STATE = ONGOING_INITILIZATION;
 			performInitialization();
@@ -125,8 +125,8 @@ public final class ServiceMonitorAgentFactory {
 		}
 		switch (INITIALIZATION_STATE) {
 		case SUCCESSFUL_INITILIZATION:
-			return StaticServiceMonitorAgentFactoryBinder.getSingleton()
-					.getServiceMonitorAgentFactory();
+			return StaticJobProgressAgentFactoryBinder.getSingleton()
+					.getJobProgressAgentFactory();
 		case NOP_FALLBACK_INITILIZATION:
 			return NOP_FALLBACK_FACTORY;
 		case FAILED_INITILIZATION:
@@ -147,15 +147,15 @@ public final class ServiceMonitorAgentFactory {
 	 */
 	private static void singleImplementationSanityCheck() {
 		try {
-			ClassLoader serviceMonitorAgentFactoryClassLoader = ServiceMonitorAgentFactory.class
+			ClassLoader jobProgressAgentFactoryClassLoader = JobProgressAgentFactory.class
 					.getClassLoader();
 			Enumeration<URL> paths;
-			if (serviceMonitorAgentFactoryClassLoader == null) {
+			if (jobProgressAgentFactoryClassLoader == null) {
 				paths = ClassLoader
-						.getSystemResources(STATIC_SERVICE_MONITOR_AGENT_FACTORY_BINDER_PATH);
+						.getSystemResources(STATIC_JOB_PROGRESS_AGENT_FACTORY_BINDER_PATH);
 			} else {
-				paths = serviceMonitorAgentFactoryClassLoader
-						.getResources(STATIC_SERVICE_MONITOR_AGENT_FACTORY_BINDER_PATH);
+				paths = jobProgressAgentFactoryClassLoader
+						.getResources(STATIC_JOB_PROGRESS_AGENT_FACTORY_BINDER_PATH);
 			}
 			List<URL> implementationList = new ArrayList<URL>();
 			while (paths.hasMoreElements()) {
@@ -163,7 +163,7 @@ public final class ServiceMonitorAgentFactory {
 				implementationList.add(path);
 			}
 			if (implementationList.size() > 1) {
-				log.error("Class path contains multiple Service Monitor Agent bindings.");
+				log.error("Class path contains multiple Job Progress Agent bindings.");
 				for (int i = 0; i < implementationList.size(); i++) {
 					log.error("Found binding in [" + implementationList.get(i)
 							+ "]");
@@ -177,8 +177,7 @@ public final class ServiceMonitorAgentFactory {
 	/**
 	 * Default constructor.
 	 */
-	private ServiceMonitorAgentFactory() {
+	private JobProgressAgentFactory() {
 		// prevent instantiation
 	}
-
 }

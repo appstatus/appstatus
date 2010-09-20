@@ -15,7 +15,6 @@
  */
 package net.sf.appstatus.monitor.resource.batch;
 
-import java.util.Date;
 import java.util.List;
 
 import net.sf.appstatus.monitor.resource.IStatusResource;
@@ -26,47 +25,26 @@ import net.sf.appstatus.monitor.resource.IStatusResource;
  * @author Guillaume Mary
  * 
  */
-public interface IStatusJobRessource extends IStatusResource {
+public interface IStatusJobResource extends IStatusResource {
 	/**
-	 * Return the job's comitted item count.
+	 * Retrieve the current running job
 	 * 
-	 * @return total number of the committed items
+	 * @return the current job's executions
 	 */
-	int getCommittedItemCount();
+	List<IStatusJobExecutionResource> getCurrentJobExecutionsStatus();
 
 	/**
-	 * Return the job's execution end date.
+	 * Retrieve the last executed jobs history.
 	 * 
-	 * @return execution end date
+	 * @return the last executed job history
 	 */
-	Date getEndDate();
+	List<IStatusExecutedJobResource> getLastExecutedJobsHistory();
 
 	/**
-	 * Return the job status
+	 * Retrieve the next sheduled job execution.
 	 * 
-	 * @return
+	 * @return next scheduled job execution
 	 */
-	String getJobStatus();
-
-	/**
-	 * Return the progress status.
-	 * 
-	 * @return progress status
-	 */
-	double getProgressStatus();
-
-	/**
-	 * Return the skipped item ids.
-	 * 
-	 * @return skipped item ids
-	 */
-	List<String> getSkippedItemsId();
-
-	/**
-	 * Return the job's execution start date.
-	 * 
-	 * @return execution start date
-	 */
-	Date getStartDate();
+	IScheduledJobDetail getNextJobExecution();
 
 }

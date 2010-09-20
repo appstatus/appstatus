@@ -15,28 +15,28 @@
  */
 package net.sf.appstatus.agent.service.helpers;
 
-import net.sf.appstatus.agent.service.IServiceMonitorAgent;
-import net.sf.appstatus.agent.service.IServiceMonitorAgentFactory;
+import net.sf.appstatus.agent.service.IServiceAgent;
+import net.sf.appstatus.agent.service.IServiceAgentFactory;
 
 /**
- * Return the unique instance of the {@link NOPServiceMonitorAgent}
+ * Return the unique instance of the {@link NOPServiceAgent}
  * 
  * @author Guillaume Mary
  * 
  */
-public class NOPServiceMonitorAgentFactory implements
-		IServiceMonitorAgentFactory {
+public class NOPServiceAgentFactory implements
+		IServiceAgentFactory {
 	/**
 	 * Default constructor.
 	 */
-	public NOPServiceMonitorAgentFactory() {
+	public NOPServiceAgentFactory() {
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
-	public IServiceMonitorAgent getAgent(String serviceName) {
-		return NOPServiceMonitorAgent.NOP_SERVICE_MONITOR_AGENT;
+	public IServiceAgent getAgent(String serviceName) {
+		return NOPServiceAgent.NOP_SERVICE_AGENT;
 	}
 
 }

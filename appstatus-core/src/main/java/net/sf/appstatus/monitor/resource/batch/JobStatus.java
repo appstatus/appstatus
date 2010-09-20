@@ -13,34 +13,26 @@
  * limitations under the License. 
  * 
  */
-package net.sf.appstatus.agent.service;
+package net.sf.appstatus.monitor.resource.batch;
 
 /**
- * Service monitor agent interface.
+ * Job status enumeration.
  * 
  * @author Guillaume Mary
  * 
  */
-public interface IServiceMonitorAgent {
+public enum JobStatus {
+	STARTED("STARTED"), FAILED("FAILED"), ABANDONED("ABANDONED"), UNKNOW(
+			"UNKNOW"), COMPLETED("COMPLETED");
 
-	/**
-	 * Notify the beginning of a call to a service.
-	 * 
-	 * @param operationName
-	 *            operation name
-	 * @param parameters
-	 *            operation parameters
-	 * @return call id
-	 */
-	String beginCall(String operationName, Object[] parameters);
+	private String label;
 
-	/**
-	 * Notify the end of a call to a service.
-	 * 
-	 * @param operationName
-	 *            operation name
-	 * @param executionId
-	 *            call id
-	 */
-	void endCall(String operationName, String executionId);
+	private JobStatus(String label) {
+		this.label = label;
+	}
+
+	public String getLabel() {
+		return label;
+	}
+
 }

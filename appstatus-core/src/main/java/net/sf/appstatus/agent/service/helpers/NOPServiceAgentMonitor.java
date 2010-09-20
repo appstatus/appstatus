@@ -13,27 +13,26 @@
  * limitations under the License. 
  * 
  */
-package net.sf.appstatus.monitor.resource.service.statistics.helpers;
+package net.sf.appstatus.agent.service.helpers;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Observable;
 
-import net.sf.appstatus.monitor.resource.service.statistics.IServiceMonitorStatisticsProvider;
+import net.sf.appstatus.agent.service.IServiceAgentMonitor;
 
 /**
- * A direct NOP (no operation) implementation of
- * {@link IServiceMonitorStatisticsProvider}.
+ * A direct NOP (no operation) implementation of {@link IServiceAgentMonitor}.
  * 
  * @author Guillaume Mary
  * 
  */
-public class NOPServiceMonitorStatisticsProvider implements
-		IServiceMonitorStatisticsProvider {
+public class NOPServiceAgentMonitor implements IServiceAgentMonitor {
 
 	/**
-	 * The unique instance of NOPServiceMonitorStatisticsProvider.
+	 * The unique instance of NOPServiceAgentMonitor.
 	 */
-	public static final NOPServiceMonitorStatisticsProvider NOP_SERVICE_MONITOR_AGENT = new NOPServiceMonitorStatisticsProvider();
+	public static final NOPServiceAgentMonitor NOP_SERVICE_AGENT_MONITOR = new NOPServiceAgentMonitor();
 
 	private static final List<String> NOP_OPERATION_NAMES = new ArrayList<String>();
 
@@ -42,7 +41,7 @@ public class NOPServiceMonitorStatisticsProvider implements
 	 * NOPServiceMonitorStatisticsProvider, except by derived classes, hence the
 	 * protected access for the constructor.
 	 */
-	protected NOPServiceMonitorStatisticsProvider() {
+	protected NOPServiceAgentMonitor() {
 	}
 
 	/**
@@ -66,6 +65,13 @@ public class NOPServiceMonitorStatisticsProvider implements
 	 */
 	public List<String> getOperationNames() {
 		return NOP_OPERATION_NAMES;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public void update(Observable o, Object arg) {
+		// NOP
 	}
 
 }

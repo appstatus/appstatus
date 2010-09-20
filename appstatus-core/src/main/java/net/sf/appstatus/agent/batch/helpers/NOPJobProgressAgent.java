@@ -15,28 +15,27 @@
  */
 package net.sf.appstatus.agent.batch.helpers;
 
-import net.sf.appstatus.agent.batch.IJobProgressMonitorAgent;
+import net.sf.appstatus.agent.batch.IJobProgressAgent;
 
 /**
- * A direct NOP (no operation) implementation of
- * {@link IJobProgressMonitorAgent}.
+ * A direct NOP (no operation) implementation of {@link IJobProgressAgent}.
  * 
  * @author Guillaume Mary
  * 
  */
-public class NOPJobProgressMonitorAgent implements IJobProgressMonitorAgent {
+public class NOPJobProgressAgent implements IJobProgressAgent {
 
 	/**
-	 * The unique instance of NOPJobProgressMonitorAgent.
+	 * The unique instance of NOPJobProgressAgent.
 	 */
-	public static final NOPJobProgressMonitorAgent NOP_JOB_PROGRESS_MONITOR_AGENT = new NOPJobProgressMonitorAgent();
+	public static final NOPJobProgressAgent NOP_JOB_PROGRESS_AGENT = new NOPJobProgressAgent();
 
 	/**
 	 * There is no point in creating multiple instances of
 	 * NOPJobProgressMonitorAgent, except by derived classes, hence the
 	 * protected access for the constructor.
 	 */
-	protected NOPJobProgressMonitorAgent() {
+	protected NOPJobProgressAgent() {
 	}
 
 	/**
@@ -50,8 +49,8 @@ public class NOPJobProgressMonitorAgent implements IJobProgressMonitorAgent {
 	/**
 	 * {@inheritDoc}
 	 */
-	public IJobProgressMonitorAgent createSubTask(int work) {
-		return NOP_JOB_PROGRESS_MONITOR_AGENT;
+	public IJobProgressAgent createSubTask(int work) {
+		return NOP_JOB_PROGRESS_AGENT;
 	}
 
 	/**
@@ -79,14 +78,14 @@ public class NOPJobProgressMonitorAgent implements IJobProgressMonitorAgent {
 	/**
 	 * {@inheritDoc}
 	 */
-	public void reject(Object item, String reason) {
+	public void reject(Object item, String reason, String idMethodName) {
 		// NOP implementation
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
-	public void reject(Object[] items, String reason) {
+	public void reject(Object[] items, String reason, String idMethodName) {
 		// NOP implementation
 	}
 

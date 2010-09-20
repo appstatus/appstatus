@@ -15,8 +15,8 @@
  */
 package net.sf.appstatus.agent.batch.impl;
 
-import net.sf.appstatus.agent.batch.IJobProgressMonitorAgentFactory;
-import net.sf.appstatus.agent.batch.spi.IJobProgressMonitorAgentFactoryBinder;
+import net.sf.appstatus.agent.batch.IJobProgressAgentFactory;
+import net.sf.appstatus.agent.batch.spi.IJobProgressAgentFactoryBinder;
 
 /**
  * Dummy binder use to compile. Should be excluded at compile time.
@@ -24,25 +24,25 @@ import net.sf.appstatus.agent.batch.spi.IJobProgressMonitorAgentFactoryBinder;
  * @author Guillaume Mary
  * 
  */
-public class StaticJobProgressMonitorAgentFactoryBinder implements
-		IJobProgressMonitorAgentFactoryBinder {
+public class StaticJobProgressAgentFactoryBinder implements
+		IJobProgressAgentFactoryBinder {
 
 	/**
 	 * The unique instance of this class.
 	 * 
 	 */
-	private static final StaticJobProgressMonitorAgentFactoryBinder SINGLETON = new StaticJobProgressMonitorAgentFactoryBinder();
+	private static final StaticJobProgressAgentFactoryBinder SINGLETON = new StaticJobProgressAgentFactoryBinder();
 
 	/**
 	 * Return the singleton of this class.
 	 * 
 	 * @return the StaticJobProgressMonitorAgentFactoryBinder singleton
 	 */
-	public static final StaticJobProgressMonitorAgentFactoryBinder getSingleton() {
+	public static final StaticJobProgressAgentFactoryBinder getSingleton() {
 		return SINGLETON;
 	}
 
-	private StaticJobProgressMonitorAgentFactoryBinder() {
+	private StaticJobProgressAgentFactoryBinder() {
 		throw new UnsupportedOperationException(
 				"This code should have never made it into the jar");
 	}
@@ -50,7 +50,7 @@ public class StaticJobProgressMonitorAgentFactoryBinder implements
 	/**
 	 * {@inheritDoc}
 	 */
-	public IJobProgressMonitorAgentFactory getJobProgressMonitorAgentFactory() {
+	public IJobProgressAgentFactory getJobProgressAgentFactory() {
 		throw new UnsupportedOperationException(
 				"This code should have never made it into the jar");
 	}
@@ -58,7 +58,7 @@ public class StaticJobProgressMonitorAgentFactoryBinder implements
 	/**
 	 * {@inheritDoc}
 	 */
-	public String getJobProgressMonitorAgentFactoryStr() {
+	public String getJobProgressAgentFactoryStr() {
 		throw new UnsupportedOperationException(
 				"This code should have never made it into the jar");
 	}

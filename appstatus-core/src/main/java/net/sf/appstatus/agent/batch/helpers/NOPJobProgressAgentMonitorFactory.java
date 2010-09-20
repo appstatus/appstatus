@@ -15,28 +15,28 @@
  */
 package net.sf.appstatus.agent.batch.helpers;
 
-import net.sf.appstatus.agent.batch.IJobProgressMonitorAgent;
-import net.sf.appstatus.agent.batch.IJobProgressMonitorAgentFactory;
+import net.sf.appstatus.agent.batch.IJobProgressAgentMonitor;
+import net.sf.appstatus.agent.batch.IJobProgressAgentMonitorFactory;
 
 /**
- * Return the unique instance of the {@link NOPJobProgressMonitorAgent}
+ * Return the unique instance of the {@link NOPJobProgressAgentMonitor}
  * 
  * @author Guillaume Mary
  * 
  */
-public class NOPJobProgressMonitorAgentFactory implements
-		IJobProgressMonitorAgentFactory {
+public class NOPJobProgressAgentMonitorFactory implements
+		IJobProgressAgentMonitorFactory {
 	/**
 	 * Default constructor.
 	 */
-	public NOPJobProgressMonitorAgentFactory() {
+	public NOPJobProgressAgentMonitorFactory() {
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
-	public IJobProgressMonitorAgent getAgent(String executionId) {
-		return NOPJobProgressMonitorAgent.NOP_JOB_PROGRESS_MONITOR_AGENT;
+	public IJobProgressAgentMonitor getMonitor(String serviceName) {
+		return NOPJobProgressAgentMonitor.NOP_JOB_PROGRESS_AGENT_MONITOR;
 	}
 
 }
