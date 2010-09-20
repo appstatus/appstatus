@@ -19,6 +19,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
+import java.text.DateFormat;
+import java.text.NumberFormat;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -36,6 +38,8 @@ import net.sf.appstatus.IStatusResult;
 import net.sf.appstatus.StatusService;
 import net.sf.appstatus.monitor.resource.IStatusResource;
 import net.sf.appstatus.monitor.resource.ResourceType;
+import net.sf.appstatus.monitor.resource.batch.IStatusJobExecutionResource;
+import net.sf.appstatus.monitor.resource.batch.IStatusJobResource;
 import net.sf.appstatus.monitor.resource.service.IStatusServiceResource;
 
 import org.apache.commons.io.IOUtils;
@@ -108,6 +112,8 @@ public class StatusServlet extends HttpServlet {
 
 		generateServiceResourcesStatus(os);
 
+		generateBatchResourcesStatus(os);
+
 		os.write("</body></html>".getBytes(ENCODING));
 	}
 
@@ -137,6 +143,29 @@ public class StatusServlet extends HttpServlet {
 		IOUtils.copy(is, os);
 	}
 
+	private void generateBatchResourcesStatus(ServletOutputStream os)
+			throws IOException, UnsupportedEncodingException {
+		os.write("<h2>Batch Status</h2>".getBytes(ENCODING));
+		os.write("<table>".getBytes(ENCODING));
+		os.write("<tr><th></th><th>Name</th><th>Description</th><th>Code</th><th>Resolution</th><th>Details</th></tr>"
+				.getBytes(ENCODING));
+
+		for (IStatusResource resource : status.getMonitoredResourcesStatus()) {
+			if (resource.getType().equals(ResourceType.JOB.getLabel())) {
+				IStatusResult r = resource.getStatus();
+				generateRow(
+						os,
+						getStatus(r),
+						resource.getName(),
+						r.getDescription(),
+						String.valueOf(r.getCode()),
+						r.getResolutionSteps(),
+						generateJobResourceDetails((IStatusJobResource) resource));
+			}
+		}
+		os.write("</table>".getBytes(ENCODING));
+	}
+
 	private void generateConfiguration(ServletOutputStream os)
 			throws IOException, UnsupportedEncodingException {
 		os.write("<h2>Configuration</h2>".getBytes(ENCODING));
@@ -154,6 +183,37 @@ public class StatusServlet extends HttpServlet {
 
 		}
 		os.write("</table>".getBytes(ENCODING));
+	}
+
+	private String generateJobResourceDetails(IStatusJobResource resource) {
+		StringBuilder details = new StringBuilder();
+		details.append("<p><h3>Running jobs</h3>");
+		details.append(generateRunningJobsDetails(resource
+				.getCurrentJobExecutionsStatus()));
+		details.append("</p>");
+		details.append("<p><h3>Last executed jobs</h3>");
+		details.append("Not yet implemented");
+		details.append("</p>");
+		details.append("<p><h3>Next firing jobs</h3>");
+		details.append("Not yet implemented");
+		details.append("</p>");
+		return details.toString();
+	}
+
+	private StringBuilder generateRejectedItemList(List<String> rejectedItemsId) {
+		StringBuilder sb = new StringBuilder();
+		int i = 0;
+		for (String rejectedItemId : rejectedItemsId) {
+			sb.append(rejectedItemId);
+			i++;
+			if (i < rejectedItemsId.size()) {
+				sb.append(" , ");
+			}
+			if (i % 10 == 0) {
+				sb.append("<br/>");
+			}
+		}
+		return sb;
 	}
 
 	private void generateResourcesStatus(ServletOutputStream os)
@@ -200,6 +260,33 @@ public class StatusServlet extends HttpServlet {
 		os.write("</tr>".getBytes());
 	}
 
+	private Object generateRunningJobsDetails(
+			List<IStatusJobExecutionResource> currentJobExecutionsStatus) {
+		StringBuilder runningJobExecutionsDetails = new StringBuilder();
+		runningJobExecutionsDetails.append("<table>");
+		runningJobExecutionsDetails
+				.append("<tr><th>Execution id</th><th>Start date</th><th>Job Status</th><th>Job progress</th><th>Rejected items</th></tr>");
+		for (IStatusJobExecutionResource jobExecutionStatus : currentJobExecutionsStatus) {
+			runningJobExecutionsDetails
+					.append("<tr><td>")
+					.append(jobExecutionStatus.getUid())
+					.append("</td><td>")
+					.append(DateFormat.getDateTimeInstance(DateFormat.SHORT,
+							DateFormat.FULL).format(
+							jobExecutionStatus.getStartDate()))
+					.append("</td><td>")
+					.append(jobExecutionStatus.getJobStatus())
+					.append("</td><td>")
+					.append(NumberFormat.getPercentInstance().format(
+							jobExecutionStatus.getProgressStatus()))
+					.append("</td><td>")
+					.append(generateRejectedItemList(jobExecutionStatus
+							.getRejectedItemsId())).append("</td></tr>");
+		}
+		runningJobExecutionsDetails.append("</table>");
+		return runningJobExecutionsDetails.toString();
+	}
+
 	private void generateServiceResourcesStatus(ServletOutputStream os)
 			throws IOException, UnsupportedEncodingException {
 		os.write("<h2>Service Status</h2>".getBytes(ENCODING));
@@ -228,13 +315,18 @@ public class StatusServlet extends HttpServlet {
 		StringBuilder statistics = new StringBuilder();
 		statistics.append("<table>");
 		statistics
-				.append("<tr><th>Operation</th><th>Average Response Time (s)</th><th>Average request flow (req/s)</th></tr>");
+				.append("<tr><th>Operation</th><th>Average Response Time (ms)</th><th>Average request flow (req/s)</th></tr>");
 		List<String> operations = resource.getOperationNames();
 		for (String operation : operations) {
-			statistics.append("<tr><td>").append(operation).append("</td><td>")
-					.append(resource.getAverageResponseTime(operation))
+			statistics
+					.append("<tr><td>")
+					.append(operation)
 					.append("</td><td>")
-					.append(resource.getAverageFlow(operation))
+					.append(NumberFormat.getNumberInstance().format(
+							resource.getAverageResponseTime(operation)))
+					.append("</td><td>")
+					.append(NumberFormat.getNumberInstance().format(
+							resource.getAverageFlow(operation)))
 					.append("</td></tr>");
 		}
 		statistics.append("</table>");
