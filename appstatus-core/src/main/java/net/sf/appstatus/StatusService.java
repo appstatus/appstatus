@@ -13,7 +13,11 @@
  */
 package net.sf.appstatus;
 
+import static net.sf.appstatus.IStatusResult.ERROR;
+
 import java.io.InputStream;
+import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Enumeration;
@@ -23,7 +27,10 @@ import java.util.Properties;
 import java.util.Set;
 import java.util.TreeMap;
 
+import net.sf.appstatus.annotations.AppCheckMethod;
+import net.sf.appstatus.check.impl.StatusResultImpl;
 import net.sf.appstatus.core.IObjectInstantiationListener;
+import net.sf.appstatus.util.Tuple;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -38,7 +45,7 @@ public class StatusService {
   private static Logger logger = LoggerFactory.getLogger(StatusService.class);
 
   private IObjectInstantiationListener objectInstanciationListener = null;
-  private final List<IStatusChecker> probes;
+  private final ArrayList<Tuple<Object, Method>> probes;
   private final List<IPropertyProvider> propertyProviders;
   private IServletContextProvider servletContextProvider = null;
 
@@ -47,7 +54,7 @@ public class StatusService {
    */
   public StatusService() {
 
-    probes = new ArrayList<IStatusChecker>();
+    probes = new ArrayList<Tuple<Object, Method>>();
     propertyProviders = new ArrayList<IPropertyProvider>();
 
   }
@@ -56,10 +63,41 @@ public class StatusService {
 
     ArrayList<IStatusResult> l = new ArrayList<IStatusResult>();
 
-    for (IStatusChecker check : probes) {
-      l.add(check.checkStatus());
+    for (Tuple<Object, Method> check : probes) {
+
+      Object obj = check.getFirst();
+      Method meth = check.getSecond();
+
+      IStatusResult result;
+      try {
+        result = (IStatusResult) meth.invoke(obj, (Object[]) null);
+      } catch (Exception e) {
+        String name = meth.getName();
+        String className = meth.getClass().getCanonicalName();
+        String message = "Error " + e.getMessage() + " when calling " + name;
+        result = new StatusResultImpl(ERROR, message, false, className, "see log files");
+
+        logger.error("calling check method " + name + " in " + className + " produced an error", e);
+      }
+      l.add(result);
+
     }
     return l;
+
+  }
+
+  private Object getInstance(String className) throws InstantiationException, IllegalAccessException,
+      ClassNotFoundException {
+    Object obj = null;
+
+    if (objectInstanciationListener != null) {
+      obj = objectInstanciationListener.getInstance(className);
+    }
+
+    if (obj != null) {
+      return obj;
+    }
+    return Class.forName(className).newInstance();
 
   }
 
@@ -86,6 +124,12 @@ public class StatusService {
     return servletContextProvider;
   }
 
+  /**
+   * TODO document this.
+   * 
+   * TODO enlever la contrainte sur le nom de clef ("check" et "property")
+   * scanner toutes les classes du fichier properties
+   */
   public void init() {
     try {
       // Load and init all probes
@@ -115,11 +159,18 @@ public class StatusService {
           name = (String) key;
           if (name.startsWith("check")) {
             String clazz = (String) p.get(name);
-            IStatusChecker check = (IStatusChecker) getInstance(clazz);
-            if (check instanceof IServletContextAware) {
-              ((IServletContextAware) check).setServletContext(servletContextProvider.getServletContext());
+            Object checker = getInstance(clazz);
+            if (checker instanceof IServletContextAware) {
+              ((IServletContextAware) checker).setServletContext(servletContextProvider.getServletContext());
             }
-            probes.add(check);
+
+            Method[] allMethods = checker.getClass().getMethods();
+            for (Method method : allMethods) {
+              if (isACheckMethod(method)) {
+                probes.add(new Tuple<Object, Method>(checker, method));
+              }
+            }
+
             logger.info("Registered status checker " + clazz);
           } else if (name.startsWith("property")) {
             String clazz = (String) p.get(name);
@@ -140,26 +191,30 @@ public class StatusService {
 
   }
 
+  /**
+   * Verify if a given method is a check method.
+   * 
+   * <p>
+   * The signature MUST match : <code>public IStatusResult doSomething() </code>
+   * OR <code>public static IStatusResult doSomething() </code>
+   * </p>
+   * 
+   * @param method
+   *          the method to test.
+   * @return true is the given method is pulic, returns an {@link IStatusResult}
+   *         , does not have any parameter and is annotated by
+   *         {@link AppCheckMethod}
+   */
+  private boolean isACheckMethod(Method method) {
+    return Modifier.isPublic(method.getModifiers()) && method.getReturnType().isAssignableFrom(IStatusResult.class)
+        && (method.getParameterTypes().length == 0) && method.isAnnotationPresent(AppCheckMethod.class);
+  }
+
   public void setObjectInstanciationListener(IObjectInstantiationListener objectInstanciationListener) {
     this.objectInstanciationListener = objectInstanciationListener;
   }
 
   public void setServletContextProvider(IServletContextProvider servletContext) {
     this.servletContextProvider = servletContext;
-  }
-
-  private Object getInstance(String className) throws InstantiationException, IllegalAccessException,
-      ClassNotFoundException {
-    Object obj = null;
-
-    if (objectInstanciationListener != null) {
-      obj = objectInstanciationListener.getInstance(className);
-    }
-
-    if (obj != null) {
-      return obj;
-    }
-    return Class.forName(className).newInstance();
-
   }
 }

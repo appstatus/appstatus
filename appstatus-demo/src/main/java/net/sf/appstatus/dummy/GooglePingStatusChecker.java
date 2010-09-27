@@ -18,10 +18,12 @@ package net.sf.appstatus.dummy;
 import java.net.InetAddress;
 
 import net.sf.appstatus.IStatusResult;
+import net.sf.appstatus.annotations.AppCheckMethod;
 import net.sf.appstatus.check.impl.AbstractStatusChecker;
 
 public class GooglePingStatusChecker extends AbstractStatusChecker {
 
+  @AppCheckMethod
 	public IStatusResult checkStatus() {
 		IStatusResult result = null;
 

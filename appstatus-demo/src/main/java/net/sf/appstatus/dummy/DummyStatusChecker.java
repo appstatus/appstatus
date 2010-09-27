@@ -16,24 +16,24 @@
 package net.sf.appstatus.dummy;
 
 import net.sf.appstatus.IStatusResult;
+import net.sf.appstatus.annotations.AppCheckMethod;
 import net.sf.appstatus.check.impl.AbstractHttpStatusChecker;
 import net.sf.appstatus.check.impl.StatusResultImpl;
 
 public class DummyStatusChecker extends AbstractHttpStatusChecker {
 
+  @AppCheckMethod
 	public IStatusResult checkStatus() {
 		StatusResultImpl result = new StatusResultImpl();
 
 		result.setProbeName(getName());
-		result.setCode(Math.random() > 0.5 ? IStatusResult.OK
-				: IStatusResult.ERROR);
+    result.setCode(Math.random() > 0.5 ? IStatusResult.OK : IStatusResult.ERROR);
 		if (result.getCode() == IStatusResult.OK) {
 			result.setDescription("Random is good");
 			result.setFatal(false);
 		} else {
 			result.setDescription("Random failed");
-			result
-					.setResolutionSteps("This probe fails randomly. Please reload the page for better luck.");
+      result.setResolutionSteps("This probe fails randomly. Please reload the page for better luck.");
 			result.setFatal(true);
 		}
 		return result;

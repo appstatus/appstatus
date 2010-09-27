@@ -39,13 +39,14 @@ public class SpringBeanInstantiationListener implements IObjectInstantiationList
   }
 
   public Object getInstance(String className) {
-    Object obj = null;
-
     try {
-      obj = this.applicationContext.getBean(className);
-    } catch (BeansException e) {
-    }
 
-    return obj;
+      return this.applicationContext.getBean(className);
+
+    } catch (BeansException e) {
+
+      return null; // spring initialization failed
+
+    }
   }
 }

@@ -49,11 +49,9 @@ public class StatusServlet extends HttpServlet {
 	private static final String STATUS_PROP = "prop";
 	private static final String STATUS_WARN = "warn";
 	private String allow = null;
-	private final String styleSheet = "<style type=\"text/css\" media=\"screen\">"
-			+ "table { font-size: 80%; }"
-			+ "table ,th, td {  border: 1px solid black; border-collapse:collapse;}"
-			+ "th { background-color: #DDDDDD; }" + "</style>";
-	private boolean useSpring = false;
+  private final String styleSheet = "<style type=\"text/css\" media=\"screen\">" + "table { font-size: 80%; }"
+      + "table ,th, td {  border: 1px solid black; border-collapse:collapse;}" + "th { background-color: #DDDDDD; }"
+      + "</style>";
 
 	/*
 	 * (non-Javadoc)
@@ -63,8 +61,7 @@ public class StatusServlet extends HttpServlet {
 	 * , javax.servlet.http.HttpServletResponse)
 	 */
 	@Override
-	protected void doGet(HttpServletRequest req, HttpServletResponse resp)
-			throws ServletException, IOException {
+  protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 
 		if (allow != null) {
 			if (!req.getRemoteAddr().equals(allow)) {
@@ -95,7 +92,7 @@ public class StatusServlet extends HttpServlet {
 
 		ServletOutputStream os = resp.getOutputStream();
 
-		os.write("<html><head".getBytes(ENCODING));
+    os.write("<html><head>".getBytes(ENCODING));
 		os.write(styleSheet.getBytes(ENCODING));
 		os.write("<body>".getBytes(ENCODING));
 		os.write("<h1>Status Page</h1>".getBytes(ENCODING));
@@ -104,20 +101,18 @@ public class StatusServlet extends HttpServlet {
 
 		os.write("<h2>Status</h2>".getBytes(ENCODING));
 		os.write("<table>".getBytes(ENCODING));
-		os.write("<tr><th></th><th>Name</th><th>Description</th><th>Code</th><th>Resolution</th></tr>"
-				.getBytes(ENCODING));
+    os.write("<tr><th></th><th>Name</th><th>Description</th><th>Code</th><th>Resolution</th></tr>".getBytes(ENCODING));
 
 		for (IStatusResult r : results) {
-			generateRow(os, getStatus(r), r.getProbeName(), r.getDescription(),
-					String.valueOf(r.getCode()), r.getResolutionSteps());
+      generateRow(os, getStatus(r), r.getProbeName(), r.getDescription(), String.valueOf(r.getCode()),
+          r.getResolutionSteps());
 		}
 		os.write("</table>".getBytes(ENCODING));
 
 		os.write("<h2>Properties</h2>".getBytes(ENCODING));
 		Map<String, Map<String, String>> properties = status.getProperties();
 		os.write("<table>".getBytes(ENCODING));
-		os.write("<tr><th></th><th>Category</th><th>Name</th><th>Value</th></tr>"
-				.getBytes(ENCODING));
+    os.write("<tr><th></th><th>Category</th><th>Name</th><th>Value</th></tr>".getBytes(ENCODING));
 
 		for (Entry<String, Map<String, String>> cat : properties.entrySet()) {
 			String category = cat.getKey();
@@ -140,8 +135,7 @@ public class StatusServlet extends HttpServlet {
 	 * @param resp
 	 * @throws IOException
 	 */
-	protected void doGetResource(String id, HttpServletRequest req,
-			HttpServletResponse resp) throws IOException {
+  protected void doGetResource(String id, HttpServletRequest req, HttpServletResponse resp) throws IOException {
 		String location = null;
 		if (STATUS_OK.equals(id)) {
 			location = "/org/freedesktop/tango/22x22/status/weather-clear.png";
@@ -166,12 +160,10 @@ public class StatusServlet extends HttpServlet {
 	 * @param cols
 	 * @throws IOException
 	 */
-	private void generateRow(ServletOutputStream os, String status,
-			Object... cols) throws IOException {
+  private void generateRow(ServletOutputStream os, String status, Object... cols) throws IOException {
 		os.write("<tr>".getBytes());
 
-		os.write(("<td><img src='?icon=" + status + "'></td>")
-				.getBytes(ENCODING));
+    os.write(("<td><img src='?icon=" + status + "'></td>").getBytes(ENCODING));
 
 		for (Object obj : cols) {
 			os.write("<td>".getBytes());
@@ -206,9 +198,9 @@ public class StatusServlet extends HttpServlet {
 	@Override
 	public void init() throws ServletException {
 		super.init();
+    boolean useSpring = false;
 		try {
-			InputStream is = StatusServlet.class
-					.getResourceAsStream("/status-web-conf.properties");
+      InputStream is = StatusServlet.class.getResourceAsStream("/status-web-conf.properties");
 
 			if (is == null) {
 				logger.warn("/status-web-conf.properties not found in classpath. Using default configuration");
@@ -220,16 +212,13 @@ public class StatusServlet extends HttpServlet {
 				useSpring = Boolean.parseBoolean((String) p.get("useSpring"));
 			}
 		} catch (Exception e) {
-			logger.error(
-					"Error loading configuration from /status-web-conf.properties.",
-					e);
+      logger.error("Error loading configuration from /status-web-conf.properties.", e);
 		}
 
 		status = new StatusService();
 
 		if (useSpring) {
-			status.setObjectInstanciationListener(new SpringObjectInstantiationListener(
-					this.getServletContext()));
+      status.setObjectInstanciationListener(new SpringObjectInstantiationListener(this.getServletContext()));
 		}
 
 		status.setServletContextProvider(new IServletContextProvider() {

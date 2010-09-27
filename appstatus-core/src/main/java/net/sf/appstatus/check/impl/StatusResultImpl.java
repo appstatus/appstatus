@@ -30,6 +30,18 @@ public class StatusResultImpl implements IStatusResult {
 	private String probeName;
 	private String resolutionSteps;
 
+  public StatusResultImpl() {
+    // empty constructor
+  }
+
+  public StatusResultImpl(int code, String description, boolean fatal, String probeName, String resolutionSteps) {
+    this.code = code;
+    this.description = description;
+    this.fatal = fatal;
+    this.probeName = probeName;
+    this.resolutionSteps = resolutionSteps;
+  }
+
 	public int getCode() {
 		return code;
 	}

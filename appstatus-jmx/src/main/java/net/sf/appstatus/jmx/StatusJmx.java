@@ -108,7 +108,7 @@ public class StatusJmx implements ApplicationContextAware, ServletContextAware {
 
     statusService.setObjectInstanciationListener(new SpringBeanInstantiationListener(this.applicationContext));
 
-    this.statusService.setServletContextProvider(new IServletContextProvider() {
+    statusService.setServletContextProvider(new IServletContextProvider() {
 
       public ServletContext getServletContext() {
         return StatusJmx.this.servletContext;

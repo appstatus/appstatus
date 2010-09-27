@@ -16,10 +16,12 @@
 package net.sf.appstatus.dummy;
 
 import net.sf.appstatus.IStatusResult;
+import net.sf.appstatus.annotations.AppCheckMethod;
 import net.sf.appstatus.check.impl.AbstractHttpStatusChecker;
 
 public class GoogleHttpStatusChecker extends AbstractHttpStatusChecker {
 
+  @AppCheckMethod
 	public IStatusResult checkStatus() {
 		IStatusResult result = null;
 
@@ -30,9 +32,7 @@ public class GoogleHttpStatusChecker extends AbstractHttpStatusChecker {
 		} catch (Exception e) {
 			result = createResult(FATAL);
 			result.setDescription("Google access failed");
-			result
-					.setResolutionSteps("Your server does not have internet access : "
-							+ e.getMessage());
+      result.setResolutionSteps("Your server does not have internet access : " + e.getMessage());
 		}
 
 		return result;
