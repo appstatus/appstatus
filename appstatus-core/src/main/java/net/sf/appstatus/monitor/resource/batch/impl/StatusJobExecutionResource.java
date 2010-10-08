@@ -19,7 +19,7 @@ import java.util.Date;
 import java.util.List;
 
 import net.sf.appstatus.IStatusResult;
-import net.sf.appstatus.agent.batch.IJobProgressAgentMonitor;
+import net.sf.appstatus.agent.batch.IBatchMonitor;
 import net.sf.appstatus.check.impl.StatusResultImpl;
 import net.sf.appstatus.monitor.resource.ResourceType;
 import net.sf.appstatus.monitor.resource.batch.IStatusJobExecutionResource;
@@ -37,7 +37,7 @@ public class StatusJobExecutionResource implements IStatusJobExecutionResource {
 
 	private final String name;
 
-	private final IJobProgressAgentMonitor jobProgressMonitor;
+	private final IBatchMonitor jobProgressMonitor;
 
 	/**
 	 * Default constructor.
@@ -50,7 +50,7 @@ public class StatusJobExecutionResource implements IStatusJobExecutionResource {
 	 *            job execution monitor
 	 */
 	public StatusJobExecutionResource(String uid, String name,
-			IJobProgressAgentMonitor jobProgressAgentMonitor) {
+			IBatchMonitor jobProgressAgentMonitor) {
 		this.uid = uid;
 		this.name = name;
 		this.jobProgressMonitor = jobProgressAgentMonitor;
@@ -130,7 +130,7 @@ public class StatusJobExecutionResource implements IStatusJobExecutionResource {
 	 * {@inheritDoc}
 	 */
 	public String getType() {
-		return ResourceType.JOB.getLabel();
+		return ResourceType.BATCH.getLabel();
 	}
 
 	/**

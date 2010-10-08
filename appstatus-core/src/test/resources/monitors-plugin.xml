@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<monitors-plugin>
+	<monitor name="service-test" class="net.sf.appstatus.agent.service.impl.MockServiceMonitorAgent" type="SERVICE">
+		<agent class="net.sf.appstatus.agent.service.impl.MockServiceMonitorAgent"/>
+	</monitor>
+	<monitor name="batch-test" class="net.sf.appstatus.agent.batch.impl.MockBatchMonitorAgent" type="BATCH">
+		<agent class="net.sf.appstatus.agent.batch.impl.MockBatchMonitorAgent"/>
+	</monitor>
+</monitors-plugin>

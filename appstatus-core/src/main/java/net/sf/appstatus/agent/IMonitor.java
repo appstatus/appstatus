@@ -13,29 +13,14 @@
  * limitations under the License. 
  * 
  */
-package net.sf.appstatus.monitor.resource;
+package net.sf.appstatus.agent;
 
 /**
- * Enumeration of the resource types
+ * Monitor tag interface.
  * 
  * @author Guillaume Mary
  * 
  */
-public enum ResourceType {
-	SERVICE("SERVICE"), BATCH("BATCH"), DEFAULT("RESOURCE");
+public interface IMonitor {
 
-	private String label;
-
-	private ResourceType(String label) {
-		this.label = label;
-	}
-
-	/**
-	 * Return the resource type label.
-	 * 
-	 * @return resource type label
-	 */
-	public String getLabel() {
-		return this.label;
-	}
 }

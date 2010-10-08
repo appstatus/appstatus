@@ -13,29 +13,31 @@
  * limitations under the License. 
  * 
  */
-package net.sf.appstatus.monitor.resource;
+package net.sf.appstatus.agent.batch;
+
+import net.sf.appstatus.agent.MonitorFactory;
 
 /**
- * Enumeration of the resource types
+ * Batch Monitor Agent factory.
  * 
  * @author Guillaume Mary
  * 
  */
-public enum ResourceType {
-	SERVICE("SERVICE"), BATCH("BATCH"), DEFAULT("RESOURCE");
+public final class BatchMonitorAgentFactory {
 
-	private String label;
-
-	private ResourceType(String label) {
-		this.label = label;
+	/**
+	 * Return a new {@link IBatchMonitorAgent} instance.
+	 * 
+	 * @return a new {@link IBatchMonitorAgent} instance
+	 */
+	public static IBatchMonitorAgent getAgent(String executionId) {
+		return MonitorFactory.getAgent(IBatchMonitorAgent.class, executionId);
 	}
 
 	/**
-	 * Return the resource type label.
-	 * 
-	 * @return resource type label
+	 * Default constructor.
 	 */
-	public String getLabel() {
-		return this.label;
+	private BatchMonitorAgentFactory() {
+		// prevent instantiation
 	}
 }

@@ -19,8 +19,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import net.sf.appstatus.IStatusResult;
-import net.sf.appstatus.agent.batch.IJobProgressAgentMonitor;
-import net.sf.appstatus.agent.batch.JobProgressAgentMonitorFactory;
+import net.sf.appstatus.agent.batch.BatchMonitorFactory;
+import net.sf.appstatus.agent.batch.IBatchMonitor;
 import net.sf.appstatus.check.impl.StatusResultImpl;
 import net.sf.appstatus.monitor.resource.ResourceType;
 import net.sf.appstatus.monitor.resource.batch.IScheduledJobDetail;
@@ -58,7 +58,7 @@ public class StatusJobResource implements IStatusJobResource {
 	 */
 	public List<IStatusJobExecutionResource> getCurrentJobExecutionsStatus() {
 		List<IStatusJobExecutionResource> jobExecutionsStatus = new ArrayList<IStatusJobExecutionResource>();
-		IJobProgressAgentMonitor jobProgressMonitor = JobProgressAgentMonitorFactory
+		IBatchMonitor jobProgressMonitor = BatchMonitorFactory
 				.getMonitor(getUid());
 		List<String> executionIds = jobProgressMonitor.getJobExecutionIds();
 		for (String executionId : executionIds) {
@@ -112,7 +112,7 @@ public class StatusJobResource implements IStatusJobResource {
 	 * {@inheritDoc}
 	 */
 	public String getType() {
-		return ResourceType.JOB.getLabel();
+		return ResourceType.BATCH.getLabel();
 	}
 
 	/**

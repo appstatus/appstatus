@@ -13,29 +13,36 @@
  * limitations under the License. 
  * 
  */
-package net.sf.appstatus.monitor.resource;
+package net.sf.appstatus.agent.service;
+
+import net.sf.appstatus.agent.IMonitorAgent;
 
 /**
- * Enumeration of the resource types
+ * Service agent interface.
  * 
  * @author Guillaume Mary
  * 
  */
-public enum ResourceType {
-	SERVICE("SERVICE"), BATCH("BATCH"), DEFAULT("RESOURCE");
-
-	private String label;
-
-	private ResourceType(String label) {
-		this.label = label;
-	}
+public interface IServiceMonitorAgent extends IMonitorAgent {
 
 	/**
-	 * Return the resource type label.
+	 * Notify the beginning of a call to a service.
 	 * 
-	 * @return resource type label
+	 * @param operationName
+	 *            operation name
+	 * @param parameters
+	 *            operation parameters
+	 * @return call id
 	 */
-	public String getLabel() {
-		return this.label;
-	}
+	String beginCall(String operationName, Object[] parameters);
+
+	/**
+	 * Notify the end of a call to a service.
+	 * 
+	 * @param operationName
+	 *            operation name
+	 * @param executionId
+	 *            call id
+	 */
+	void endCall(String operationName, String executionId);
 }

@@ -19,8 +19,8 @@ import java.util.List;
 
 import net.sf.appstatus.IStatusChecker;
 import net.sf.appstatus.IStatusResult;
-import net.sf.appstatus.agent.service.IServiceAgentMonitor;
-import net.sf.appstatus.agent.service.ServiceAgentMonitorFactory;
+import net.sf.appstatus.agent.service.IServiceMonitor;
+import net.sf.appstatus.agent.service.ServiceMonitorFactory;
 import net.sf.appstatus.monitor.resource.ResourceType;
 import net.sf.appstatus.monitor.resource.service.IStatusServiceResource;
 
@@ -34,7 +34,7 @@ public class StatusServiceResource implements IStatusServiceResource {
 
 	private IStatusChecker statusChecker;
 
-	private IServiceAgentMonitor serviceAgentMonitor;
+	private IServiceMonitor serviceAgentMonitor;
 
 	private final String name;
 
@@ -51,7 +51,7 @@ public class StatusServiceResource implements IStatusServiceResource {
 	public StatusServiceResource(String uid, String name) {
 		this.uid = uid;
 		this.name = name;
-		this.serviceAgentMonitor = ServiceAgentMonitorFactory.getMonitor(uid);
+		this.serviceAgentMonitor = ServiceMonitorFactory.getMonitor(uid);
 	}
 
 	/**
@@ -103,7 +103,7 @@ public class StatusServiceResource implements IStatusServiceResource {
 		return uid;
 	}
 
-	public void setServiceAgentMonitor(IServiceAgentMonitor statisticsProvider) {
+	public void setServiceAgentMonitor(IServiceMonitor statisticsProvider) {
 		this.serviceAgentMonitor = statisticsProvider;
 	}
 
