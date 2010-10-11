@@ -38,7 +38,7 @@ public class StatusService {
   private static Logger logger = LoggerFactory.getLogger(StatusService.class);
 
   private IObjectInstantiationListener objectInstanciationListener = null;
-  private final List<IStatusChecker> probes;
+  protected final List<IStatusChecker> probes;
   private final List<IPropertyProvider> propertyProviders;
   private IServletContextProvider servletContextProvider = null;
 
@@ -61,6 +61,25 @@ public class StatusService {
     }
     return l;
 
+  }
+
+  private Object getInstance(String className) throws InstantiationException, IllegalAccessException {
+    Object obj = null;
+
+    if (objectInstanciationListener != null) {
+      obj = objectInstanciationListener.getInstance(className);
+    }
+
+    if (obj != null) {
+      return obj;
+    }
+    Class<?> clazz;
+    try {
+      clazz = Class.forName(className);
+      return clazz.newInstance();
+    } catch (ClassNotFoundException e) {
+      return null;
+    }
   }
 
   public IObjectInstantiationListener getObjectInstanciationListener() {
@@ -119,8 +138,13 @@ public class StatusService {
             if (check instanceof IServletContextAware) {
               ((IServletContextAware) check).setServletContext(servletContextProvider.getServletContext());
             }
-            probes.add(check);
-            logger.info("Registered status checker " + clazz);
+            if (check != null) {
+              probes.add(check);
+              logger.info("Registered status checker " + clazz);
+            } else {
+              logger.error("cannot instanciate class {}, Please configure \"status-check.properties\" file properly",
+                  clazz);
+            }
           } else if (name.startsWith("property")) {
             String clazz = (String) p.get(name);
             IPropertyProvider provider = (IPropertyProvider) getInstance(clazz);
@@ -146,20 +170,5 @@ public class StatusService {
 
   public void setServletContextProvider(IServletContextProvider servletContext) {
     this.servletContextProvider = servletContext;
-  }
-
-  private Object getInstance(String className) throws InstantiationException, IllegalAccessException,
-      ClassNotFoundException {
-    Object obj = null;
-
-    if (objectInstanciationListener != null) {
-      obj = objectInstanciationListener.getInstance(className);
-    }
-
-    if (obj != null) {
-      return obj;
-    }
-    return Class.forName(className).newInstance();
-
   }
 }
