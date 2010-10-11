@@ -13,6 +13,7 @@
  */
 package net.sf.appstatus;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.ArrayList;
@@ -46,24 +47,57 @@ public class StatusService {
    * Status Service creator.
    */
   public StatusService() {
-
     probes = new ArrayList<IStatusChecker>();
     propertyProviders = new ArrayList<IPropertyProvider>();
+  }
 
+  private void addPropertyProvider(String clazz) {
+    IPropertyProvider provider = (IPropertyProvider) getInstance(clazz);
+    if (provider instanceof IServletContextAware && servletContextProvider != null) {
+      ((IServletContextAware) provider).setServletContext(servletContextProvider.getServletContext());
+    }
+    // else : guess is if we don't have the servlet context now, we will
+    // later.
+
+    if (provider != null) {
+      propertyProviders.add(provider);
+      logger.info("Registered property provider " + clazz);
+    } else {
+      logger.error("cannot instanciate class {}, Please configure \"{}\" file properly", clazz, CONFIG_LOCATION);
+    }
+  }
+
+  private void addStatusChecker(String clazz) {
+    IStatusChecker check = (IStatusChecker) getInstance(clazz);
+    if (check == null) {
+      logger.error("cannot instanciate class {}, Please configure \"{}\" file properly", clazz, CONFIG_LOCATION);
+      return;
+    }
+
+    if (check instanceof IServletContextAware) {
+      ((IServletContextAware) check).setServletContext(servletContextProvider.getServletContext());
+    }
+
+    probes.add(check);
+    logger.info("Registered status checker " + clazz);
   }
 
   public List<IStatusResult> checkAll() {
-
-    ArrayList<IStatusResult> l = new ArrayList<IStatusResult>();
-
+    ArrayList<IStatusResult> statusList = new ArrayList<IStatusResult>();
     for (IStatusChecker check : probes) {
-      l.add(check.checkStatus());
+      statusList.add(check.checkStatus());
     }
-    return l;
-
+    return statusList;
   }
 
-  private Object getInstance(String className) throws InstantiationException, IllegalAccessException {
+  /**
+   * Try to instantiate a class.
+   * 
+   * @param className
+   * @return an object instance of "className" class or null if instantiation is
+   *         not possible
+   */
+  private Object getInstance(String className) {
     Object obj = null;
 
     if (objectInstanciationListener != null) {
@@ -73,13 +107,17 @@ public class StatusService {
     if (obj != null) {
       return obj;
     }
-    Class<?> clazz;
+
     try {
-      clazz = Class.forName(className);
-      return clazz.newInstance();
+      return Class.forName(className).newInstance();
     } catch (ClassNotFoundException e) {
-      return null;
+      logger.warn("Class {} not found ", className, e);
+    } catch (InstantiationException e) {
+      logger.warn("Cannot instanciate {} ", className, e);
+    } catch (IllegalAccessException e) {
+      logger.warn("Cannot access class {} for instantiation ", className, e);
     }
+    return null;
   }
 
   public IObjectInstantiationListener getObjectInstanciationListener() {
@@ -113,48 +151,22 @@ public class StatusService {
       configFiles = StatusService.class.getClassLoader().getResources(CONFIG_LOCATION);
 
       if (configFiles == null) {
+        logger.info("config file {} not found in classpath", CONFIG_LOCATION);
         return;
       }
 
-      URL url = null;
-      Properties p = null;
-      InputStream is = null;
       while (configFiles.hasMoreElements()) {
-        url = configFiles.nextElement();
+        Properties p = loadProperties(configFiles.nextElement());
 
-        // Load plugin configuration
-        p = new Properties();
-        is = url.openStream();
-        p.load(is);
-        is.close();
-
-        Set<Object> keys = p.keySet();
-        String name = null;
-        for (Object key : keys) {
-          name = (String) key;
+        Set<String> keys = p.stringPropertyNames();
+        for (String name : keys) {
+          String clazz = (String) p.get(name);
           if (name.startsWith("check")) {
-            String clazz = (String) p.get(name);
-            IStatusChecker check = (IStatusChecker) getInstance(clazz);
-            if (check instanceof IServletContextAware) {
-              ((IServletContextAware) check).setServletContext(servletContextProvider.getServletContext());
-            }
-            if (check != null) {
-              probes.add(check);
-              logger.info("Registered status checker " + clazz);
-            } else {
-              logger.error("cannot instanciate class {}, Please configure \"status-check.properties\" file properly",
-                  clazz);
-            }
+            addStatusChecker(clazz);
           } else if (name.startsWith("property")) {
-            String clazz = (String) p.get(name);
-            IPropertyProvider provider = (IPropertyProvider) getInstance(clazz);
-            propertyProviders.add(provider);
-            if (provider instanceof IServletContextAware && servletContextProvider != null) {
-              ((IServletContextAware) provider).setServletContext(servletContextProvider.getServletContext());
-            }
-            // else : guess is if we don't have the servlet context now, we will
-            // later.
-            logger.info("Registered property provider " + clazz);
+            addPropertyProvider(clazz);
+          } else {
+            logger.warn("unknown propery  {} : {} ", name, clazz);
           }
         }
       }
@@ -162,6 +174,24 @@ public class StatusService {
       logger.error("Initialization error", e);
     }
 
+  }
+
+  /**
+   * Load a properties file from a given URL.
+   * 
+   * @param url
+   *          an url
+   * @return a {@link Properties} object
+   * @throws IOException
+   *           in an error occurs
+   */
+  private Properties loadProperties(URL url) throws IOException {
+    // Load plugin configuration
+    Properties p = new Properties();
+    InputStream is = url.openStream();
+    p.load(is);
+    is.close();
+    return p;
   }
 
   public void setObjectInstanciationListener(IObjectInstantiationListener objectInstanciationListener) {
