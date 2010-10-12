@@ -1,17 +1,19 @@
 package net.sf.appstatus;
 
+import static org.mockito.Mockito.mock;
+
 import java.util.Map;
 
 public class MockPropertyProvider implements IPropertyProvider {
 
+	private final IPropertyProvider mockPropertyProvider = mock(IPropertyProvider.class);
+
 	public String getCategory() {
-		// TODO Auto-generated method stub
-		return null;
+		return mockPropertyProvider.getCategory();
 	}
 
 	public Map<String, String> getProperties() {
-		// TODO Auto-generated method stub
-		return null;
+		return mockPropertyProvider.getProperties();
 	}
 
 }

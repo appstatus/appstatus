@@ -166,11 +166,23 @@ public class StatusService implements IStatusResourcesMonitor {
 								resource.getId(), resource.getName(), resource
 										.getType().name(), statusCheckers,
 								propertyProviders));
+						logger.info(
+								"The basic resource ({}) is registered in the system.",
+								resource.getId());
 					} else if (resource.getType().equals(ResourceType.SERVICE)) {
 						String statisticsMonitorName = null;
-						if (!resource.getDetails().getDetail().isEmpty()) {
-							statisticsMonitorName = resource.getDetails()
-									.getDetail().get(0).getMonitor();
+						if (resource.getDetails() != null
+								&& !resource.getDetails().getDetail().isEmpty()) {
+							Detail detail = resource.getDetails().getDetail()
+									.get(0);
+							if (detail.getType().equals(DetailType.STATISTICS)) {
+								statisticsMonitorName = detail.getMonitor();
+							} else {
+								logger.info(
+										"The detail configuration {} of the resource ({}) is unknown by the system for a service resource. This detail configuration is ignored.",
+										new Object[] { detail.getType(),
+												resource.getId() });
+							}
 						}
 						monitoredResources
 								.add(new ServiceStatusResourceMonitor(resource
@@ -178,6 +190,9 @@ public class StatusService implements IStatusResourcesMonitor {
 										.getType().name(), statusCheckers,
 										propertyProviders,
 										statisticsMonitorName));
+						logger.info(
+								"The service resource ({}) is registered in the system.",
+								resource.getId());
 					} else if (resource.getType().equals(ResourceType.BATCH)) {
 						String nextMonitorName = null;
 						String executionMonitorName = null;
@@ -187,17 +202,17 @@ public class StatusService implements IStatusResourcesMonitor {
 							for (Detail detail : resource.getDetails()
 									.getDetail()) {
 								if (detail.getType().equals(
-										DetailType.EXECUTION.name())) {
+										DetailType.EXECUTION)) {
 									executionMonitorName = detail.getMonitor();
 								} else if (detail.getType().equals(
-										DetailType.NEXT.name())) {
+										DetailType.NEXT)) {
 									nextMonitorName = detail.getMonitor();
 								} else if (detail.getType().equals(
-										DetailType.HISTORY.name())) {
+										DetailType.HISTORY)) {
 									historyMonitorName = detail.getMonitor();
 								} else {
 									logger.info(
-											"The detail configuration {} of the resource ({}) is unknown by the system. This detail configuration is ignored.",
+											"The detail configuration {} of the resource ({}) is unknown by the system for a batch resource. This detail configuration is ignored.",
 											new Object[] { detail.getType(),
 													resource.getId() });
 								}
@@ -208,6 +223,9 @@ public class StatusService implements IStatusResourcesMonitor {
 										.getType().name(), statusCheckers,
 								propertyProviders, executionMonitorName,
 								historyMonitorName, nextMonitorName));
+						logger.info(
+								"The batch resource ({}) is registered in the system.",
+								resource.getId());
 					} else {
 						logger.info(
 								"The configured resource ({}) type [{}] is unknow by the system. This resource is ignored.",

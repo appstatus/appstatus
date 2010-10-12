@@ -2,41 +2,39 @@
 <resources>
 	<resource id="appstatus-demo" name="Demo Application" description="Demo application for demonstration purpose" type="BASIC">
 		<configuration>
-			<properties class="net.sf.appstatus.check.impl.WarMavenVersionProvider"/>
+			<properties class="net.sf.appstatus.MockPropertyProvider"/>
 		</configuration>
 	</resource>
 	
 	<resource id="dummy" name="Dummy" description="Dummy resource" type="BASIC">
 		<configuration>
-			<properties class="net.sf.appstatus.dummy.DummyPropertyProvider"/>
+			<properties class="net.sf.appstatus.MockPropertyProvider"/>
 		</configuration>
 	</resource>
 	
 	<resource id="google" name="Google" description="Google resource" type="BASIC">
 		<status>
-			<checker class="net.sf.appstatus.dummy.GoogleHttpStatusChecker"/>
-			<checker class="net.sf.appstatus.dummy.GooglePingStatusChecker"/>
+			<checker class="net.sf.appstatus.MockStatusChecker"/>
+			<checker class="net.sf.appstatus.MockStatusChecker"/>
 		</status>
 	</resource>
 	
 	<resource id="service-sample" name="Service Sample" description="Example service used to test appstatus" type="SERVICE">
 		<status>
-			<checker class="net.sf.appstatus.samples.service.ServiceSampleStatusChecker"/>
+			<checker class="net.sf.appstatus.MockStatusChecker"/>
 		</status>
 		<details>
-			<detail type="statistics" monitor="service-mem" />
+			<detail type="statistics" monitor="service-test" />
 		</details>
 	</resource>
 	
 	<resource id="batch-sample" name="Batch Sample" description="Example batch used to test appstatus" type="BATCH">
 		<configuration>
-			<properties class="net.sf.appstatus.samples.batch.classic.LaunchParamPropertyProvider"/>
-			<properties class="net.sf.appstatus.samples.batch.classic.CronNextFiringPropertyProvider"/>
+			<properties class="net.sf.appstatus.MockPropertyProvider"/>
+			<properties class="net.sf.appstatus.MockPropertyProvider"/>
 		</configuration>
 		<details>
-			<detail type="next" />
-			<detail type="execution" monitor="batch-execution-mem"/>
-			<detail type="last" />
+			<detail type="execution" monitor="batch-test"/>
 		</details>
 	</resource>
 </resources>
