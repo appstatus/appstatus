@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<resources>
+	<resource id="appstatus-demo" name="Demo Application" description="Demo application for demonstration purpose" type="BASIC">
+		<configuration>
+			<properties class="net.sf.appstatus.check.impl.WarMavenVersionProvider"/>
+		</configuration>
+	</resource>
+	
+	<resource id="dummy" name="Dummy" description="Dummy resource" type="BASIC">
+		<configuration>
+			<properties class="net.sf.appstatus.dummy.DummyPropertyProvider"/>
+		</configuration>
+	</resource>
+	
+	<resource id="google" name="Google" description="Google resource" type="BASIC">
+		<status>
+			<checker class="net.sf.appstatus.dummy.GoogleHttpStatusChecker"/>
+			<checker class="net.sf.appstatus.dummy.GooglePingStatusChecker"/>
+		</status>
+	</resource>
+	
+	<resource id="service-sample" name="Service Sample" description="Example service used to test appstatus" type="SERVICE">
+		<status>
+			<checker class="net.sf.appstatus.samples.service.ServiceSampleStatusChecker"/>
+		</status>
+		<details>
+			<detail type="statistics" monitor="service-mem" />
+		</details>
+	</resource>
+	
+	<resource id="batch-sample" name="Batch Sample" description="Example batch used to test appstatus" type="BATCH">
+		<configuration>
+			<properties class="net.sf.appstatus.samples.batch.classic.LaunchParamPropertyProvider"/>
+			<properties class="net.sf.appstatus.samples.batch.classic.CronNextFiringPropertyProvider"/>
+		</configuration>
+		<details>
+			<detail type="next" />
+			<detail type="execution" monitor="batch-execution-mem"/>
+			<detail type="last" />
+		</details>
+	</resource>
+</resources>

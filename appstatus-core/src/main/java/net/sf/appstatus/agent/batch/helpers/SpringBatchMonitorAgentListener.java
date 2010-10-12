@@ -17,8 +17,8 @@ package net.sf.appstatus.agent.batch.helpers;
 
 import java.util.List;
 
-import net.sf.appstatus.agent.batch.IBatchMonitorAgent;
-import net.sf.appstatus.agent.batch.BatchMonitorAgentFactory;
+import net.sf.appstatus.agent.batch.IBatchExecutionMonitorAgent;
+import net.sf.appstatus.agent.batch.BatchExecutionMonitorAgentFactory;
 
 import org.springframework.batch.core.ExitStatus;
 import org.springframework.batch.core.JobExecution;
@@ -57,7 +57,7 @@ public class SpringBatchMonitorAgentListener {
 	/**
 	 * The current job monitor.
 	 */
-	private IBatchMonitorAgent jobMonitor;
+	private IBatchExecutionMonitorAgent jobMonitor;
 
 	/**
 	 * Job name.
@@ -67,12 +67,12 @@ public class SpringBatchMonitorAgentListener {
 	/**
 	 * Job step monitor.
 	 */
-	private IBatchMonitorAgent stepMonitor = null;
+	private IBatchExecutionMonitorAgent stepMonitor = null;
 
 	/**
 	 * Total work, usually the number of steps.
 	 */
-	int totalWork = IBatchMonitorAgent.UNKNOW;
+	int totalWork = IBatchExecutionMonitorAgent.UNKNOW;
 
 	/**
 	 * After job execution callback method.
@@ -90,7 +90,7 @@ public class SpringBatchMonitorAgentListener {
 		if (item != null) {
 			// increment item read
 			int totalWork = stepMonitor.getTotalWork();
-			if (totalWork == IBatchMonitorAgent.UNKNOW) {
+			if (totalWork == IBatchExecutionMonitorAgent.UNKNOW) {
 				totalWork = 1;
 			} else {
 				totalWork++;
@@ -131,7 +131,7 @@ public class SpringBatchMonitorAgentListener {
 	 */
 	@BeforeJob
 	public void beforeJob(JobExecution jobExecution) {
-		jobMonitor = BatchMonitorAgentFactory.getAgent(jobExecution.getJobId()
+		jobMonitor = BatchExecutionMonitorAgentFactory.getAgent(jobExecution.getJobId()
 				.toString());
 		jobMonitor.beginTask(name, group, description, totalWork);
 	}
@@ -146,7 +146,7 @@ public class SpringBatchMonitorAgentListener {
 	public void beforeStep(StepExecution stepExecution) {
 		stepMonitor = jobMonitor.createSubTask(1);
 		stepMonitor.beginTask(stepExecution.getStepName(), group,
-				stepExecution.getSummary(), IBatchMonitorAgent.UNKNOW);
+				stepExecution.getSummary(), IBatchExecutionMonitorAgent.UNKNOW);
 	}
 
 	/**

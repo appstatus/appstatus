@@ -6,15 +6,15 @@ import static org.mockito.Mockito.when;
 import java.util.ArrayList;
 import java.util.List;
 
-import net.sf.appstatus.agent.service.IServiceMonitor;
-import net.sf.appstatus.agent.service.IServiceMonitorAgent;
+import net.sf.appstatus.agent.service.IServiceStatisticsMonitor;
+import net.sf.appstatus.agent.service.IServiceStatisticsMonitorAgent;
 
-public class MockServiceMonitorAgent implements IServiceMonitorAgent,
-		IServiceMonitor {
+public class MockServiceMonitorAgent implements IServiceStatisticsMonitorAgent,
+		IServiceStatisticsMonitor {
 
-	private final IServiceMonitorAgent mockAgent = mock(IServiceMonitorAgent.class);
+	private final IServiceStatisticsMonitorAgent mockAgent = mock(IServiceStatisticsMonitorAgent.class);
 
-	private final IServiceMonitor mockMonitor = mock(IServiceMonitor.class);
+	private final IServiceStatisticsMonitor mockMonitor = mock(IServiceStatisticsMonitor.class);
 
 	private final String serviceName;
 

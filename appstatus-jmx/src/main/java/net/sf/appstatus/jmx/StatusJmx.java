@@ -17,13 +17,14 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.servlet.ServletContext;
 
 import net.sf.appstatus.IServletContextProvider;
 import net.sf.appstatus.IStatusResult;
 import net.sf.appstatus.StatusService;
-import net.sf.appstatus.monitor.resource.IStatusResource;
+import net.sf.appstatus.monitor.resource.IStatusResourceMonitor;
 
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
@@ -54,11 +55,13 @@ public class StatusJmx implements ApplicationContextAware, ServletContextAware {
 	@ManagedAttribute(description = "Status list", currencyTimeLimit = 15)
 	public Map<String, String> getStatus() {
 		Map<String, String> statusChecker = new HashMap<String, String>();
-		for (IStatusResource resource : statusService
+		for (IStatusResourceMonitor resource : statusService
 				.getMonitoredResourcesStatus()) {
-			IStatusResult result = resource.getStatus();
-			statusChecker.put(result.getProbeName(),
-					formatCodeDisplay(result.getCode()));
+			List<IStatusResult> results = resource.getStatus();
+			for (IStatusResult result : results) {
+				statusChecker.put(result.getProbeName(),
+						formatCodeDisplay(result.getCode()));
+			}
 		}
 		return statusChecker;
 	}
@@ -67,21 +70,28 @@ public class StatusJmx implements ApplicationContextAware, ServletContextAware {
 	public Map<String, List<String>> getFullStatus() {
 		Map<String, List<String>> statusChecker = new HashMap<String, List<String>>();
 		List<String> statusAttributs = null;
-		for (IStatusResource resource : statusService
+		for (IStatusResourceMonitor resource : statusService
 				.getMonitoredResourcesStatus()) {
-			IStatusResult result = resource.getStatus();
-			statusAttributs = new ArrayList<String>();
-			statusAttributs.add(formatCodeDisplay(result.getCode()));
-			statusAttributs.add(result.getDescription());
-			statusAttributs.add(result.getResolutionSteps());
-			statusChecker.put(result.getProbeName(), statusAttributs);
+			List<IStatusResult> results = resource.getStatus();
+			for (IStatusResult result : results) {
+				statusAttributs = new ArrayList<String>();
+				statusAttributs.add(formatCodeDisplay(result.getCode()));
+				statusAttributs.add(result.getDescription());
+				statusAttributs.add(result.getResolutionSteps());
+				statusChecker.put(result.getProbeName(), statusAttributs);
+			}
 		}
 		return statusChecker;
 	}
 
 	@ManagedAttribute(description = "The services properties")
 	public Map<String, Map<String, String>> getServicesProperties() {
-		return this.statusService.getConfiguration();
+		Map<String, Map<String, String>> properties = new HashMap<String, Map<String,String>>();
+		for (IStatusResourceMonitor resource : statusService
+				.getMonitoredResourcesStatus()) {
+			properties.putAll(resource.getConfiguration());
+		}
+		return properties;
 	}
 
 	/**

@@ -19,8 +19,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-import net.sf.appstatus.agent.batch.IJobProgressAgent;
-import net.sf.appstatus.agent.batch.JobProgressAgentFactory;
+import net.sf.appstatus.agent.batch.IBatchExecutionMonitorAgent;
+import net.sf.appstatus.agent.batch.BatchExecutionMonitorAgentFactory;
 
 /**
  * Classic sample batch.
@@ -48,7 +48,7 @@ public class BatchSample implements Runnable {
 	 *            step monitor
 	 * @return items
 	 */
-	private static List<String> step1(IJobProgressAgent stepMonitor) {
+	private static List<String> step1(IBatchExecutionMonitorAgent stepMonitor) {
 		stepMonitor.beginTask("step1", "SampleGroup", "Create the item list",
 				100);
 		List<String> items = new ArrayList<String>();
@@ -81,7 +81,7 @@ public class BatchSample implements Runnable {
 	 * @param stepMonitor
 	 *            step monitor
 	 */
-	private static void step2(List<String> items, IJobProgressAgent stepMonitor) {
+	private static void step2(List<String> items, IBatchExecutionMonitorAgent stepMonitor) {
 		stepMonitor.beginTask("step2", "SampleGroup",
 				"Write the items in the console output.", items.size());
 		for (String item : items) {
@@ -94,7 +94,7 @@ public class BatchSample implements Runnable {
 
 	public void run() {
 		// retrieve the job monitor
-		IJobProgressAgent jobMonitor = JobProgressAgentFactory.getAgent(UUID
+		IBatchExecutionMonitorAgent jobMonitor = BatchExecutionMonitorAgentFactory.getAgent(UUID
 				.randomUUID().toString());
 
 		// start the job

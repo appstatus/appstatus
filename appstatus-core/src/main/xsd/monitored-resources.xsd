@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:common="http://appstatus.sourceforge.net/common/"
+	elementFormDefault="qualified" >
+	<xs:import namespace="http://appstatus.sourceforge.net/common/" schemaLocation="common.xsd"/>
+	<xs:element name="resources">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element maxOccurs="unbounded" ref="resource" />
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="resource">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element minOccurs="0" maxOccurs="1" ref="status" />
+				<xs:element minOccurs="0" maxOccurs="1" ref="configuration" />
+				<xs:element minOccurs="0" maxOccurs="1" ref="details" />
+			</xs:sequence>
+			<xs:attribute name="description" use="required" />
+			<xs:attribute name="id" use="required" type="xs:string" />
+			<xs:attribute name="name" use="required" />
+			<xs:attribute name="type" use="required" type="common:resourceType" />
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="status">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element maxOccurs="unbounded" ref="checker" />
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="checker">
+		<xs:complexType>
+			<xs:attribute name="class" use="required" type="xs:string"/>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="configuration">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element maxOccurs="unbounded" ref="properties" />
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="properties">
+		<xs:complexType>
+			<xs:attribute name="class" use="required" type="xs:string"/>
+		</xs:complexType>
+	</xs:element>
+	<xs:simpleType name="detailType">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="statistics" />
+			<xs:enumeration value="execution" />
+			<xs:enumeration value="next" />
+			<xs:enumeration value="history" />
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:element name="details">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element maxOccurs="unbounded" ref="detail" />
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="detail">
+		<xs:complexType>
+			<xs:attribute name="type" use="required" type="detailType" />
+			<xs:attribute name="monitor" type="xs:string" />
+		</xs:complexType>
+	</xs:element>
+</xs:schema>

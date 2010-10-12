@@ -15,8 +15,8 @@
  */
 package net.sf.appstatus.samples.service;
 
-import net.sf.appstatus.agent.service.IServiceAgent;
-import net.sf.appstatus.agent.service.ServiceAgentFactory;
+import net.sf.appstatus.agent.service.IServiceStatisticsMonitorAgent;
+import net.sf.appstatus.agent.service.ServiceMonitorAgentFactory;
 
 /**
  * Main sample service call class.
@@ -38,7 +38,7 @@ public class ServiceSampleCall implements Runnable {
 	}
 
 	private void generateServiceCall() {
-		IServiceAgent monitor = ServiceAgentFactory
+		IServiceStatisticsMonitorAgent monitor = ServiceMonitorAgentFactory
 				.getAgent(ServiceSample.class.getName());
 		ServiceSample service = new ServiceSample();
 		String id = monitor.beginCall("myService", null);

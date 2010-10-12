@@ -24,17 +24,17 @@ import java.util.concurrent.ConcurrentHashMap;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.Unmarshaller;
 
-import net.sf.appstatus.agent.batch.IBatchMonitor;
-import net.sf.appstatus.agent.batch.IBatchMonitorAgent;
-import net.sf.appstatus.agent.batch.helpers.NOPBatchMonitor;
-import net.sf.appstatus.agent.batch.helpers.NOPBatchMonitorAgent;
-import net.sf.appstatus.agent.service.IServiceMonitor;
-import net.sf.appstatus.agent.service.IServiceMonitorAgent;
-import net.sf.appstatus.agent.service.helpers.NOPServiceMonitor;
-import net.sf.appstatus.agent.service.helpers.NOPServiceMonitorAgent;
+import net.sf.appstatus.agent.batch.IBatchExecutionMonitor;
+import net.sf.appstatus.agent.batch.IBatchExecutionMonitorAgent;
+import net.sf.appstatus.agent.batch.helpers.NOPBatchExecutionMonitor;
+import net.sf.appstatus.agent.batch.helpers.NOPBatchExecutionMonitorAgent;
+import net.sf.appstatus.agent.service.IServiceStatisticsMonitor;
+import net.sf.appstatus.agent.service.IServiceStatisticsMonitorAgent;
+import net.sf.appstatus.agent.service.helpers.NOPServiceStatisticsMonitor;
+import net.sf.appstatus.agent.service.helpers.NOPServiceStatisticsMonitorAgent;
 import net.sf.appstatus.monitor.Monitor;
 import net.sf.appstatus.monitor.MonitorsPlugin;
-import net.sf.appstatus.monitor.resource.ResourceType;
+import net.sf.appstatus.monitor.ResourceType;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.lang.builder.ToStringStyle;
@@ -147,11 +147,12 @@ public class MonitorFactory<T> {
 				// Load plugin configuration
 				MonitorsPlugin o = (MonitorsPlugin) u.unmarshal(url);
 				for (Monitor monitor : o.getMonitor()) {
-					if (confMonitorsMapByType.containsKey(monitor.getType())) {
+					if (confMonitorsMapByType.containsKey(monitor.getType()
+							.name())) {
 						Map<String, Monitor> confMonitorsMapByName = confMonitorsMapByType
 								.get(monitor.getType());
 						confMonitorsMapByName.put(monitor.getName(), monitor);
-						confMonitorsMapByType.put(monitor.getType(),
+						confMonitorsMapByType.put(monitor.getType().name(),
 								confMonitorsMapByName);
 						logger.warn(
 								"There is multiple implementation of the monitor : {}, the implementation used should be the first found in the classpath : {}",
@@ -166,7 +167,7 @@ public class MonitorFactory<T> {
 						// add the new monitor
 						Map<String, Monitor> confMonitorsMapByName = new HashMap<String, Monitor>();
 						confMonitorsMapByName.put(monitor.getName(), monitor);
-						confMonitorsMapByType.put(monitor.getType(),
+						confMonitorsMapByType.put(monitor.getType().name(),
 								confMonitorsMapByName);
 						logger.info(
 								"New registered monitor :{}-{}({}) with the agent : {}",
@@ -186,19 +187,19 @@ public class MonitorFactory<T> {
 			Class<? extends IMonitorAgent> type, String monitorName,
 			Object[] params) {
 		IMonitorAgent agent = null;
-		if (IServiceMonitorAgent.class.isAssignableFrom(type)) {
+		if (IServiceStatisticsMonitorAgent.class.isAssignableFrom(type)) {
 			agent = newServiceAgentInstance(monitorName, params);
-		} else if (IBatchMonitorAgent.class.isAssignableFrom(type)) {
+		} else if (IBatchExecutionMonitorAgent.class.isAssignableFrom(type)) {
 			agent = newBatchAgentInstance(monitorName, params);
 		}
 		return agent;
 	}
 
-	private static IBatchMonitorAgent newBatchAgentInstance(String monitorName,
+	private static IBatchExecutionMonitorAgent newBatchAgentInstance(String monitorName,
 			Object[] params) {
 		String className = null;
 		Map<String, Monitor> confMonitorsByName = confMonitorsMapByType
-				.get(ResourceType.BATCH.getLabel());
+				.get(ResourceType.BATCH.name());
 		if (confMonitorsByName != null && !confMonitorsByName.isEmpty()) {
 			if (monitorName.equals(DEFAULT_MONITOR_NAME)) {
 				// retrieve the first agent
@@ -212,26 +213,26 @@ public class MonitorFactory<T> {
 				logger.error(
 						"The specified agent implementation : {} is not registered in the factory. Returning a NOP Agent.",
 						monitorName);
-				return NOPBatchMonitorAgent.NOP_BATCH_AGENT;
+				return NOPBatchExecutionMonitorAgent.NOP_BATCH_AGENT;
 			}
 		} else {
-			return NOPBatchMonitorAgent.NOP_BATCH_AGENT;
+			return NOPBatchExecutionMonitorAgent.NOP_BATCH_AGENT;
 		}
 		// instanciation
-		IBatchMonitorAgent agent = null;
+		IBatchExecutionMonitorAgent agent = null;
 		Class<?>[] constructorParamsTypes = new Class<?>[params.length];
 		for (int i = 0; i < params.length; i++) {
 			constructorParamsTypes[i] = params[i].getClass();
 		}
 		try {
-			agent = (IBatchMonitorAgent) Class.forName(className)
+			agent = (IBatchExecutionMonitorAgent) Class.forName(className)
 					.getConstructor(constructorParamsTypes).newInstance(params);
 		} catch (Exception e) {
 			logger.error(
 					"Error during the initialisation of a service monitor agent class : {}, params : {}, cause : {}",
 					new Object[] { className, params, e });
 			logger.info("Return a NOP agent");
-			agent = NOPBatchMonitorAgent.NOP_BATCH_AGENT;
+			agent = NOPBatchExecutionMonitorAgent.NOP_BATCH_AGENT;
 		}
 		return agent;
 	}
@@ -240,7 +241,7 @@ public class MonitorFactory<T> {
 			Object[] params) {
 		String className = null;
 		Map<String, Monitor> confMonitorsByName = confMonitorsMapByType
-				.get(ResourceType.BATCH.getLabel());
+				.get(ResourceType.BATCH.name());
 		if (confMonitorsByName != null && !confMonitorsByName.isEmpty()) {
 			if (monitorName.equals(DEFAULT_MONITOR_NAME)) {
 				// retrieve the first monitor
@@ -253,26 +254,26 @@ public class MonitorFactory<T> {
 				logger.error(
 						"The specified monitor implementation : {} is not registered in the factory. Returning a NOP Monitor.",
 						monitorName);
-				return NOPBatchMonitor.NOP_BATCH_MONITOR;
+				return NOPBatchExecutionMonitor.NOP_BATCH_MONITOR;
 			}
 		} else {
-			return NOPBatchMonitor.NOP_BATCH_MONITOR;
+			return NOPBatchExecutionMonitor.NOP_BATCH_MONITOR;
 		}
 		// instanciation
-		IBatchMonitor monitor = null;
+		IBatchExecutionMonitor monitor = null;
 		Class<?>[] constructorParamsTypes = new Class<?>[params.length];
 		for (int i = 0; i < params.length; i++) {
 			constructorParamsTypes[i] = params[i].getClass();
 		}
 		try {
-			monitor = (IBatchMonitor) Class.forName(className)
+			monitor = (IBatchExecutionMonitor) Class.forName(className)
 					.getConstructor(constructorParamsTypes).newInstance(params);
 		} catch (Exception e) {
 			logger.error(
 					"Error during the initialisation of a service monitor class : {}, params : {}, cause : {}",
 					new Object[] { className, params, e });
 			logger.info("Return a NOP monitor");
-			monitor = NOPBatchMonitor.NOP_BATCH_MONITOR;
+			monitor = NOPBatchExecutionMonitor.NOP_BATCH_MONITOR;
 		}
 		return monitor;
 	}
@@ -280,19 +281,19 @@ public class MonitorFactory<T> {
 	private static IMonitor newMonitorInstance(Class<? extends IMonitor> type,
 			String monitorName, Object[] params) {
 		IMonitor monitor = null;
-		if (IServiceMonitor.class.isAssignableFrom(type)) {
+		if (IServiceStatisticsMonitor.class.isAssignableFrom(type)) {
 			monitor = newServiceMonitorInstance(monitorName, params);
-		} else if (IBatchMonitor.class.isAssignableFrom(type)) {
+		} else if (IBatchExecutionMonitor.class.isAssignableFrom(type)) {
 			monitor = newBatchMonitorInstance(monitorName, params);
 		}
 		return monitor;
 	}
 
-	private static IServiceMonitorAgent newServiceAgentInstance(
+	private static IServiceStatisticsMonitorAgent newServiceAgentInstance(
 			String monitorName, Object[] params) {
 		String className = null;
 		Map<String, Monitor> confMonitorsByName = confMonitorsMapByType
-				.get(ResourceType.SERVICE.getLabel());
+				.get(ResourceType.SERVICE.name());
 		if (confMonitorsByName != null && !confMonitorsByName.isEmpty()) {
 			if (monitorName.equals(DEFAULT_MONITOR_NAME)) {
 				// retrieve the first agent
@@ -306,26 +307,26 @@ public class MonitorFactory<T> {
 				logger.error(
 						"The specified agent implementation : {} is not registered in the factory. Returning a NOP Agent.",
 						monitorName);
-				return NOPServiceMonitorAgent.NOP_SERVICE_AGENT;
+				return NOPServiceStatisticsMonitorAgent.NOP_SERVICE_AGENT;
 			}
 		} else {
-			return NOPServiceMonitorAgent.NOP_SERVICE_AGENT;
+			return NOPServiceStatisticsMonitorAgent.NOP_SERVICE_AGENT;
 		}
 		// instanciation
-		IServiceMonitorAgent agent = null;
+		IServiceStatisticsMonitorAgent agent = null;
 		Class<?>[] constructorParamsTypes = new Class<?>[params.length];
 		for (int i = 0; i < params.length; i++) {
 			constructorParamsTypes[i] = params[i].getClass();
 		}
 		try {
-			agent = (IServiceMonitorAgent) Class.forName(className)
+			agent = (IServiceStatisticsMonitorAgent) Class.forName(className)
 					.getConstructor(constructorParamsTypes).newInstance(params);
 		} catch (Exception e) {
 			logger.error(
 					"Error during the initialisation of a service monitor agent class : {}, params : {}, cause : {}",
 					new Object[] { className, params, e });
 			logger.info("Return a NOP agent");
-			agent = NOPServiceMonitorAgent.NOP_SERVICE_AGENT;
+			agent = NOPServiceStatisticsMonitorAgent.NOP_SERVICE_AGENT;
 		}
 		return agent;
 	}
@@ -334,7 +335,7 @@ public class MonitorFactory<T> {
 			Object[] params) {
 		String className = null;
 		Map<String, Monitor> confMonitorsByName = confMonitorsMapByType
-				.get(ResourceType.SERVICE.getLabel());
+				.get(ResourceType.SERVICE.name());
 		if (confMonitorsByName != null && !confMonitorsByName.isEmpty()) {
 			if (monitorName.equals(DEFAULT_MONITOR_NAME)) {
 				// retrieve the first monitor
@@ -347,26 +348,26 @@ public class MonitorFactory<T> {
 				logger.error(
 						"The specified monitor implementation : {} is not registered in the factory. Returning a NOP Monitor.",
 						monitorName);
-				return NOPServiceMonitor.NOP_SERVICE_AGENT_MONITOR;
+				return NOPServiceStatisticsMonitor.NOP_SERVICE_AGENT_MONITOR;
 			}
 		} else {
-			return NOPServiceMonitor.NOP_SERVICE_AGENT_MONITOR;
+			return NOPServiceStatisticsMonitor.NOP_SERVICE_AGENT_MONITOR;
 		}
 		// instanciation
-		IServiceMonitor monitor = null;
+		IServiceStatisticsMonitor monitor = null;
 		Class<?>[] constructorParamsTypes = new Class<?>[params.length];
 		for (int i = 0; i < params.length; i++) {
 			constructorParamsTypes[i] = params[i].getClass();
 		}
 		try {
-			monitor = (IServiceMonitor) Class.forName(className)
+			monitor = (IServiceStatisticsMonitor) Class.forName(className)
 					.getConstructor(constructorParamsTypes).newInstance(params);
 		} catch (Exception e) {
 			logger.error(
 					"Error during the initialisation of a service monitor class : {}, params : {}, cause : {}",
 					new Object[] { className, params, e });
 			logger.info("Return a NOP monitor");
-			monitor = NOPServiceMonitor.NOP_SERVICE_AGENT_MONITOR;
+			monitor = NOPServiceStatisticsMonitor.NOP_SERVICE_AGENT_MONITOR;
 		}
 		return monitor;
 	}

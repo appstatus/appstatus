@@ -5,14 +5,14 @@ import static org.mockito.Mockito.mock;
 import java.util.Date;
 import java.util.List;
 
-import net.sf.appstatus.agent.batch.IBatchMonitor;
-import net.sf.appstatus.agent.batch.IBatchMonitorAgent;
+import net.sf.appstatus.agent.batch.IBatchExecutionMonitor;
+import net.sf.appstatus.agent.batch.IBatchExecutionMonitorAgent;
 
-public class MockBatchMonitorAgent implements IBatchMonitorAgent, IBatchMonitor {
+public class MockBatchMonitorAgent implements IBatchExecutionMonitorAgent, IBatchExecutionMonitor {
 
-	private final IBatchMonitorAgent mockAgent = mock(IBatchMonitorAgent.class);
+	private final IBatchExecutionMonitorAgent mockAgent = mock(IBatchExecutionMonitorAgent.class);
 
-	private final IBatchMonitor mockMonitor = mock(IBatchMonitor.class);
+	private final IBatchExecutionMonitor mockMonitor = mock(IBatchExecutionMonitor.class);
 
 	private final String batchName;
 
@@ -25,7 +25,7 @@ public class MockBatchMonitorAgent implements IBatchMonitorAgent, IBatchMonitor 
 		mockAgent.beginTask(name, group, description, totalWork);
 	}
 
-	public IBatchMonitorAgent createSubTask(int work) {
+	public IBatchExecutionMonitorAgent createSubTask(int work) {
 		return mockAgent.createSubTask(work);
 	}
 

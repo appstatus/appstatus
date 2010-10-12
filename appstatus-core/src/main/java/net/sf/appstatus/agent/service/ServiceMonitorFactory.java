@@ -26,28 +26,28 @@ import net.sf.appstatus.agent.MonitorFactory;
 public final class ServiceMonitorFactory {
 
 	/**
-	 * Return a new {@link IServiceMonitor} instance.
+	 * Return a new {@link IServiceStatisticsMonitor} instance.
 	 * 
 	 * @param serviceName
 	 *            service name
-	 * @return a new {@link IServiceMonitor} instance
+	 * @return a new {@link IServiceStatisticsMonitor} instance
 	 */
-	public static IServiceMonitor getMonitor(String serviceName) {
+	public static IServiceStatisticsMonitor getMonitor(String serviceName) {
 		return getMonitor(MonitorFactory.DEFAULT_MONITOR_NAME, serviceName);
 	}
 
 	/**
-	 * Return a new {@link IServiceMonitor} instance.
+	 * Return a new {@link IServiceStatisticsMonitor} instance.
 	 * 
 	 * @param monitorName
 	 *            monitor name
 	 * @param serviceName
 	 *            service name
-	 * @return a new {@link IServiceMonitor} instance
+	 * @return a new {@link IServiceStatisticsMonitor} instance
 	 */
-	public static IServiceMonitor getMonitor(String monitorName,
+	public static IServiceStatisticsMonitor getMonitor(String monitorName,
 			String serviceName) {
-		return MonitorFactory.getMonitor(IServiceMonitor.class, monitorName,
+		return MonitorFactory.getMonitor(IServiceStatisticsMonitor.class, monitorName,
 				serviceName);
 	}
 

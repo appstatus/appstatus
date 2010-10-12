@@ -13,29 +13,27 @@
  */
 package net.sf.appstatus;
 
-import java.io.InputStream;
 import java.net.URL;
-import java.util.ArrayList;
 import java.util.Enumeration;
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
 import java.util.Set;
-import java.util.TreeMap;
+
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.Unmarshaller;
 
 import net.sf.appstatus.core.IObjectInstantiationListener;
-import net.sf.appstatus.monitor.IStatusApplicationResourceMonitor;
-import net.sf.appstatus.monitor.resource.IStatusResource;
-import net.sf.appstatus.monitor.resource.ResourceType;
-import net.sf.appstatus.monitor.resource.batch.IScheduledJobDetail;
-import net.sf.appstatus.monitor.resource.batch.IStatusExecutedJobResource;
-import net.sf.appstatus.monitor.resource.batch.IStatusJobResource;
-import net.sf.appstatus.monitor.resource.batch.impl.StatusJobResource;
-import net.sf.appstatus.monitor.resource.impl.StatusResource;
-import net.sf.appstatus.monitor.resource.service.IStatusServiceResource;
-import net.sf.appstatus.monitor.resource.service.impl.StatusServiceResource;
+import net.sf.appstatus.monitor.Checker;
+import net.sf.appstatus.monitor.Detail;
+import net.sf.appstatus.monitor.DetailType;
+import net.sf.appstatus.monitor.IStatusResourcesMonitor;
+import net.sf.appstatus.monitor.Properties;
+import net.sf.appstatus.monitor.Resource;
+import net.sf.appstatus.monitor.ResourceType;
+import net.sf.appstatus.monitor.Resources;
+import net.sf.appstatus.monitor.resource.IStatusResourceMonitor;
+import net.sf.appstatus.monitor.resource.batch.impl.BatchStatusResourceMonitor;
+import net.sf.appstatus.monitor.resource.impl.BasicStatusResourceMonitor;
+import net.sf.appstatus.monitor.resource.service.impl.ServiceStatusResourceMonitor;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -44,38 +42,32 @@ import org.slf4j.LoggerFactory;
  * @author Nicolas Richeton
  * 
  */
-public class StatusService implements IStatusApplicationResourceMonitor {
-	private static final String CONFIG_LOCATION = "status-check.properties";
+public class StatusService implements IStatusResourcesMonitor {
+	private static final String CONFIG_LOCATION = "monitored-resources.xml";
 
 	private static Logger logger = LoggerFactory.getLogger(StatusService.class);
 
 	private IObjectInstantiationListener objectInstanciationListener = null;
-	private final List<IPropertyProvider> propertyProviders;
-	private final Set<IStatusResource> monitoredResources;
+
+	private Set<IStatusResourceMonitor> monitoredResources;
+
 	private IServletContextProvider servletContextProvider = null;
 
 	/**
 	 * Status Service creator.
 	 */
 	public StatusService() {
-		monitoredResources = new HashSet<IStatusResource>();
-		propertyProviders = new ArrayList<IPropertyProvider>();
+		monitoredResources = new HashSet<IStatusResourceMonitor>();
 	}
 
-	public Map<String, Map<String, String>> getConfiguration() {
-		TreeMap<String, Map<String, String>> categories = new TreeMap<String, Map<String, String>>();
-
-		for (IPropertyProvider provider : propertyProviders) {
-			if (categories.get(provider.getCategory()) == null) {
-				categories.put(provider.getCategory(),
-						new TreeMap<String, String>());
-			}
-
-			Map<String, String> l = categories.get(provider.getCategory());
-
-			l.putAll(provider.getProperties());
-		}
-		return categories;
+	public int getGlobalStatus() {
+		// for (IStatusResourceMonitor monitoredResource : monitoredResources) {
+		// if (IStatusResult.OK != monitoredResource.getStatus().getCode()) {
+		// return IStatusResult.ERROR;
+		// }
+		// }
+		// return IStatusResult.OK;
+		return 0;
 	}
 
 	private Object getInstance(String className) throws InstantiationException,
@@ -93,49 +85,16 @@ public class StatusService implements IStatusApplicationResourceMonitor {
 
 	}
 
-	public List<IStatusExecutedJobResource> getLastExecutedJobsStatus() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	public Set<IStatusResource> getMonitoredResourcesStatus() {
+	public Set<IStatusResourceMonitor> getMonitoredResourcesStatus() {
 		return monitoredResources;
-	}
-
-	public List<IScheduledJobDetail> getNextFiredJobs() {
-		// TODO Auto-generated method stub
-		return null;
 	}
 
 	public IObjectInstantiationListener getObjectInstanciationListener() {
 		return objectInstanciationListener;
 	}
 
-	public String getRessourceName() {
-		String resourceName = "ROOT";
-		IServletContextProvider servletProvider = getServletContext();
-		if (servletProvider != null) {
-			resourceName = servletProvider.getServletContext().getServerInfo();
-		}
-		return resourceName;
-	}
-
-	public Set<IStatusJobResource> getRunningJobsStatus() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
 	public IServletContextProvider getServletContext() {
 		return servletContextProvider;
-	}
-
-	public int getStatus() {
-		for (IStatusResource monitoredResource : monitoredResources) {
-			if (IStatusResult.OK != monitoredResource.getStatus().getCode()) {
-				return IStatusResult.ERROR;
-			}
-		}
-		return IStatusResult.OK;
 	}
 
 	public void init() {
@@ -143,110 +102,123 @@ public class StatusService implements IStatusApplicationResourceMonitor {
 			// Load and init all probes
 			Enumeration<URL> configFiles;
 
-			configFiles = StatusService.class.getClassLoader().getResources(
-					CONFIG_LOCATION);
+			// Load and init all probes
+			ClassLoader classLoader = StatusService.class.getClassLoader();
+			if (classLoader == null) {
+				configFiles = ClassLoader.getSystemResources(CONFIG_LOCATION);
+			} else {
+				configFiles = classLoader.getResources(CONFIG_LOCATION);
+			}
 
 			if (configFiles == null) {
 				return;
 			}
 
 			URL url = null;
-			Properties p = null;
-			InputStream is = null;
-			Map<String, IStatusResource> mapResource = new HashMap<String, IStatusResource>();
+			monitoredResources = new HashSet<IStatusResourceMonitor>();
+			JAXBContext jc = JAXBContext
+					.newInstance("net.sf.appstatus.monitor");
+			Unmarshaller u = jc.createUnmarshaller();
 			while (configFiles.hasMoreElements()) {
 				url = configFiles.nextElement();
 
-				// Load plugin configuration
-				p = new Properties();
-				is = url.openStream();
-				p.load(is);
-				is.close();
-
-				Set<Object> keys = p.keySet();
-				String name = null;
-				for (Object key : keys) {
-					name = (String) key;
-					if (name.startsWith("resource.check")) {
-						String clazz = (String) p.get(name);
-						IStatusChecker check = (IStatusChecker) getInstance(clazz);
-						if (check instanceof IServletContextAware) {
-							((IServletContextAware) check)
-									.setServletContext(servletContextProvider
-											.getServletContext());
-						}
-						String realName = name.substring("resource.check."
-								.length());
-						IStatusResource resource = new StatusResource(realName,
-								ResourceType.DEFAULT.getLabel(), check);
-						monitoredResources.add(resource);
-						logger.info(
-								"Registered status resource {} with checker : {}",
-								resource.getName(), clazz);
-					} else if (name.startsWith("property")) {
-						String clazz = (String) p.get(name);
-						IPropertyProvider provider = (IPropertyProvider) getInstance(clazz);
-						propertyProviders.add(provider);
-						if (provider instanceof IServletContextAware
-								&& servletContextProvider != null) {
-							((IServletContextAware) provider)
-									.setServletContext(servletContextProvider
-											.getServletContext());
-						}
-						// else : guess is if we don't have the servlet context
-						// now, we will
-						// later.
-						logger.info("Registered property provider " + clazz);
-					} else if (name.startsWith("service.class")) {
-						String clazz = (String) p.get(name);
-						String realName = name.substring("service.class."
-								.length());
-						IStatusServiceResource resource = new StatusServiceResource(
-								clazz, realName);
-						mapResource.put(realName, resource);
-						logger.info(
-								"Registered service resource : {}, class={}",
-								realName, clazz);
-					} else if (name.startsWith("service.check")) {
-						String realName = name.substring("service.check."
-								.length());
-						String clazz = (String) p.get(name);
-						if (mapResource.containsKey(realName)) {
-							IStatusChecker check = (IStatusChecker) getInstance(clazz);
+				// Load service configuration
+				// Load resource configuration
+				Resources o = (Resources) u.unmarshal(url);
+				for (Resource resource : o.getResource()) {
+					// init the checker set
+					Set<IStatusChecker> statusCheckers = null;
+					if (resource.getStatus() != null) {
+						statusCheckers = new HashSet<IStatusChecker>();
+						for (Checker checker : resource.getStatus()
+								.getChecker()) {
+							IStatusChecker check = (IStatusChecker) getInstance(checker
+									.getClazz());
 							if (check instanceof IServletContextAware) {
 								((IServletContextAware) check)
 										.setServletContext(servletContextProvider
 												.getServletContext());
 							}
-							StatusServiceResource resource = (StatusServiceResource) mapResource
-									.get(realName);
-							resource.setStatusChecker(check);
-							mapResource.put(realName, resource);
-							logger.info(
-									"Add status checker ({}) to a registered service ({})",
-									clazz, realName);
-						} else {
-							logger.error(
-									"A checker ({}) is configured for an unregistered service ({}). This configuration is discarded.",
-									clazz, realName);
+							statusCheckers.add(check);
 						}
-					} else if (name.startsWith("batch.name")) {
-						String jobName = (String) p.get(name);
-						String uid = name.substring("batch.name.".length());
-						IStatusJobResource resource = new StatusJobResource(
-								uid, jobName);
-						mapResource.put(uid, resource);
-						logger.info("Registered batch resource : {}, name={}",
-								uid, jobName);
 					}
-					// add all the registered resource
-					monitoredResources.addAll(mapResource.values());
+
+					// init the property provider set
+					Set<IPropertyProvider> propertyProviders = null;
+					if (resource.getConfiguration() != null) {
+						propertyProviders = new HashSet<IPropertyProvider>();
+						for (Properties property : resource.getConfiguration()
+								.getProperties()) {
+							IPropertyProvider provider = (IPropertyProvider) getInstance(property
+									.getClazz());
+							if (provider instanceof IServletContextAware
+									&& servletContextProvider != null) {
+								((IServletContextAware) provider)
+										.setServletContext(servletContextProvider
+												.getServletContext());
+							}
+							propertyProviders.add(provider);
+						}
+					}
+
+					if (resource.getType().equals(ResourceType.BASIC)) {
+						monitoredResources.add(new BasicStatusResourceMonitor(
+								resource.getId(), resource.getName(), resource
+										.getType().name(), statusCheckers,
+								propertyProviders));
+					} else if (resource.getType().equals(ResourceType.SERVICE)) {
+						String statisticsMonitorName = null;
+						if (!resource.getDetails().getDetail().isEmpty()) {
+							statisticsMonitorName = resource.getDetails()
+									.getDetail().get(0).getMonitor();
+						}
+						monitoredResources
+								.add(new ServiceStatusResourceMonitor(resource
+										.getId(), resource.getName(), resource
+										.getType().name(), statusCheckers,
+										propertyProviders,
+										statisticsMonitorName));
+					} else if (resource.getType().equals(ResourceType.BATCH)) {
+						String nextMonitorName = null;
+						String executionMonitorName = null;
+						String historyMonitorName = null;
+						if (!resource.getDetails().getDetail().isEmpty()) {
+							// retrieve the monitor configured
+							for (Detail detail : resource.getDetails()
+									.getDetail()) {
+								if (detail.getType().equals(
+										DetailType.EXECUTION.name())) {
+									executionMonitorName = detail.getMonitor();
+								} else if (detail.getType().equals(
+										DetailType.NEXT.name())) {
+									nextMonitorName = detail.getMonitor();
+								} else if (detail.getType().equals(
+										DetailType.HISTORY.name())) {
+									historyMonitorName = detail.getMonitor();
+								} else {
+									logger.info(
+											"The detail configuration {} of the resource ({}) is unknown by the system. This detail configuration is ignored.",
+											new Object[] { detail.getType(),
+													resource.getId() });
+								}
+							}
+						}
+						monitoredResources.add(new BatchStatusResourceMonitor(
+								resource.getId(), resource.getName(), resource
+										.getType().name(), statusCheckers,
+								propertyProviders, executionMonitorName,
+								historyMonitorName, nextMonitorName));
+					} else {
+						logger.info(
+								"The configured resource ({}) type [{}] is unknow by the system. This resource is ignored.",
+								new Object[] { resource.getId(),
+										resource.getType().name() });
+					}
 				}
 			}
 		} catch (Exception e) {
 			logger.error("Initialization error", e);
 		}
-
 	}
 
 	public void setObjectInstanciationListener(

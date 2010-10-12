@@ -36,11 +36,11 @@ import javax.servlet.http.HttpServletResponse;
 import net.sf.appstatus.IServletContextProvider;
 import net.sf.appstatus.IStatusResult;
 import net.sf.appstatus.StatusService;
-import net.sf.appstatus.monitor.resource.IStatusResource;
+import net.sf.appstatus.monitor.resource.IStatusResourceMonitor;
 import net.sf.appstatus.monitor.resource.ResourceType;
 import net.sf.appstatus.monitor.resource.batch.IStatusJobExecutionResource;
 import net.sf.appstatus.monitor.resource.batch.IStatusJobResource;
-import net.sf.appstatus.monitor.resource.service.IStatusServiceResource;
+import net.sf.appstatus.monitor.resource.service.IStatusServiceResourceMonitor;
 
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
@@ -150,8 +150,8 @@ public class StatusServlet extends HttpServlet {
 		os.write("<tr><th></th><th>Name</th><th>Description</th><th>Code</th><th>Resolution</th><th>Details</th></tr>"
 				.getBytes(ENCODING));
 
-		for (IStatusResource resource : status.getMonitoredResourcesStatus()) {
-			if (resource.getType().equals(ResourceType.JOB.getLabel())) {
+		for (IStatusResourceMonitor resource : status.getMonitoredResourcesStatus()) {
+			if (resource.getType().equals(ResourceType.BATCH.getLabel())) {
 				IStatusResult r = resource.getStatus();
 				generateRow(
 						os,
@@ -223,7 +223,7 @@ public class StatusServlet extends HttpServlet {
 		os.write("<tr><th></th><th>Name</th><th>Description</th><th>Code</th><th>Resolution</th></tr>"
 				.getBytes(ENCODING));
 
-		for (IStatusResource resource : status.getMonitoredResourcesStatus()) {
+		for (IStatusResourceMonitor resource : status.getMonitoredResourcesStatus()) {
 			if (resource.getType().equals(ResourceType.DEFAULT.getLabel())) {
 				IStatusResult r = resource.getStatus();
 				generateRow(os, getStatus(r), resource.getName(),
@@ -294,7 +294,7 @@ public class StatusServlet extends HttpServlet {
 		os.write("<tr><th></th><th>Name</th><th>Description</th><th>Code</th><th>Resolution</th><th>Statistics</th></tr>"
 				.getBytes(ENCODING));
 
-		for (IStatusResource resource : status.getMonitoredResourcesStatus()) {
+		for (IStatusResourceMonitor resource : status.getMonitoredResourcesStatus()) {
 			if (resource.getType().equals(ResourceType.SERVICE.getLabel())) {
 				IStatusResult r = resource.getStatus();
 				generateRow(
@@ -304,14 +304,14 @@ public class StatusServlet extends HttpServlet {
 						r.getDescription(),
 						String.valueOf(r.getCode()),
 						r.getResolutionSteps(),
-						generateServiceResourceStatistics((IStatusServiceResource) resource));
+						generateServiceResourceStatistics((IStatusServiceResourceMonitor) resource));
 			}
 		}
 		os.write("</table>".getBytes(ENCODING));
 	}
 
 	private String generateServiceResourceStatistics(
-			IStatusServiceResource resource) {
+			IStatusServiceResourceMonitor resource) {
 		StringBuilder statistics = new StringBuilder();
 		statistics.append("<table>");
 		statistics

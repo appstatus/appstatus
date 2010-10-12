@@ -31,69 +31,75 @@ import org.slf4j.LoggerFactory;
  * @author Nicolas Richeton (Capgemini)
  * 
  */
-public class WarMavenVersionProvider extends AbstractPropertyProvider implements IServletContextAware {
+public class WarMavenVersionProvider extends AbstractPropertyProvider implements
+		IServletContextAware {
 
-  private static final String NOT_AVAILABLE = "Not available";
-private static final String ARTIFACT_ID = "artifactId";
-  private static final String CATEGORY = "maven";
-  private static final String GROUP_ID = "groupId";
-  private static Logger logger = LoggerFactory.getLogger(WarMavenVersionProvider.class);
-  private static final String VERSION = "version";
-  private ServletContext servletContext = null;
+	private static final String NOT_AVAILABLE = "Not available";
+	private static final String ARTIFACT_ID = "artifactId";
+	private static final String CATEGORY = "maven";
+	private static final String GROUP_ID = "groupId";
+	private static Logger logger = LoggerFactory
+			.getLogger(WarMavenVersionProvider.class);
+	private static final String VERSION = "version";
+	private ServletContext servletContext = null;
 
-  /**
-   * {@inheritDoc}
-   * 
-   * @see net.sf.appstatus.IPropertyProvider#getCategory()
-   */
-  public String getCategory() {
-    return CATEGORY;
-  }
+	/**
+	 * {@inheritDoc}
+	 * 
+	 * @see net.sf.appstatus.IPropertyProvider#getCategory()
+	 */
+	public String getCategory() {
+		return CATEGORY;
+	}
 
-  /**
-   * {@inheritDoc}
-   * 
-   * @see net.sf.appstatus.IPropertyProvider#getProperties()
-   */
-  public Map<String, String> getProperties() {
-    InputStream url = null;
-    Properties pomProperties = null;
-    Map<String, String> prop = new HashMap<String, String>();
-    if (this.servletContext != null) {
-      try {
-        url = servletContext.getResourceAsStream(servletContext
-            .getResourcePaths((String) servletContext.getResourcePaths("/META-INF/maven/").iterator().next())
-            .iterator().next()
-            + "pom.properties");
-        if (url != null) {
-          pomProperties = new Properties();
-          pomProperties.load(url);
-          url.close();
-        }
-      } catch (Exception e) {
-        logger.warn("Error getting maven information from /META-INF/maven/*", e);
-      }
-      if (pomProperties == null) {
-        prop.put(VERSION, NOT_AVAILABLE);
-        prop.put(GROUP_ID, NOT_AVAILABLE);
-        prop.put(ARTIFACT_ID, NOT_AVAILABLE);
-      } else {
-        prop.put(VERSION, pomProperties.getProperty(VERSION));
-        prop.put(GROUP_ID, pomProperties.getProperty(GROUP_ID));
-        prop.put(ARTIFACT_ID, pomProperties.getProperty(ARTIFACT_ID));
-      }
-    }
+	/**
+	 * {@inheritDoc}
+	 * 
+	 * @see net.sf.appstatus.IPropertyProvider#getProperties()
+	 */
+	public Map<String, String> getProperties() {
+		InputStream url = null;
+		Properties pomProperties = null;
+		Map<String, String> prop = new HashMap<String, String>();
+		if (this.servletContext != null) {
+			try {
+				url = servletContext.getResourceAsStream(servletContext
+						.getResourcePaths(
+								(String) servletContext
+										.getResourcePaths("/META-INF/maven/")
+										.iterator().next()).iterator().next()
+						+ "pom.properties");
+				if (url != null) {
+					pomProperties = new Properties();
+					pomProperties.load(url);
+					url.close();
+				}
+			} catch (Exception e) {
+				logger.warn(
+						"Error getting maven information from /META-INF/maven/*",
+						e);
+			}
+			if (pomProperties == null) {
+				prop.put(VERSION, NOT_AVAILABLE);
+				prop.put(GROUP_ID, NOT_AVAILABLE);
+				prop.put(ARTIFACT_ID, NOT_AVAILABLE);
+			} else {
+				prop.put(VERSION, pomProperties.getProperty(VERSION));
+				prop.put(GROUP_ID, pomProperties.getProperty(GROUP_ID));
+				prop.put(ARTIFACT_ID, pomProperties.getProperty(ARTIFACT_ID));
+			}
+		}
 
-    return prop;
-  }
+		return prop;
+	}
 
-  /**
-   * {@inheritDoc}
-   * 
-   * @see net.sf.appstatus.IServletContextAware#setServletContext(javax.servlet.ServletContext)
-   */
-  public void setServletContext(ServletContext servletContext) {
-    this.servletContext = servletContext;
-  }
+	/**
+	 * {@inheritDoc}
+	 * 
+	 * @see net.sf.appstatus.IServletContextAware#setServletContext(javax.servlet.ServletContext)
+	 */
+	public void setServletContext(ServletContext servletContext) {
+		this.servletContext = servletContext;
+	}
 
 }

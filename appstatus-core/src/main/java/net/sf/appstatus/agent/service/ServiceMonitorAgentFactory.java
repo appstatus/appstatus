@@ -32,7 +32,7 @@ public final class ServiceMonitorAgentFactory {
 	 *            service name
 	 * @return agent used to monitor
 	 */
-	public static IServiceMonitorAgent getAgent(String serviceName) {
+	public static IServiceStatisticsMonitorAgent getAgent(String serviceName) {
 		return getAgent(MonitorFactory.DEFAULT_MONITOR_NAME, serviceName);
 	}
 
@@ -43,9 +43,9 @@ public final class ServiceMonitorAgentFactory {
 	 *            service name
 	 * @return agent used to monitor
 	 */
-	public static IServiceMonitorAgent getAgent(String monitorName,
+	public static IServiceStatisticsMonitorAgent getAgent(String monitorName,
 			String serviceName) {
-		return MonitorFactory.getAgent(IServiceMonitorAgent.class, monitorName,
+		return MonitorFactory.getAgent(IServiceStatisticsMonitorAgent.class, monitorName,
 				serviceName);
 	}
 

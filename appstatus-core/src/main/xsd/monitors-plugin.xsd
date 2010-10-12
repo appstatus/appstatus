@@ -1,25 +1,27 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified">
-  <xs:element name="monitors-plugin">
-    <xs:complexType>
-      <xs:sequence>
-        <xs:element maxOccurs="unbounded" ref="monitor"/>
-      </xs:sequence>
-    </xs:complexType>
-  </xs:element>
-  <xs:element name="monitor">
-    <xs:complexType>
-      <xs:sequence>
-        <xs:element ref="agent"/>
-      </xs:sequence>
-      <xs:attribute name="class" use="required" type="xs:string"/>
-      <xs:attribute name="name" use="required" type="xs:string"/>
-      <xs:attribute name="type" use="required" type="xs:string"/>
-    </xs:complexType>
-  </xs:element>
-  <xs:element name="agent">
-    <xs:complexType>
-      <xs:attribute name="class" use="required" type="xs:string"/>
-    </xs:complexType>
-  </xs:element>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:common="http://appstatus.sourceforge.net/common/"
+	elementFormDefault="qualified">
+	<xs:import namespace="http://appstatus.sourceforge.net/common/" schemaLocation="common.xsd"/>
+	<xs:element name="monitors-plugin">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element maxOccurs="unbounded" ref="monitor" />
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="monitor">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="agent" />
+			</xs:sequence>
+			<xs:attribute name="class" use="required" type="xs:string" />
+			<xs:attribute name="name" use="required" type="xs:string" />
+			<xs:attribute name="type" use="required" type="common:resourceType" />
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="agent">
+		<xs:complexType>
+			<xs:attribute name="class" use="required" type="xs:string" />
+		</xs:complexType>
+	</xs:element>
 </xs:schema>

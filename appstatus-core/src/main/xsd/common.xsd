@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+	elementFormDefault="qualified" targetNamespace="http://appstatus.sourceforge.net/common/">
+	<xs:simpleType name="resourceType">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="BASIC" />
+			<xs:enumeration value="BATCH" />
+			<xs:enumeration value="SERVICE" />
+		</xs:restriction>
+	</xs:simpleType>
+</xs:schema>

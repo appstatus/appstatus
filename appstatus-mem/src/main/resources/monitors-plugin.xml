@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<monitors-plugin>
+	<monitor name="batch-progress-mem" class="net.sf.appstatus.agent.batch.impl.MemJobProgressMonitorAgent" type="BATCH">
+		<agent class="net.sf.appstatus.agent.batch.impl.MemJobProgressMonitorAgent"/>
+	</monitor>
+	
+	<monitor name="service-mem" class="net.sf.appstatus.agent.batch.impl.MemServiceMonitorAgent" type="SERVICE">
+		<agent class="net.sf.appstatus.agent.batch.impl.MemServiceMonitorAgent"/>
+	</monitor>
+</monitors-plugin>
