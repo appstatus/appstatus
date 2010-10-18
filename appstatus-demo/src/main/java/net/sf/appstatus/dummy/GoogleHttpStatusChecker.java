@@ -15,31 +15,31 @@
  */
 package net.sf.appstatus.dummy;
 
-import net.sf.appstatus.IStatusResult;
 import net.sf.appstatus.annotations.AppCheckMethod;
 import net.sf.appstatus.check.impl.AbstractHttpStatusChecker;
+import net.sf.appstatus.check.impl.StatusResult;
 
 public class GoogleHttpStatusChecker extends AbstractHttpStatusChecker {
 
   @AppCheckMethod
-	public IStatusResult checkStatus() {
-		IStatusResult result = null;
+  public StatusResult checkStatus() {
+    StatusResult result = null;
 
-		try {
-			this.doHttpGet("http://www.google.com");
-			result = createResult(OK);
-			result.setDescription("Google Access ok");
-		} catch (Exception e) {
-			result = createResult(FATAL);
-			result.setDescription("Google access failed");
+    try {
+      this.doHttpGet("http://www.google.com");
+      result = createResult(OK);
+      result.setDescription("Google Access ok");
+    } catch (Exception e) {
+      result = createResult(FATAL);
+      result.setDescription("Google access failed");
       result.setResolutionSteps("Your server does not have internet access : " + e.getMessage());
-		}
+    }
 
-		return result;
-	}
+    return result;
+  }
 
-	public String getName() {
-		return "Google Http check";
-	}
+  public String getName() {
+    return "Google Http check";
+  }
 
 }

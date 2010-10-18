@@ -17,41 +17,41 @@ package net.sf.appstatus.dummy;
 
 import java.net.InetAddress;
 
-import net.sf.appstatus.IStatusResult;
 import net.sf.appstatus.annotations.AppCheckMethod;
 import net.sf.appstatus.check.impl.AbstractStatusChecker;
+import net.sf.appstatus.check.impl.StatusResult;
 
 public class GooglePingStatusChecker extends AbstractStatusChecker {
 
   @AppCheckMethod
-	public IStatusResult checkStatus() {
-		IStatusResult result = null;
+  public StatusResult checkStatus() {
+    StatusResult result = null;
 
-		try {
-			InetAddress address = InetAddress.getByName("www.google.com");
+    try {
+      InetAddress address = InetAddress.getByName("www.google.com");
 
-			if (address.isReachable(2000)) {
-				result = createResult(OK);
-				result.setDescription("Google Access ok");
+      if (address.isReachable(2000)) {
+        result = createResult(OK);
+        result.setDescription("Google Access ok");
 
-			} else {
-				throw new Exception("Ping timeout (2000ms)");
-			}
+      } else {
+        throw new Exception("Ping timeout (2000ms)");
+      }
 
-		} catch (Exception e) {
-			result = createResult(WARN);
-			result.setDescription("Google ping failed");
-			result
-					.setResolutionSteps("Ping failed. This means that ICMP messages are blocked by this host. (This may not be an issue) "
-							+ e.getMessage());
+    } catch (Exception e) {
+      result = createResult(WARN);
+      result.setDescription("Google ping failed");
+      result
+          .setResolutionSteps("Ping failed. This means that ICMP messages are blocked by this host. (This may not be an issue) "
+              + e.getMessage());
 
-		}
+    }
 
-		return result;
-	}
+    return result;
+  }
 
-	public String getName() {
-		return "Google Ping check";
-	}
+  public String getName() {
+    return "Google Ping check";
+  }
 
 }

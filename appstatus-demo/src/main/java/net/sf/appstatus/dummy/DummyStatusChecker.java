@@ -15,32 +15,37 @@
  */
 package net.sf.appstatus.dummy;
 
-import net.sf.appstatus.IStatusResult;
+import static net.sf.appstatus.check.impl.StatusResult.ERROR;
 import net.sf.appstatus.annotations.AppCheckMethod;
 import net.sf.appstatus.check.impl.AbstractHttpStatusChecker;
-import net.sf.appstatus.check.impl.StatusResultImpl;
+import net.sf.appstatus.check.impl.StatusResult;
 
 public class DummyStatusChecker extends AbstractHttpStatusChecker {
 
   @AppCheckMethod
-	public IStatusResult checkStatus() {
-		StatusResultImpl result = new StatusResultImpl();
+  public StatusResult checkStatus() {
+    StatusResult result = new StatusResult();
 
-		result.setProbeName(getName());
-    result.setCode(Math.random() > 0.5 ? IStatusResult.OK : IStatusResult.ERROR);
-		if (result.getCode() == IStatusResult.OK) {
-			result.setDescription("Random is good");
-			result.setFatal(false);
-		} else {
-			result.setDescription("Random failed");
+    result.setProbeName(getName());
+    double random = Math.random();
+    if (random < 0.33) {
+      result.setCode(OK);
+    } else if (random > 0.66) {
+      result.setCode(ERROR);
+    } else {
+      result.setCode(FATAL);
+    }
+    if (result.getCode() == OK) {
+      result.setDescription("Random is good");
+    } else {
+      result.setDescription("Random failed");
       result.setResolutionSteps("This probe fails randomly. Please reload the page for better luck.");
-			result.setFatal(true);
-		}
-		return result;
-	}
+    }
+    return result;
+  }
 
-	public String getName() {
-		return "Dummy check";
-	}
+  public String getName() {
+    return "Dummy check";
+  }
 
 }

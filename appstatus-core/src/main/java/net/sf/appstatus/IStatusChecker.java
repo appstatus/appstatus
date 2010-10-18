@@ -15,13 +15,15 @@
  */
 package net.sf.appstatus;
 
+import net.sf.appstatus.check.impl.StatusResult;
+
 /**
  * Interface for status check
  * 
  * @author Nicolas Richeton
  */
 public interface IStatusChecker {
-	IStatusResult checkStatus();
+  StatusResult checkStatus();
 
-	String getName();
+  String getName();
 }

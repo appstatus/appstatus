@@ -21,8 +21,8 @@ import java.util.Map;
 import javax.servlet.ServletContext;
 
 import net.sf.appstatus.IServletContextProvider;
-import net.sf.appstatus.IStatusResult;
 import net.sf.appstatus.StatusService;
+import net.sf.appstatus.check.impl.StatusResult;
 
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
@@ -53,7 +53,7 @@ public class StatusJmx implements ApplicationContextAware, ServletContextAware {
   @ManagedAttribute(description = "Status list", currencyTimeLimit = 15)
   public Map<String, String> getStatus() {
     Map<String, String> statusChecker = new HashMap<String, String>();
-    for (IStatusResult result : statusService.checkAll()) {
+    for (StatusResult result : statusService.checkAll()) {
       statusChecker.put(result.getProbeName(), formatCodeDisplay(result.getCode()));
     }
     return statusChecker;
@@ -63,7 +63,7 @@ public class StatusJmx implements ApplicationContextAware, ServletContextAware {
   public Map<String, List<String>> getFullStatus() {
     Map<String, List<String>> statusChecker = new HashMap<String, List<String>>();
     List<String> statusAttributs = null;
-    for (IStatusResult result : statusService.checkAll()) {
+    for (StatusResult result : statusService.checkAll()) {
       statusAttributs = new ArrayList<String>();
       statusAttributs.add(formatCodeDisplay(result.getCode()));
       statusAttributs.add(result.getDescription());
@@ -82,15 +82,15 @@ public class StatusJmx implements ApplicationContextAware, ServletContextAware {
    * Human readable code format.
    * 
    * @param code
-   * @return the code from {@link IStatusResult} or the int code if not found
+   * @return the code from {@link StatusResult} or the int code if not found
    */
   protected String formatCodeDisplay(int code) {
     String codeDisplay = "";
     switch (code) {
-    case (IStatusResult.ERROR):
+    case (StatusResult.ERROR):
       codeDisplay = "ERROR";
       break;
-    case (IStatusResult.OK):
+    case (StatusResult.OK):
       codeDisplay = "OK";
       break;
     default:

@@ -13,10 +13,19 @@
  * limitations under the License. 
  * 
  */
-package net.sf.appstatus.check.impl;
 
-import net.sf.appstatus.IStatusChecker;
+package net.sf.appstatus.dummy;
 
-public abstract class AbtractRemoteRestChecker implements IStatusChecker {
+import java.util.Collections;
+import java.util.Map;
+
+import net.sf.appstatus.annotations.AppStatusProperties;
+
+public class UnitTestPropertyProvider {
+
+  @AppStatusProperties("Unit Test")
+  public Map<String, String> getMyProperties() {
+    return Collections.singletonMap("version", "1.0-unit test");
+  }
 
 }

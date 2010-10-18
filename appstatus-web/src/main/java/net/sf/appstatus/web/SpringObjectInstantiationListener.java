@@ -30,30 +30,28 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
  * @author Nicolas Richeton
  * 
  */
-public class SpringObjectInstantiationListener implements
-		IObjectInstantiationListener {
-	WebApplicationContext webApplicationContext = null;
+public class SpringObjectInstantiationListener implements IObjectInstantiationListener {
+  WebApplicationContext webApplicationContext = null;
 
-	/**
-	 * Constructor.
-	 * 
-	 * @param context
-	 *            Current servlet context.
-	 */
-	public SpringObjectInstantiationListener(ServletContext context) {
-		webApplicationContext = WebApplicationContextUtils
-				.getRequiredWebApplicationContext(context);
-	}
+  /**
+   * Constructor.
+   * 
+   * @param context
+   *          Current servlet context.
+   */
+  public SpringObjectInstantiationListener(ServletContext context) {
+    webApplicationContext = WebApplicationContextUtils.getRequiredWebApplicationContext(context);
+  }
 
-	public Object getInstance(String className) {
-		Object obj = null;
+  public Object getInstance(String className) {
+    Object obj = null;
 
-		try {
-			obj = webApplicationContext.getBean(className);
-		} catch (BeansException e) {
-		}
+    try {
+      obj = webApplicationContext.getBean(className);
+    } catch (BeansException e) {
+    }
 
-		return obj;
-	}
+    return obj;
+  }
 
 }

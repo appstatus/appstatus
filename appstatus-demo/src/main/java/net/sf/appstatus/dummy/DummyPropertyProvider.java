@@ -19,17 +19,25 @@ import java.util.HashMap;
 import java.util.Map;
 
 import net.sf.appstatus.IPropertyProvider;
+import net.sf.appstatus.annotations.AppStatusProperties;
 
 public class DummyPropertyProvider implements IPropertyProvider {
 
-	public String getCategory() {
-		return "Dummy";
-	}
+  public String getCategory() {
+    return "Dummy";
+  }
 
-	public Map<String, String> getProperties() {
-		HashMap<String, String> hm = new HashMap<String, String>();
-		hm.put("version", "1.0-demo");
-		return hm;
-	}
+  @AppStatusProperties("Dummy")
+  public Map<String, String> getMyProperties() {
+    HashMap<String, String> hm = new HashMap<String, String>();
+    hm.put("version", "1.0-demo");
+    return hm;
+  }
+
+  public Map<String, String> getProperties() {
+    HashMap<String, String> hm = new HashMap<String, String>();
+    hm.put("version", "1.0-demo");
+    return hm;
+  }
 
 }
