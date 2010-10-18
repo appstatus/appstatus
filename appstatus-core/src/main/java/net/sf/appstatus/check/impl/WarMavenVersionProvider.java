@@ -21,6 +21,7 @@ import java.util.Properties;
 import javax.servlet.ServletContext;
 
 import net.sf.appstatus.IServletContextAware;
+import net.sf.appstatus.annotations.AppStatusProperties;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,30 +32,19 @@ import org.slf4j.LoggerFactory;
  * @author Nicolas Richeton (Capgemini)
  * 
  */
-public class WarMavenVersionProvider extends AbstractPropertyProvider implements IServletContextAware {
+public class WarMavenVersionProvider implements IServletContextAware {
 
   private static final String NOT_AVAILABLE = "Not available";
-private static final String ARTIFACT_ID = "artifactId";
-  private static final String CATEGORY = "maven";
+  private static final String ARTIFACT_ID = "artifactId";
   private static final String GROUP_ID = "groupId";
   private static Logger logger = LoggerFactory.getLogger(WarMavenVersionProvider.class);
   private static final String VERSION = "version";
   private ServletContext servletContext = null;
 
   /**
-   * {@inheritDoc}
-   * 
-   * @see net.sf.appstatus.IPropertyProvider#getCategory()
+   * TODO document ME
    */
-  public String getCategory() {
-    return CATEGORY;
-  }
-
-  /**
-   * {@inheritDoc}
-   * 
-   * @see net.sf.appstatus.IPropertyProvider#getProperties()
-   */
+  @AppStatusProperties("maven")
   public Map<String, String> getProperties() {
     InputStream url = null;
     Properties pomProperties = null;

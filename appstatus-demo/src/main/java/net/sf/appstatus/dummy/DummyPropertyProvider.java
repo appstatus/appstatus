@@ -15,29 +15,16 @@
  */
 package net.sf.appstatus.dummy;
 
-import java.util.HashMap;
+import java.util.Collections;
 import java.util.Map;
 
-import net.sf.appstatus.IPropertyProvider;
 import net.sf.appstatus.annotations.AppStatusProperties;
 
-public class DummyPropertyProvider implements IPropertyProvider {
-
-  public String getCategory() {
-    return "Dummy";
-  }
+public class DummyPropertyProvider {
 
   @AppStatusProperties("Dummy")
   public Map<String, String> getMyProperties() {
-    HashMap<String, String> hm = new HashMap<String, String>();
-    hm.put("version", "1.0-demo");
-    return hm;
-  }
-
-  public Map<String, String> getProperties() {
-    HashMap<String, String> hm = new HashMap<String, String>();
-    hm.put("version", "1.0-demo");
-    return hm;
+    return Collections.singletonMap("version", "1.0-demo");
   }
 
 }
