@@ -30,9 +30,10 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import net.sf.appstatus.IServletContextProvider;
-import net.sf.appstatus.IStatusResult;
-import net.sf.appstatus.StatusService;
+import net.sf.appstatus.core.AppStatus;
+import net.sf.appstatus.core.AppStatusStatic;
+import net.sf.appstatus.core.IServletContextProvider;
+import net.sf.appstatus.core.check.ICheckResult;
 
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
@@ -41,9 +42,9 @@ import org.slf4j.LoggerFactory;
 public class StatusServlet extends HttpServlet {
 
 	private static final String ENCODING = "UTF-8";
-	private static Logger logger = LoggerFactory.getLogger(StatusService.class);
+	private static Logger logger = LoggerFactory.getLogger(AppStatus.class);
 	private static final long serialVersionUID = 3912325072098291029L;
-	private static StatusService status = null;
+	private static AppStatus status = null;
 	private static final String STATUS_ERROR = "error";
 	private static final String STATUS_OK = "ok";
 	private static final String STATUS_PROP = "prop";
@@ -78,10 +79,10 @@ public class StatusServlet extends HttpServlet {
 			return;
 		}
 
-		List<IStatusResult> results = status.checkAll();
+		List<ICheckResult> results = status.checkAll();
 		boolean statusOk = true;
 		int statusCode = 200;
-		for (IStatusResult r : results) {
+		for (ICheckResult r : results) {
 			if (r.isFatal()) {
 				resp.setStatus(500);
 				statusCode = 500;
@@ -95,7 +96,7 @@ public class StatusServlet extends HttpServlet {
 
 		ServletOutputStream os = resp.getOutputStream();
 
-		os.write("<html><head".getBytes(ENCODING));
+		os.write("<html><head>".getBytes(ENCODING));
 		os.write(styleSheet.getBytes(ENCODING));
 		os.write("<body>".getBytes(ENCODING));
 		os.write("<h1>Status Page</h1>".getBytes(ENCODING));
@@ -107,7 +108,7 @@ public class StatusServlet extends HttpServlet {
 		os.write("<tr><th></th><th>Name</th><th>Description</th><th>Code</th><th>Resolution</th></tr>"
 				.getBytes(ENCODING));
 
-		for (IStatusResult r : results) {
+		for (ICheckResult r : results) {
 			generateRow(os, getStatus(r), r.getProbeName(), r.getDescription(),
 					String.valueOf(r.getCode()), r.getResolutionSteps());
 		}
@@ -190,13 +191,13 @@ public class StatusServlet extends HttpServlet {
 	 * @param result
 	 * @return
 	 */
-	private String getStatus(IStatusResult result) {
+	private String getStatus(ICheckResult result) {
 
 		if (result.isFatal()) {
 			return STATUS_ERROR;
 		}
 
-		if (result.getCode() == IStatusResult.OK) {
+		if (result.getCode() == ICheckResult.OK) {
 			return STATUS_OK;
 		}
 
@@ -225,7 +226,7 @@ public class StatusServlet extends HttpServlet {
 					e);
 		}
 
-		status = new StatusService();
+		status = AppStatusStatic.getInstance();
 
 		if (useSpring) {
 			status.setObjectInstanciationListener(new SpringObjectInstantiationListener(

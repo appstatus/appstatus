@@ -13,27 +13,41 @@
  * limitations under the License. 
  * 
  */
-package net.sf.appstatus.core;
+package net.sf.appstatus.core.check;
 
 /**
- * Object instantiation listener.
- * 
- * <p>
- * This allows to delegate object creation to a custom class. Can be used to
- * create beans with spring instead of default Class#newInstance().
+ * Status check result.
  * 
  * @author Nicolas Richeton
- * 
  */
-public interface IObjectInstantiationListener {
+public interface ICheckResult {
+
+	int ERROR = -1;
+	int OK = 0;
+
+	int getCode();
+
+	String getDescription();
+
+	String getProbeName();
 
 	/**
-	 * Try to instantiate the 'className' object. If object cannot be created,
-	 * the AppStatus will try to create it by itself.
+	 * On error, should provide some advices on how to solve the issue. (Fix
+	 * values in some property file, ensure remote service is running).
 	 * 
-	 * 
-	 * @param className
-	 * @return object instance or null.
+	 * @return
 	 */
-	Object getInstance(String className);
+	String getResolutionSteps();
+
+	/**
+	 * If true, the application status will be set to ERROR. If false the error
+	 * will be considered as a warning.
+	 * 
+	 * @return
+	 */
+	boolean isFatal();
+
+	void setDescription(String description);
+
+	void setResolutionSteps(String resolutionSteps);
 }

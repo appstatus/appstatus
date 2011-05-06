@@ -1,8 +1,13 @@
 <html>
 <body>
 <h1>AppStatus Demo application</h1>
-<p>
+<ul>
+<li>
 Try my <a href="status">status page</a>.
-</p>
+</li>
+<li>
+Launch the <a href="startBatch">classic batch sample</a>
+</li>
+</ul>
 </body>
 </html>

@@ -1,5 +1,5 @@
 /*
- * Copyright 2010 Capgemini
+ * Copyright 2010 Capgemini and others.
  * Licensed under the Apache License, Version 2.0 (the "License"); 
  * you may not use this file except in compliance with the License. 
  * You may obtain a copy of the License at 
@@ -15,25 +15,16 @@
  */
 package net.sf.appstatus.core;
 
+import javax.servlet.ServletContext;
+
+
 /**
- * Object instantiation listener.
+ * Used to inject {@link ServletContext} in {@link AppStatus}.
  * 
- * <p>
- * This allows to delegate object creation to a custom class. Can be used to
- * create beans with spring instead of default Class#newInstance().
- * 
- * @author Nicolas Richeton
+ * @see AppStatus#setServletContextProvider(IServletContextProvider)
+ * @author Nicolas Richeton (Capgemini)
  * 
  */
-public interface IObjectInstantiationListener {
-
-	/**
-	 * Try to instantiate the 'className' object. If object cannot be created,
-	 * the AppStatus will try to create it by itself.
-	 * 
-	 * 
-	 * @param className
-	 * @return object instance or null.
-	 */
-	Object getInstance(String className);
+public interface IServletContextProvider {
+	ServletContext getServletContext();
 }

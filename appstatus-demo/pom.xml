@@ -30,6 +30,20 @@
     	<type>jar</type>
     	<scope>compile</scope>
     </dependency>
+    <dependency>
+    	<groupId>javax.servlet</groupId>
+    	<artifactId>servlet-api</artifactId>
+    	<version>2.5</version>
+    	<type>jar</type>
+    	<scope>provided</scope>
+    </dependency>
+    <dependency>
+    	<groupId>net.sf.appstatus</groupId>
+    	<artifactId>appstatus-batch-log</artifactId>
+    	<version>0.0.4-SNAPSHOT</version>
+    	<type>jar</type>
+    	<scope>compile</scope>
+    </dependency>
   </dependencies>
   <inceptionYear>2010</inceptionYear>
   <build>
@@ -43,3 +57,4 @@
     </plugins>
   </build>
 </project>
+ 

@@ -1,21 +1,28 @@
 package net.sf.appstatus;
 
-import net.sf.appstatus.check.impl.StatusResultImpl;
+import net.sf.appstatus.core.check.ICheck;
+import net.sf.appstatus.core.check.ICheckResult;
+import net.sf.appstatus.core.check.impl.StatusResultImpl;
 
-public class FakeChecker implements IStatusChecker {
+public class FakeChecker implements ICheck {
 
-  public IStatusResult checkStatus() {
-    StatusResultImpl result = new StatusResultImpl();
-    result.setCode(IStatusResult.OK);
-    result.setFatal(false);
-    result.setProbeName("Unit testing probe");
-    result.setDescription("fake check");
-    result.setResolutionSteps("nothing to do");
-    return result;
-  }
+	public ICheckResult checkStatus() {
+		StatusResultImpl result = new StatusResultImpl();
+		result.setCode(ICheckResult.OK);
+		result.setFatal(false);
+		result.setProbeName("Unit testing probe");
+		result.setDescription("fake check");
+		result.setResolutionSteps("nothing to do");
+		return result;
+	}
 
-  public String getName() {
-    return "FakeChecker";
-  }
+	public String getGroup() {
+
+		return "fake";
+	}
+
+	public String getName() {
+		return "FakeChecker";
+	}
 
 }

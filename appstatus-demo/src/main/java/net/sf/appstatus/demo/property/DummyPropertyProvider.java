@@ -13,27 +13,23 @@
  * limitations under the License. 
  * 
  */
-package net.sf.appstatus.core;
+package net.sf.appstatus.demo.property;
 
-/**
- * Object instantiation listener.
- * 
- * <p>
- * This allows to delegate object creation to a custom class. Can be used to
- * create beans with spring instead of default Class#newInstance().
- * 
- * @author Nicolas Richeton
- * 
- */
-public interface IObjectInstantiationListener {
+import java.util.HashMap;
+import java.util.Map;
 
-	/**
-	 * Try to instantiate the 'className' object. If object cannot be created,
-	 * the AppStatus will try to create it by itself.
-	 * 
-	 * 
-	 * @param className
-	 * @return object instance or null.
-	 */
-	Object getInstance(String className);
+import net.sf.appstatus.core.property.IPropertyProvider;
+
+public class DummyPropertyProvider implements IPropertyProvider {
+
+	public String getCategory() {
+		return "Dummy";
+	}
+
+	public Map<String, String> getProperties() {
+		HashMap<String, String> hm = new HashMap<String, String>();
+		hm.put("id", "webapp-demo");
+		return hm;
+	}
+
 }
