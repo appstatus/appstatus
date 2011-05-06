@@ -70,15 +70,6 @@ public class AppStatus {
 
 	private void addPropertyProvider(String clazz) {
 		IPropertyProvider provider = (IPropertyProvider) getInstance(clazz);
-		if (provider instanceof IServletContextAware
-				&& servletContextProvider != null) {
-			((IServletContextAware) provider)
-					.setServletContext(servletContextProvider
-							.getServletContext());
-		}
-
-		// else : guess is if we don't have the servlet context now, we will
-		// later.
 
 		if (provider != null) {
 			propertyProviders.add(provider);
@@ -145,6 +136,15 @@ public class AppStatus {
 		}
 
 		if (obj != null) {
+
+			// Inject servlet context if possible
+			if (obj instanceof IServletContextAware
+					&& servletContextProvider != null) {
+				((IServletContextAware) obj)
+						.setServletContext(servletContextProvider
+								.getServletContext());
+			}
+
 			return obj;
 		}
 
