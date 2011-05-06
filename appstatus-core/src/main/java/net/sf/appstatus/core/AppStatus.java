@@ -24,8 +24,10 @@ import java.util.Properties;
 import java.util.Set;
 import java.util.TreeMap;
 
+import net.sf.appstatus.core.batch.IBatch;
 import net.sf.appstatus.core.batch.IBatchProgressMonitor;
 import net.sf.appstatus.core.batch.IBatchProgressMonitorFactory;
+import net.sf.appstatus.core.batch.IBatchStorage;
 import net.sf.appstatus.core.check.ICheck;
 import net.sf.appstatus.core.check.ICheckResult;
 import net.sf.appstatus.core.property.IPropertyProvider;
@@ -54,6 +56,7 @@ public class AppStatus {
 	private static final String NOT_INITIALIZED_YET = "Not initialized yet";
 
 	private IBatchProgressMonitorFactory batchProgressMonitorFactory = null;
+	private IBatchStorage batchStorage = null;
 	private boolean initDone = false;
 	private IObjectInstantiationListener objectInstanciationListener = null;
 	protected final List<ICheck> probes;
@@ -117,8 +120,11 @@ public class AppStatus {
 		if (!initDone) {
 			throw new IllegalStateException(NOT_INITIALIZED_YET);
 		}
-
-		return batchProgressMonitorFactory.getMonitor(uuid);
+		IBatch batch = null;
+		if (batchStorage != null) {
+			batch = batchStorage.addBatch(name, group, uuid);
+		}
+		return batchProgressMonitorFactory.getMonitor(uuid, batch);
 	}
 
 	/**
@@ -181,6 +187,10 @@ public class AppStatus {
 		return categories;
 	}
 
+	public List<IBatch> getRunningBatches() {
+		return batchStorage.getRunningBatches();
+	}
+
 	public IServletContextProvider getServletContext() {
 		return servletContextProvider;
 	}
@@ -238,10 +248,18 @@ public class AppStatus {
 				URL url = plugins.nextElement();
 				logger.info(url.toString());
 				Properties p = loadProperties(url);
+
+				// batchProgressMonitorFactory
 				String batchProgressMonitorFactoryClass = p
 						.getProperty("batchProgressMonitorFactory");
 				if (batchProgressMonitorFactoryClass != null) {
 					batchProgressMonitorFactory = (IBatchProgressMonitorFactory) getInstance(batchProgressMonitorFactoryClass);
+				}
+
+				// batchStorage
+				String batchStorageClass = p.getProperty("batchStorage");
+				if (batchStorageClass != null) {
+					batchStorage = (IBatchStorage) getInstance(batchStorageClass);
 				}
 
 			}

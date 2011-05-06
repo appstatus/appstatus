@@ -33,6 +33,7 @@ import javax.servlet.http.HttpServletResponse;
 import net.sf.appstatus.core.AppStatus;
 import net.sf.appstatus.core.AppStatusStatic;
 import net.sf.appstatus.core.IServletContextProvider;
+import net.sf.appstatus.core.batch.IBatch;
 import net.sf.appstatus.core.check.ICheckResult;
 
 import org.apache.commons.io.IOUtils;
@@ -46,6 +47,7 @@ public class StatusServlet extends HttpServlet {
 	private static final long serialVersionUID = 3912325072098291029L;
 	private static AppStatus status = null;
 	private static final String STATUS_ERROR = "error";
+	private static final String STATUS_JOB = "job";
 	private static final String STATUS_OK = "ok";
 	private static final String STATUS_PROP = "prop";
 	private static final String STATUS_WARN = "warn";
@@ -130,6 +132,20 @@ public class StatusServlet extends HttpServlet {
 		}
 
 		os.write("</table>".getBytes(ENCODING));
+
+		os.write("<h2>Batchs</h2>".getBytes(ENCODING));
+		os.write("<table>".getBytes(ENCODING));
+		os.write("<tr><th></th><th>Category</th><th>Name</th><th>Start</th><th>Progress</th><th>End (est.)</th><th>Status</th><th>Task</th><th>Last Msg</th><th>Rejected</th></tr>"
+				.getBytes(ENCODING));
+
+		for (IBatch batch : status.getRunningBatches()) {
+			generateRow(os, STATUS_JOB, batch.getGroup(), batch.getName(),
+					batch.getStartDate(), batch.getProgressStatus() + "%",
+					batch.getEndDate(), batch.getStatus(),
+					batch.getCurrentTask(), batch.getLastMessage(), batch
+							.getRejectedItemsId().size());
+		}
+		os.write("</table>".getBytes(ENCODING));
 		os.write("</body></html>".getBytes(ENCODING));
 	}
 
@@ -152,6 +168,8 @@ public class StatusServlet extends HttpServlet {
 			location = "/org/freedesktop/tango/22x22/status/weather-severe-alert.png";
 		} else if (STATUS_PROP.equals(id)) {
 			location = "/org/freedesktop/tango/22x22/actions/format-justify-fill.png";
+		} else if (STATUS_JOB.equals(id)) {
+			location = "/org/freedesktop/tango/22x22/categories/preferences-system.png";
 		}
 
 		InputStream is = this.getClass().getResourceAsStream(location);

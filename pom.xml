@@ -102,6 +102,7 @@
 		<module>appstatus-demo</module>
 		<module>appstatus-jmx</module>
 		<module>appstatus-batch-log</module>
+		<module>appstatus-batch-inprocess</module>
 	</modules>
 	<reporting>
 		<plugins>

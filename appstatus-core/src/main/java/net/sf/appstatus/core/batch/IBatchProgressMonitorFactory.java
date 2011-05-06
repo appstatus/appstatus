@@ -1,5 +1,5 @@
 package net.sf.appstatus.core.batch;
 
 public interface IBatchProgressMonitorFactory {
-	IBatchProgressMonitor getMonitor(String executionId);
+	IBatchProgressMonitor getMonitor(String executionId, IBatch batch);
 }

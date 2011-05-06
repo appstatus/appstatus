@@ -60,7 +60,7 @@ public class BatchSample implements Runnable {
 				stepMonitor.reject(item, "Test the reject feature", null);
 			} else {
 				try {
-					Thread.sleep(5000);
+					Thread.sleep(500);
 					items.add(item);
 					stepMonitor.message(item + " item added");
 				} catch (InterruptedException e) {
@@ -87,7 +87,6 @@ public class BatchSample implements Runnable {
 				"Write the items in the console output.", items.size());
 		for (String item : items) {
 			stepMonitor.message("Writing item : " + item);
-			System.out.println(item);
 			stepMonitor.worked(1);
 		}
 		stepMonitor.done();
