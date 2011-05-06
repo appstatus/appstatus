@@ -39,9 +39,8 @@
     </dependency>
     <dependency>
     	<groupId>net.sf.appstatus</groupId>
-    	<artifactId>appstatus-batch-log</artifactId>
+    	<artifactId>appstatus-batch-inprocess</artifactId>
     	<version>0.0.4-SNAPSHOT</version>
-    	<type>jar</type>
     	<scope>compile</scope>
     </dependency>
   </dependencies>

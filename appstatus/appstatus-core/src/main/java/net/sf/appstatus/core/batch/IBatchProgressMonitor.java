@@ -118,14 +118,6 @@ public interface IBatchProgressMonitor {
 	void setCurrentItem(Object item);
 
 	/**
-	 * Set the total work amount.
-	 * 
-	 * @param totalWork
-	 *            total work.
-	 */
-	void setTotalWork(int totalWork);
-
-	/**
 	 * Notify the processing of items.
 	 * 
 	 * @param work
