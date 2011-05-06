@@ -20,9 +20,9 @@ import java.util.Map;
 
 import javax.servlet.ServletContext;
 
-import net.sf.appstatus.IServletContextProvider;
-import net.sf.appstatus.IStatusResult;
-import net.sf.appstatus.StatusService;
+import net.sf.appstatus.core.IServletContextProvider;
+import net.sf.appstatus.core.AppStatus;
+import net.sf.appstatus.core.check.ICheckResult;
 
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
@@ -40,7 +40,7 @@ import org.springframework.web.context.ServletContextAware;
 @ManagedResource(objectName = "AppStatus:bean=ServicesStatusChecker")
 public class StatusJmx implements ApplicationContextAware, ServletContextAware {
 
-  private StatusService statusService = null;
+  private AppStatus statusService = null;
 
   private ApplicationContext applicationContext;
 
@@ -53,7 +53,7 @@ public class StatusJmx implements ApplicationContextAware, ServletContextAware {
   @ManagedAttribute(description = "Status list", currencyTimeLimit = 15)
   public Map<String, String> getStatus() {
     Map<String, String> statusChecker = new HashMap<String, String>();
-    for (IStatusResult result : statusService.checkAll()) {
+    for (ICheckResult result : statusService.checkAll()) {
       statusChecker.put(result.getProbeName(), formatCodeDisplay(result.getCode()));
     }
     return statusChecker;
@@ -63,7 +63,7 @@ public class StatusJmx implements ApplicationContextAware, ServletContextAware {
   public Map<String, List<String>> getFullStatus() {
     Map<String, List<String>> statusChecker = new HashMap<String, List<String>>();
     List<String> statusAttributs = null;
-    for (IStatusResult result : statusService.checkAll()) {
+    for (ICheckResult result : statusService.checkAll()) {
       statusAttributs = new ArrayList<String>();
       statusAttributs.add(formatCodeDisplay(result.getCode()));
       statusAttributs.add(result.getDescription());
@@ -82,15 +82,15 @@ public class StatusJmx implements ApplicationContextAware, ServletContextAware {
    * Human readable code format.
    * 
    * @param code
-   * @return the code from {@link IStatusResult} or the int code if not found
+   * @return the code from {@link ICheckResult} or the int code if not found
    */
   protected String formatCodeDisplay(int code) {
     String codeDisplay = "";
     switch (code) {
-    case (IStatusResult.ERROR):
+    case (ICheckResult.ERROR):
       codeDisplay = "ERROR";
       break;
-    case (IStatusResult.OK):
+    case (ICheckResult.OK):
       codeDisplay = "OK";
       break;
     default:
@@ -104,7 +104,7 @@ public class StatusJmx implements ApplicationContextAware, ServletContextAware {
    * If not found look for Spring beans.
    */
   public void init() {
-    statusService = new StatusService();
+    statusService = new AppStatus();
 
     statusService.setObjectInstanciationListener(new SpringBeanInstantiationListener(this.applicationContext));
 
