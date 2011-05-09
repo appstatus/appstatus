@@ -55,8 +55,6 @@ public class AppStatus {
 
 	private static Logger logger = LoggerFactory.getLogger(AppStatus.class);
 
-	private static final String NOT_INITIALIZED_YET = "Not initialized yet";
-
 	private IBatchManager batchManager = null;
 	private boolean initDone = false;
 	private IObjectInstantiationListener objectInstanciationListener = null;
