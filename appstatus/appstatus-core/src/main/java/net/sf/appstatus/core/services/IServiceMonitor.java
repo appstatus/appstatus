@@ -33,23 +33,18 @@ public interface IServiceMonitor {
 	 *            operation parameters
 	 * @return call id
 	 */
-	String beginCall(String operationName, String group, Object[] parameters);
+	void beginCall(Object[] parameters);
 
 	/**
 	 * Reports that a cache system was used instead of performing the actual
 	 * call.
 	 * 
-	 * @param callId
 	 */
-	void cacheHit(String callId);
+	void cacheHit();
 
 	/**
 	 * Notify the end of a call to a service.
 	 * 
-	 * @param operationName
-	 *            operation name
-	 * @param callId
-	 *            call id
 	 */
-	void endCall(String callId);
+	void endCall();
 }

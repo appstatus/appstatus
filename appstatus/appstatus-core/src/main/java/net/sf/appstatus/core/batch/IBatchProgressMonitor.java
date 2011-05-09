@@ -15,6 +15,8 @@
  */
 package net.sf.appstatus.core.batch;
 
+import org.slf4j.Logger;
+
 /**
  * Monitor dedicated to monitor a job execution.
  * <p>
@@ -116,6 +118,8 @@ public interface IBatchProgressMonitor {
 	 *            current processed item
 	 */
 	void setCurrentItem(Object item);
+
+	void setLogger(Logger logger);
 
 	/**
 	 * Notify the processing of items.

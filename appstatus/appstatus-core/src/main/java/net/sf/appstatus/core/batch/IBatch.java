@@ -52,6 +52,8 @@ public interface IBatch {
 
 	String getName();
 
+	IBatchProgressMonitor getProgressMonitor();
+
 	/**
 	 * Retrieve the current progress status of the job execution.
 	 * 
@@ -95,4 +97,5 @@ public interface IBatch {
 	 */
 	String getUuid();
 
+	void setProgressMonitor(IBatchProgressMonitor monitor);
 }

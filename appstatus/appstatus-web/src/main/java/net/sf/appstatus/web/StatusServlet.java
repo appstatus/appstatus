@@ -35,6 +35,7 @@ import net.sf.appstatus.core.AppStatusStatic;
 import net.sf.appstatus.core.IServletContextProvider;
 import net.sf.appstatus.core.batch.IBatch;
 import net.sf.appstatus.core.check.ICheckResult;
+import net.sf.appstatus.core.services.IService;
 
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
@@ -146,6 +147,19 @@ public class StatusServlet extends HttpServlet {
 							.getRejectedItemsId().size());
 		}
 		os.write("</table>".getBytes(ENCODING));
+
+		os.write("<h2>Services</h2>".getBytes(ENCODING));
+		os.write("<table>".getBytes(ENCODING));
+		os.write("<tr><th></th><th>Category</th><th>Name</th><th>Hits</th><th>Cache</th><th>Running</th></tr>"
+				.getBytes(ENCODING));
+
+		for (IService service : status.getServices()) {
+			generateRow(os, STATUS_JOB, service.getGroup(), service.getName(),
+					service.getHits(), service.getCacheHits(),
+					service.getRunning());
+		}
+		os.write("</table>".getBytes(ENCODING));
+
 		os.write("</body></html>".getBytes(ENCODING));
 	}
 

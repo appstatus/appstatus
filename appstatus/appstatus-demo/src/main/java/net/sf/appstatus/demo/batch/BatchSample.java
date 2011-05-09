@@ -21,6 +21,10 @@ import java.util.UUID;
 
 import net.sf.appstatus.core.AppStatusStatic;
 import net.sf.appstatus.core.batch.IBatchProgressMonitor;
+import net.sf.appstatus.core.services.IServiceMonitor;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Classic sample batch.
@@ -29,6 +33,7 @@ import net.sf.appstatus.core.batch.IBatchProgressMonitor;
  * 
  */
 public class BatchSample implements Runnable {
+	private static Logger logger = LoggerFactory.getLogger(BatchSample.class);
 
 	/**
 	 * Sample batch.
@@ -54,7 +59,12 @@ public class BatchSample implements Runnable {
 		List<String> items = new ArrayList<String>();
 		String item = null;
 		for (int i = 0; i < 100; i++) {
+			IServiceMonitor monitor = AppStatusStatic.getInstance()
+					.getServiceMonitor("Dummy service", "dummy");
+
+			monitor.beginCall(null);
 			item = "item" + i;
+			monitor.endCall();
 			stepMonitor.setCurrentItem(item);
 			if (i % 5 == 0) {
 				stepMonitor.reject(item, "Test the reject feature", null);
@@ -86,6 +96,8 @@ public class BatchSample implements Runnable {
 		stepMonitor.beginTask("step2", "SampleGroup",
 				"Write the items in the console output.", items.size());
 		for (String item : items) {
+			AppStatusStatic.getInstance().getServiceMonitor("Console Write",
+					"Console");
 			stepMonitor.message("Writing item : " + item);
 			stepMonitor.worked(1);
 		}
@@ -98,6 +110,7 @@ public class BatchSample implements Runnable {
 				.getBatchProgressMonitor("Sample job", "sample",
 						UUID.randomUUID().toString());
 
+		jobMonitor.setLogger(logger);
 		// start the job
 		jobMonitor.beginTask("sample", "SampleGroup", "A batch sample", 2);
 

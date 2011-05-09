@@ -1,4 +1,4 @@
-package net.sf.appstatus.batch;
+package net.sf.appstatus.core.batch;
 
 /*
  * Copyright 2010 Capgemini
@@ -16,8 +16,6 @@ package net.sf.appstatus.batch;
  * 
  */
 
-import net.sf.appstatus.core.batch.IBatchProgressMonitor;
-import net.sf.appstatus.core.batch.IBatchProgressMonitorExt;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,35 +27,54 @@ import org.slf4j.LoggerFactory;
  * @author Nicolas Richeton
  * 
  */
-public class LogBatchProgressMonitor implements IBatchProgressMonitorExt {
+public abstract class AbstractBatchProgressMonitor implements
+		IBatchProgressMonitorExt {
 
 	private static final long DEFAULT_WRITING_DELAY = 5000;
 
 	private static Logger logger = LoggerFactory
-			.getLogger(LogBatchProgressMonitor.class);
+			.getLogger(AbstractBatchProgressMonitor.class);
 
-	private final String executionId;
+	/**
+	 * Reference to the batch description
+	 */
+	private IBatch batch;
+	protected IBatchProgressMonitor currentChild;
 
+	protected int currentChildWork = 0;
+
+	/**
+	 * Current item being processed
+	 */
+	protected Object currentItem;
+
+	protected boolean done = false;
+	protected final String executionId;
 	private long lastItemWriteTimestamp;
 
+	private String lastMessage;
 	private long lastMessageWriteTimestamp;
-	private String lastMessage ;
 
 	private long lastWorkedWriteTimestamp;
 
 	private String name;
 
-	private IBatchProgressMonitor parent;
-
+	protected AbstractBatchProgressMonitor parent;
 	private int parentWork;
 
-	private int rejected;
+	private int rejected = 0;
 
-	private long startTimestamp;
+	protected long startTime;
 
-	private int totalWork;
+	private String taskDescription;
 
-	private int worked;
+	private String taskGroup;
+
+	protected String taskName;
+
+	protected int totalWork = UNKNOW;
+
+	protected int worked = 0;
 
 	private long writingDelay = DEFAULT_WRITING_DELAY;
 
@@ -67,8 +84,11 @@ public class LogBatchProgressMonitor implements IBatchProgressMonitorExt {
 	 * @param executionId
 	 *            job execution id
 	 */
-	public LogBatchProgressMonitor(String executionId) {
+	public AbstractBatchProgressMonitor(String executionId, IBatch batch) {
 		this.executionId = executionId;
+		this.batch = batch;
+		this.batch.setProgressMonitor(this);
+		startTime = System.currentTimeMillis();
 	}
 
 	/**
@@ -81,10 +101,10 @@ public class LogBatchProgressMonitor implements IBatchProgressMonitorExt {
 	 * @param parentWork
 	 *            parent amount of work
 	 */
-	private LogBatchProgressMonitor(String executionId,
-			IBatchProgressMonitor parent, int parentWork) {
+	protected AbstractBatchProgressMonitor(String executionId,
+			IBatchProgressMonitor parent, int parentWork, IBatch batch) {
 		this.executionId = executionId;
-		this.parent = parent;
+		this.parent = (AbstractBatchProgressMonitor) parent;
 		this.parentWork = parentWork;
 	}
 
@@ -95,18 +115,22 @@ public class LogBatchProgressMonitor implements IBatchProgressMonitorExt {
 			int totalWork) {
 		this.name = name;
 		this.totalWork = totalWork;
-		this.startTimestamp = System.currentTimeMillis();
-		logger.info(
-				"Start task <{}>-<{}> ({}), id : {} timstamp : {}, totalWork : {}",
+		this.taskName = name;
+		this.taskGroup = group;
+		this.taskDescription = description;
+		getLogger().info(
+				"Start task <{}>-<{}> ({}), id : {}, totalWork : {}",
 				new Object[] { group, name, description, executionId,
-						startTimestamp, String.valueOf(totalWork) });
+						String.valueOf(totalWork) });
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	public IBatchProgressMonitor createSubTask(int work) {
-		return new LogBatchProgressMonitor(executionId, this, work);
+		currentChild = newInstance(work);
+		currentChildWork = work;
+		return currentChild;
 	}
 
 	/**
@@ -115,12 +139,50 @@ public class LogBatchProgressMonitor implements IBatchProgressMonitorExt {
 	public void done() {
 		if (parent != null) {
 			parent.worked(parentWork);
+			parent.currentChild = null;
+			parent.currentChildWork = -1;
 		}
-		logger.info(
-				"End task <{}> [totalTime : {} ms, total items : {}, processed : {}, rejected : {}]",
-				new Object[] { name,
-						System.currentTimeMillis() - startTimestamp, totalWork,
-						worked, rejected });
+
+		currentItem = null;
+		done = true;
+
+		getLogger()
+				.info("End task <{}> [totalTime : {} ms, total items : {}, processed : {}, rejected : {}]",
+						new Object[] { name,
+								System.currentTimeMillis() - startTime,
+								totalWork, worked, rejected });
+	}
+
+	public IBatch getBatch() {
+		return batch;
+	}
+
+	public Object getCurrentItem() {
+		return currentItem;
+	}
+
+	public String getLastMessage() {
+		return lastMessage;
+	}
+
+	protected Logger getLogger() {
+		return logger;
+	}
+
+	public float getProgress() {
+		return worked;
+	};
+
+	public String getTaskDescription() {
+		return taskDescription;
+	}
+
+	public String getTaskGroup() {
+		return taskGroup;
+	}
+
+	public String getTaskName() {
+		return taskName;
 	}
 
 	/**
@@ -128,6 +190,14 @@ public class LogBatchProgressMonitor implements IBatchProgressMonitorExt {
 	 */
 	public int getTotalWork() {
 		return this.totalWork;
+	}
+
+	public boolean isCancelRequested() {
+		return false;
+	}
+
+	public boolean isDone() {
+		return done;
 	}
 
 	/**
@@ -151,18 +221,23 @@ public class LogBatchProgressMonitor implements IBatchProgressMonitorExt {
 	public void message(String message) {
 		if (isLoggable(lastMessageWriteTimestamp)) {
 			lastMessageWriteTimestamp = System.currentTimeMillis();
-			logger.info("Task <{}> message : {}", name, message);
+			getLogger().info("Task <{}> message : {}", name, message);
 		}
 		lastMessage = message;
+		if (parent != null) {
+			parent.lastMessage = message;
+		}
 	}
+
+	protected abstract IBatchProgressMonitor newInstance(int work);
 
 	/**
 	 * {@inheritDoc}
 	 */
 	public void reject(Object item, String reason, String getIdMethod) {
 		rejected++;
-		logger.info("Task <{}> rejected item : {}. reason : {}", new Object[] {
-				name, item, reason });
+		getLogger().info("Task <{}> rejected item : {}. reason : {}",
+				new Object[] { name, item, reason });
 	}
 
 	/**
@@ -170,19 +245,25 @@ public class LogBatchProgressMonitor implements IBatchProgressMonitorExt {
 	 */
 	public void reject(Object[] items, String reason, String getIdMethod) {
 		rejected = rejected + items.length;
-		logger.info("Task <{}> rejected items : {}. reason : {}", new Object[] {
-				name, items, reason });
+		getLogger().info("Task <{}> rejected items : {}. reason : {}",
+				new Object[] { name, items, reason });
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	public void setCurrentItem(Object item) {
+		currentItem = item;
+
 		if (isLoggable(lastItemWriteTimestamp)) {
 			lastItemWriteTimestamp = System.currentTimeMillis();
-			logger.info("Task <{}> current item : {}", name, item);
+			getLogger().info("Task <{}> current item : {}", name, item);
 		}
 
+	}
+
+	public void setLogger(Logger logger) {
+		this.logger = logger;
 	}
 
 	/**
@@ -207,22 +288,11 @@ public class LogBatchProgressMonitor implements IBatchProgressMonitorExt {
 	 */
 	public void worked(int work) {
 		worked = worked + work;
+
 		if (isLoggable(lastWorkedWriteTimestamp)) {
 			lastWorkedWriteTimestamp = System.currentTimeMillis();
-			logger.info("Task <{}> worked on {} items", name, worked);
+			getLogger().info("Task <{}> worked on {} items", name, worked);
 		}
-	}
-
-	public boolean isCancelRequested() {
-		return false;
-	}
-
-	public String getLastMessage() {
-		return lastMessage;
-	}
-
-	public float getProgress() {
-		return worked;
 	}
 
 }

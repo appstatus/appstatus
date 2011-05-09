@@ -5,9 +5,9 @@ import java.util.Vector;
 
 import net.sf.appstatus.core.batch.IBatch;
 import net.sf.appstatus.core.batch.IBatchProgressMonitor;
-import net.sf.appstatus.core.batch.IBatchStorage;
+import net.sf.appstatus.core.batch.IBatchManager;
 
-public class InProcessBatchStorage implements IBatchStorage {
+public class InProcessBatchManager implements IBatchManager {
 
 	List<IBatch> runningBatches = new Vector<IBatch>();
 
@@ -26,6 +26,10 @@ public class InProcessBatchStorage implements IBatchStorage {
 
 	public List<IBatch> getFinishedBatches() {
 		return runningBatches;
+	}
+	
+	public IBatchProgressMonitor getMonitor( IBatch batch) {
+		return new InProcessBatchProgressMonitor(batch.getUuid(), batch);
 	}
 
 }

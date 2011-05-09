@@ -5,6 +5,7 @@ import java.util.Date;
 import java.util.List;
 
 import net.sf.appstatus.core.batch.IBatch;
+import net.sf.appstatus.core.batch.IBatchProgressMonitor;
 
 public class Batch implements IBatch {
 	String uuid;
@@ -14,9 +15,6 @@ public class Batch implements IBatch {
 	Date startDate = new Date();
 	InProcessBatchProgressMonitor monitor;
 
-	public void setMonitor(InProcessBatchProgressMonitor monitor) {
-		this.monitor = monitor;
-	}
 
 	public String getUuid() {
 		return uuid;
@@ -77,6 +75,16 @@ public class Batch implements IBatch {
 
 	public String getCurrentItem() {
 		return monitor.getCurrentItem().toString();
+	}
+
+
+
+	public void setProgressMonitor(IBatchProgressMonitor monitor) {
+		this.monitor = (InProcessBatchProgressMonitor)monitor;
+	}
+
+	public IBatchProgressMonitor getProgressMonitor() {
+		return monitor;
 	}
  
 }
