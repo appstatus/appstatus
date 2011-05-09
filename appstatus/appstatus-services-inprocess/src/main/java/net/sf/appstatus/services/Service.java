@@ -20,14 +20,17 @@ public class Service implements IService {
 		this.hits = hits;
 	}
 
-	long avrResponseTime;
-	long cacheHits;
-	long hits;
-	long running;
-	long maxResponseTime;
-	long minResponseTime;
-	String name;
-	String group;
+	protected double avgResponseTime = 0;
+	protected double avgResponseTimeWithCache = 0;
+	protected long cacheHits;
+	protected long hits;
+	protected long running;
+	protected Long maxResponseTime;
+	protected Long minResponseTimeWithCache;
+	protected Long maxResponseTimeWithCache;
+	protected Long minResponseTime;
+	protected String name;
+	protected String group;
 
 	public String getName() {
 		return name;
@@ -45,8 +48,8 @@ public class Service implements IService {
 		this.group = group;
 	}
 
-	public long getAvrResponseTime() {
-		return avrResponseTime;
+	public Double getAvgResponseTime() {
+		return avgResponseTime;
 	}
 
 	public long getCacheHits() {
@@ -57,12 +60,24 @@ public class Service implements IService {
 		return hits;
 	}
 
-	public long getMaxResponseTime() {
+	public Long getMaxResponseTime() {
 		return maxResponseTime;
 	}
 
-	public long getMinResponseTime() {
+	public Long getMinResponseTime() {
 		return minResponseTime;
+	}
+
+	public Double getAvgResponseTimeWithCache() {
+		return avgResponseTimeWithCache;
+	}
+
+	public Long getMaxResponseTimeWithCache() {
+		return maxResponseTimeWithCache;
+	}
+
+	public Long getMinResponseTimeWithCache() {
+		return minResponseTimeWithCache;
 	}
 
 }

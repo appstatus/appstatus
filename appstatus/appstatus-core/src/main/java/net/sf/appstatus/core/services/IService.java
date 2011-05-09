@@ -21,7 +21,9 @@ package net.sf.appstatus.core.services;
  */
 public interface IService {
 
-	long getAvrResponseTime();
+	Double getAvgResponseTime();
+
+	Double getAvgResponseTimeWithCache();
 
 	long getCacheHits();
 
@@ -29,9 +31,13 @@ public interface IService {
 
 	long getHits();
 
-	long getMaxResponseTime();
+	Long getMaxResponseTime();
 
-	long getMinResponseTime();
+	Long getMaxResponseTimeWithCache();
+
+	Long getMinResponseTime();
+
+	Long getMinResponseTimeWithCache();
 
 	String getName();
 

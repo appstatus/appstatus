@@ -31,7 +31,7 @@ public class ServiceCall implements IServiceMonitor {
 		return startTime;
 	}
 
-	public void beginCall(Object[] parameters) {
+	public void beginCall(Object... parameters) {
 		this.parameters = parameters;
 		service.hits++;
 		service.running++;
@@ -40,9 +40,35 @@ public class ServiceCall implements IServiceMonitor {
 	public void endCall() {
 		endTime = System.currentTimeMillis();
 
-		// don't store parameters
-		this.parameters = null;
 		service.running--;
+		long response = endTime - startTime;
+
+		if (cacheHit) {
+			if (service.maxResponseTimeWithCache == null
+					|| service.maxResponseTimeWithCache < response) {
+				service.maxResponseTimeWithCache = response;
+			}
+
+			if (service.minResponseTimeWithCache == null
+					|| service.minResponseTimeWithCache > response) {
+				service.minResponseTimeWithCache = response;
+			}
+			
+			service.avgResponseTimeWithCache = ( service.avgResponseTimeWithCache * (service.cacheHits -1) + response ) / service.cacheHits;
+		} else {
+			
+			if (service.maxResponseTime == null
+					|| service.maxResponseTime < response) {
+				service.maxResponseTime = response;
+			}
+
+			if (service.minResponseTime == null
+					|| service.minResponseTime > response) {
+				service.minResponseTime = response;
+			}
+			
+			service.avgResponseTime = ( service.avgResponseTime * (service.hits - service.cacheHits -1) + response ) / (service.hits - service.cacheHits);
+		}
 
 	}
 }
