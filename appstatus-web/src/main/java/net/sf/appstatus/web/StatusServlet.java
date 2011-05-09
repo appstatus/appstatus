@@ -150,14 +150,19 @@ public class StatusServlet extends HttpServlet {
 
 		os.write("<h2>Services</h2>".getBytes(ENCODING));
 		os.write("<table>".getBytes(ENCODING));
-		os.write("<tr><th></th><th>Category</th><th>Name</th><th>Hits</th><th>Cache</th><th>Running</th></tr>"
+		os.write("<tr><th></th><th>Category</th><th>Name</th><th>Hits</th><th>Cache</th><th>Running</th><th>min</th><th>max</th><th>avg</th><th>min (Cache)</th><th>max (Cache)</th><th>avg (Cache)</th></tr>"
 				.getBytes(ENCODING));
 
 		for (IService service : status.getServices()) {
 			generateRow(os, STATUS_JOB, service.getGroup(), service.getName(),
 					service.getHits(), service.getCacheHits(),
-					service.getRunning());
+					service.getRunning(), service.getMinResponseTime(),
+					service.getMaxResponseTime(), service.getAvgResponseTime(),
+					service.getMinResponseTimeWithCache(),
+					service.getMaxResponseTimeWithCache(),
+					service.getAvgResponseTimeWithCache());
 		}
+
 		os.write("</table>".getBytes(ENCODING));
 
 		os.write("</body></html>".getBytes(ENCODING));
