@@ -25,12 +25,14 @@ import java.util.Set;
 import java.util.TreeMap;
 
 import net.sf.appstatus.core.batch.IBatch;
+import net.sf.appstatus.core.batch.IBatchManager;
 import net.sf.appstatus.core.batch.IBatchProgressMonitor;
-import net.sf.appstatus.core.batch.IBatchProgressMonitorFactory;
-import net.sf.appstatus.core.batch.IBatchStorage;
 import net.sf.appstatus.core.check.ICheck;
 import net.sf.appstatus.core.check.ICheckResult;
 import net.sf.appstatus.core.property.IPropertyProvider;
+import net.sf.appstatus.core.services.IService;
+import net.sf.appstatus.core.services.IServiceManager;
+import net.sf.appstatus.core.services.IServiceMonitor;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -55,12 +57,12 @@ public class AppStatus {
 
 	private static final String NOT_INITIALIZED_YET = "Not initialized yet";
 
-	private IBatchProgressMonitorFactory batchProgressMonitorFactory = null;
-	private IBatchStorage batchStorage = null;
+	private IBatchManager batchManager = null;
 	private boolean initDone = false;
 	private IObjectInstantiationListener objectInstanciationListener = null;
 	protected final List<ICheck> probes;
 	private final List<IPropertyProvider> propertyProviders;
+	private IServiceManager serviceManager = null;
 	private IServletContextProvider servletContextProvider = null;
 
 	/**
@@ -72,7 +74,7 @@ public class AppStatus {
 	}
 
 	private void addPropertyProvider(String clazz) {
-		IPropertyProvider provider = (IPropertyProvider) getInstance(clazz);
+		IPropertyProvider provider = (IPropertyProvider) getClassInstance(clazz);
 
 		if (provider != null) {
 			propertyProviders.add(provider);
@@ -85,7 +87,7 @@ public class AppStatus {
 	}
 
 	private void addStatusChecker(String clazz) {
-		ICheck check = (ICheck) getInstance(clazz);
+		ICheck check = (ICheck) getClassInstance(clazz);
 		if (check == null) {
 			logger.error(
 					"cannot instanciate class {}, Please configure \"{}\" file properly",
@@ -104,9 +106,8 @@ public class AppStatus {
 	}
 
 	public List<ICheckResult> checkAll() {
-		if (!initDone) {
-			throw new IllegalStateException(NOT_INITIALIZED_YET);
-		}
+		checkInit();
+
 		ArrayList<ICheckResult> statusList = new ArrayList<ICheckResult>();
 		for (ICheck check : probes) {
 			statusList.add(check.checkStatus());
@@ -114,17 +115,24 @@ public class AppStatus {
 		return statusList;
 	}
 
-	public IBatchProgressMonitor getBatchProgressMonitor(String name,
-			String group, String uuid) {
-
+	private void checkInit() {
 		if (!initDone) {
 			throw new IllegalStateException(NOT_INITIALIZED_YET);
 		}
+	}
+
+	public IBatchProgressMonitor getBatchProgressMonitor(String name,
+			String group, String uuid) {
+
+		checkInit();
+
 		IBatch batch = null;
-		if (batchStorage != null) {
-			batch = batchStorage.addBatch(name, group, uuid);
+		if (batchManager != null) {
+			batch = batchManager.addBatch(name, group, uuid);
+			return batchManager.getMonitor(batch);
 		}
-		return batchProgressMonitorFactory.getMonitor(uuid, batch);
+
+		return null;
 	}
 
 	/**
@@ -134,7 +142,7 @@ public class AppStatus {
 	 * @return an object instance of "className" class or null if instantiation
 	 *         is not possible
 	 */
-	private Object getInstance(String className) {
+	private Object getClassInstance(String className) {
 		Object obj = null;
 
 		if (objectInstanciationListener != null) {
@@ -168,9 +176,7 @@ public class AppStatus {
 	}
 
 	public Map<String, Map<String, String>> getProperties() {
-		if (!initDone) {
-			throw new IllegalStateException(NOT_INITIALIZED_YET);
-		}
+		checkInit();
 
 		TreeMap<String, Map<String, String>> categories = new TreeMap<String, Map<String, String>>();
 
@@ -188,7 +194,23 @@ public class AppStatus {
 	}
 
 	public List<IBatch> getRunningBatches() {
-		return batchStorage.getRunningBatches();
+		return batchManager.getRunningBatches();
+	}
+
+	public IServiceMonitor getServiceMonitor(String name, String group) {
+		checkInit();
+
+		IService batch = null;
+		if (serviceManager != null) {
+			batch = serviceManager.getService(name, group);
+			return serviceManager.getMonitor(batch);
+		}
+
+		return null;
+	}
+
+	public List<IService> getServices() {
+		return serviceManager.getServices();
 	}
 
 	public IServletContextProvider getServletContext() {
@@ -249,17 +271,16 @@ public class AppStatus {
 				logger.info(url.toString());
 				Properties p = loadProperties(url);
 
-				// batchProgressMonitorFactory
-				String batchProgressMonitorFactoryClass = p
-						.getProperty("batchProgressMonitorFactory");
-				if (batchProgressMonitorFactoryClass != null) {
-					batchProgressMonitorFactory = (IBatchProgressMonitorFactory) getInstance(batchProgressMonitorFactoryClass);
+				// batchManager
+				String batchManagerClass = p.getProperty("batchManager");
+				if (batchManagerClass != null) {
+					batchManager = (IBatchManager) getClassInstance(batchManagerClass);
 				}
 
-				// batchStorage
-				String batchStorageClass = p.getProperty("batchStorage");
-				if (batchStorageClass != null) {
-					batchStorage = (IBatchStorage) getInstance(batchStorageClass);
+				// serviceManager
+				String serviceManagerClass = p.getProperty("serviceManager");
+				if (serviceManagerClass != null) {
+					serviceManager = (IServiceManager) getClassInstance(serviceManagerClass);
 				}
 
 			}

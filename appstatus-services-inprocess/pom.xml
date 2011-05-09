@@ -6,7 +6,7 @@
     <version>0.0.4-SNAPSHOT</version>
   </parent>
   <groupId>net.sf.appstatus</groupId>
-  <artifactId>appstatus-batch-log</artifactId>
+  <artifactId>appstatus-services-inprocess</artifactId>
   <version>0.0.4-SNAPSHOT</version>
   <dependencies>
   	<dependency>
