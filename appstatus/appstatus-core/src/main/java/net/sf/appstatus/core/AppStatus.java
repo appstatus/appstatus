@@ -117,7 +117,9 @@ public class AppStatus {
 
 	private void checkInit() {
 		if (!initDone) {
-			throw new IllegalStateException(NOT_INITIALIZED_YET);
+			logger.warn("Not initialized. Starting init");
+			init();
+
 		}
 	}
 
@@ -217,10 +219,11 @@ public class AppStatus {
 		return servletContextProvider;
 	}
 
-	public void init() {
+	public synchronized void init() {
 
 		if (initDone) {
-			throw new IllegalStateException("Already initialized");
+			logger.warn("Already initialized");
+			return;
 		}
 
 		try {
