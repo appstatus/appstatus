@@ -33,7 +33,7 @@ public interface IServiceMonitor {
 	 *            operation parameters
 	 * @return call id
 	 */
-	void beginCall(Object[] parameters);
+	void beginCall(Object... parameters);
 
 	/**
 	 * Reports that a cache system was used instead of performing the actual

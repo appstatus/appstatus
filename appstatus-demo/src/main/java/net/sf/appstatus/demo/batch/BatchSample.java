@@ -62,7 +62,7 @@ public class BatchSample implements Runnable {
 			IServiceMonitor monitor = AppStatusStatic.getInstance()
 					.getServiceMonitor("Dummy service", "dummy");
 
-			monitor.beginCall(null);
+			monitor.beginCall("item");
 			item = "item" + i;
 			monitor.endCall();
 			stepMonitor.setCurrentItem(item);
