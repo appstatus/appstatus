@@ -57,7 +57,6 @@ public class StatusServlet extends HttpServlet {
 			+ "table { font-size: 80%; }"
 			+ "table ,th, td {  border: 1px solid black; border-collapse:collapse;}"
 			+ "th { background-color: #DDDDDD; }" + "</style>";
-	private boolean useSpring = false;
 
 	/*
 	 * (non-Javadoc)
@@ -244,7 +243,10 @@ public class StatusServlet extends HttpServlet {
 	@Override
 	public void init() throws ServletException {
 		super.init();
+		String beanName = null;
 		try {
+			beanName = getInitParameter("bean");
+
 			InputStream is = StatusServlet.class
 					.getResourceAsStream("/status-web-conf.properties");
 
@@ -255,7 +257,6 @@ public class StatusServlet extends HttpServlet {
 				p.load(is);
 				is.close();
 				allow = (String) p.get("ip.allow");
-				useSpring = Boolean.parseBoolean((String) p.get("useSpring"));
 			}
 		} catch (Exception e) {
 			logger.error(
@@ -263,11 +264,11 @@ public class StatusServlet extends HttpServlet {
 					e);
 		}
 
-		status = AppStatusStatic.getInstance();
-
-		if (useSpring) {
-			status.setObjectInstanciationListener(new SpringObjectInstantiationListener(
-					this.getServletContext()));
+		if (beanName != null) {
+			status = (AppStatus) (new SpringObjectInstantiationListener(
+					this.getServletContext()).getInstance(beanName));
+		} else {
+			status = AppStatusStatic.getInstance();
 		}
 
 		status.setServletContextProvider(new IServletContextProvider() {
