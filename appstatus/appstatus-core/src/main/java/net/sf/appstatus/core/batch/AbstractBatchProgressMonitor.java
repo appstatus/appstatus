@@ -16,7 +16,6 @@ package net.sf.appstatus.core.batch;
  * 
  */
 
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -31,7 +30,6 @@ public abstract class AbstractBatchProgressMonitor implements
 		IBatchProgressMonitorExt {
 
 	private static final long DEFAULT_WRITING_DELAY = 5000;
-
 	private static Logger logger = LoggerFactory
 			.getLogger(AbstractBatchProgressMonitor.class);
 
