@@ -28,7 +28,7 @@
 
 	<servlet>
 		<servlet-name>startBatch</servlet-name>
-		<servlet-class>net.sf.appstatus.batch.demo.LaunchClassicBatchSampleServlet</servlet-class>
+		<servlet-class>net.sf.appstatus.demo.batch.LaunchClassicBatchSampleServlet</servlet-class>
 	</servlet>
 
 	<servlet-mapping>
