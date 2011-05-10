@@ -71,31 +71,8 @@ public class InProcessBatchProgressMonitor extends AbstractBatchProgressMonitor
 		return (Batch) super.getBatch();
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
-	public void worked(int work) {
-		super.worked(work);
-
-		long seconds = (System.currentTimeMillis() - startTime) / 1000;
-		speed = (float) worked / (float) seconds;
-	}
-
 	protected InProcessBatchProgressMonitor getCurrentChild() {
 		return (InProcessBatchProgressMonitor) currentChild;
-	}
-
-	public float getProgress() {
-		if (currentChild != null && currentChild.getTotalWork() > 0) {
-
-			float childProgress = (float) currentChildWork
-					* (float) getCurrentChild().getProgress()
-					/ (float) currentChild.getTotalWork();
-
-			return (float) worked + childProgress;
-		}
-
-		return worked;
 	}
 
 	public Date getEstimateEndDate() {
@@ -103,8 +80,9 @@ public class InProcessBatchProgressMonitor extends AbstractBatchProgressMonitor
 
 		long elapsed = currentTime - startTime;
 
-		if (totalWork == UNKNOW)
+		if (totalWork == UNKNOW) {
 			return null;
+		}
 
 		long endTime = currentTime
 				+ (long) (totalWork * elapsed / getProgress());
@@ -112,11 +90,35 @@ public class InProcessBatchProgressMonitor extends AbstractBatchProgressMonitor
 		return new Date(endTime);
 	}
 
+	@Override
+	public float getProgress() {
+		if (currentChild != null && currentChild.getTotalWork() > 0) {
+
+			float childProgress = currentChildWork
+					* getCurrentChild().getProgress()
+					/ currentChild.getTotalWork();
+
+			return worked + childProgress;
+		}
+
+		return worked;
+	}
+
+	@Override
 	protected IBatchProgressMonitor newInstance(int work) {
 		return new InProcessBatchProgressMonitor(executionId, this, work,
 				getBatch());
 	}
 
-	
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public void worked(int work) {
+		super.worked(work);
+
+		long seconds = (System.currentTimeMillis() - startTime) / 1000;
+		speed = (float) worked / (float) seconds;
+	}
 
 }
