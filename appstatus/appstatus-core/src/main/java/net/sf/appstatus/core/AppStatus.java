@@ -108,6 +108,7 @@ public class AppStatus {
 
 		ArrayList<ICheckResult> statusList = new ArrayList<ICheckResult>();
 		for (ICheck check : probes) {
+			injectServletContext(check);
 			statusList.add(check.checkStatus());
 		}
 		return statusList;
@@ -149,30 +150,24 @@ public class AppStatus {
 			obj = objectInstanciationListener.getInstance(className);
 		}
 
-		if (obj != null) {
-
-			// Inject servlet context if possible
-			if (obj instanceof IServletContextAware
-					&& servletContextProvider != null) {
-				((IServletContextAware) obj)
-						.setServletContext(servletContextProvider
-								.getServletContext());
+		if (obj == null) {
+			try {
+				obj = Class.forName(className).newInstance();
+			} catch (ClassNotFoundException e) {
+				logger.warn("Class {} not found ", className, e);
+			} catch (InstantiationException e) {
+				logger.warn("Cannot instanciate {} ", className, e);
+			} catch (IllegalAccessException e) {
+				logger.warn("Cannot access class {} for instantiation ",
+						className, e);
 			}
-
-			return obj;
 		}
 
-		try {
-			return Class.forName(className).newInstance();
-		} catch (ClassNotFoundException e) {
-			logger.warn("Class {} not found ", className, e);
-		} catch (InstantiationException e) {
-			logger.warn("Cannot instanciate {} ", className, e);
-		} catch (IllegalAccessException e) {
-			logger.warn("Cannot access class {} for instantiation ", className,
-					e);
+		if (obj != null) {
+			injectServletContext(obj);
 		}
-		return null;
+
+		return obj;
 	}
 
 	public Map<String, Map<String, String>> getProperties() {
@@ -181,13 +176,16 @@ public class AppStatus {
 		TreeMap<String, Map<String, String>> categories = new TreeMap<String, Map<String, String>>();
 
 		for (IPropertyProvider provider : propertyProviders) {
+			injectServletContext(provider);
+
+			// Init Category
 			if (categories.get(provider.getCategory()) == null) {
 				categories.put(provider.getCategory(),
 						new TreeMap<String, String>());
 			}
 
+			// Add all properties
 			Map<String, String> l = categories.get(provider.getCategory());
-
 			l.putAll(provider.getProperties());
 		}
 		return categories;
@@ -261,6 +259,16 @@ public class AppStatus {
 
 		initDone = true;
 
+	}
+
+	private void injectServletContext(Object instance) {
+		// Inject servlet context if possible
+		if (instance instanceof IServletContextAware
+				&& servletContextProvider != null) {
+			((IServletContextAware) instance)
+					.setServletContext(servletContextProvider
+							.getServletContext());
+		}
 	}
 
 	private void loadPlugins() {

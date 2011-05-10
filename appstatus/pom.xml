@@ -103,6 +103,7 @@
 		<module>appstatus-jmx</module>
 		<module>appstatus-batch-inprocess</module>
 		<module>appstatus-services-inprocess</module>
+		<module>appstatus-demo-spring</module>
 	</modules>
 	<reporting>
 		<plugins>
