@@ -4,17 +4,17 @@
 
 <web-app>
 	<display-name>AppStatus Spring Demo Application</display-name>
-	
-	<context-param>
-    <param-name>contextConfigLocation</param-name>
-    <param-value>classpath:spring-*.xml</param-value>
-</context-param>
 
-<listener>
-    <listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
-</listener>
-	
-	
+	<context-param>
+		<param-name>contextConfigLocation</param-name>
+		<param-value>classpath:spring-*.xml</param-value>
+	</context-param>
+
+	<listener>
+		<listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
+	</listener>
+
+
 	<servlet>
 		<servlet-name>status</servlet-name>
 		<servlet-class>net.sf.appstatus.web.StatusServlet</servlet-class>
