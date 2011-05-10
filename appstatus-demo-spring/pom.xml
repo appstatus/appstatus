@@ -60,7 +60,6 @@
     </dependencies>
   <inceptionYear>2010</inceptionYear>
   <build>
-    <finalName>status-demo</finalName>
     <plugins>
     	<plugin>
     		<groupId>org.mortbay.jetty</groupId>
