@@ -1,0 +1,18 @@
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:batch="http://www.springframework.org/schema/batch" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd http://www.springframework.org/schema/batch http://www.springframework.org/schema/batch/spring-batch-2.1.xsd">
+
+	<bean id="appstatus" class="net.sf.appstatus.core.AppStatus"
+		init-method="init" scope="singleton">
+		<property name="objectInstanciationListener" ref="appstatusInstanciation" />
+	</bean>
+
+	<bean id="appstatusInstanciation"
+		class="net.sf.appstatus.core.spring.SpringObjectInstantiationListener"
+		scope="singleton" />
+
+	<bean id="batch" class="net.sf.appstatus.demo.batch.BatchSample">
+		<property name="appstatus" ref="appstatus" />
+	</bean>
+
+</beans>
