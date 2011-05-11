@@ -40,14 +40,12 @@ public interface IBatchProgressMonitor {
 	 * 
 	 * @param name
 	 *            task name
-	 * @param group
-	 *            task group name
 	 * @param description
 	 *            task description
 	 * @param totalWork
 	 *            task amount of work to be done
 	 */
-	void beginTask(String name, String group, String description, int totalWork);
+	void beginTask(String name, String description, int totalWork);
 
 	/**
 	 * Create a sub task of this task with the amount of work the subtask
@@ -63,6 +61,13 @@ public interface IBatchProgressMonitor {
 	 * Set the task is done.
 	 */
 	void done();
+
+	/**
+	 * The batch has failed.
+	 * 
+	 * @param reason
+	 */
+	void fail(String reason);
 
 	/**
 	 * Retrieve the total amount of work for this task.
@@ -90,26 +95,26 @@ public interface IBatchProgressMonitor {
 	/**
 	 * Reject one item during the task processing.
 	 * 
-	 * @param item
-	 *            rejected item
+	 * @param itemId
+	 *            rejected item id
 	 * @param reason
 	 *            the reason
-	 * @param getIdMethod
-	 *            method which can be used to get the id of the rejected item
 	 */
-	void reject(Object item, String reason, String getIdMethod);
+	void reject(String itemId, String reason);
+
+	void reject(String itemId, String reason, Exception e);
 
 	/**
 	 * Reject a set of items during the task processing.
 	 * 
-	 * @param items
-	 *            set of items rejected
+	 * @param itemIds
+	 *            Array of item ids rejected
 	 * @param reason
 	 *            the reason
-	 * @param getIdMethod
-	 *            method which can be used to get the id of the rejected item
 	 */
-	void reject(Object[] items, String reason, String getIdMethod);
+	void reject(String[] itemIds, String reason);
+
+	void reject(String[] itemIds, String reason, Exception e);
 
 	/**
 	 * Set the current item which is being processed.

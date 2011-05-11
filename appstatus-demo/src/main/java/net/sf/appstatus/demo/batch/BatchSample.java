@@ -54,8 +54,7 @@ public class BatchSample implements Runnable {
 	 * @return items
 	 */
 	private static List<String> step1(IBatchProgressMonitor stepMonitor) {
-		stepMonitor.beginTask("step1", "SampleGroup", "Create the item list",
-				100);
+		stepMonitor.beginTask("step1", "Create the item list", 100);
 		List<String> items = new ArrayList<String>();
 		String item = null;
 		for (int i = 0; i < 100; i++) {
@@ -67,14 +66,14 @@ public class BatchSample implements Runnable {
 			monitor.endCall();
 			stepMonitor.setCurrentItem(item);
 			if (i % 5 == 0) {
-				stepMonitor.reject(item, "Test the reject feature", null);
+				stepMonitor.reject(item, "Test the reject feature");
 			} else {
 				try {
 					Thread.sleep(500);
 					items.add(item);
 					stepMonitor.message(item + " item added");
 				} catch (InterruptedException e) {
-					stepMonitor.reject(item, e.getMessage(), null);
+					stepMonitor.reject(item, e.getMessage());
 				}
 			}
 			stepMonitor.worked(1);
@@ -93,8 +92,8 @@ public class BatchSample implements Runnable {
 	 */
 	private static void step2(List<String> items,
 			IBatchProgressMonitor stepMonitor) {
-		stepMonitor.beginTask("step2", "SampleGroup",
-				"Write the items in the console output.", items.size());
+		stepMonitor.beginTask("step2", "Write the items in the console output.",
+				items.size());
 		for (String item : items) {
 			AppStatusStatic.getInstance().getServiceMonitor("Console Write",
 					"Console");
@@ -112,7 +111,7 @@ public class BatchSample implements Runnable {
 
 		jobMonitor.setLogger(logger);
 		// start the job
-		jobMonitor.beginTask("sample", "SampleGroup", "A batch sample", 2);
+		jobMonitor.beginTask("sample", "A batch sample", 2);
 
 		// call step 1 (process 100 items)
 		List<String> items = step1(jobMonitor.createSubTask(1));

@@ -58,11 +58,14 @@ public abstract class AbstractBatchProgressMonitor implements
 	private String name;
 
 	protected AbstractBatchProgressMonitor parent;
+
 	private int parentWork;
 
 	private int rejected = 0;
 
 	protected long startTime;
+
+	private boolean success;
 
 	private String taskDescription;
 
@@ -109,16 +112,14 @@ public abstract class AbstractBatchProgressMonitor implements
 	/**
 	 * {@inheritDoc}
 	 */
-	public void beginTask(String name, String group, String description,
-			int totalWork) {
+	public void beginTask(String name, String description, int totalWork) {
 		this.name = name;
 		this.totalWork = totalWork;
 		this.taskName = name;
-		this.taskGroup = group;
 		this.taskDescription = description;
 		getLogger().info(
-				"Start task <{}>-<{}> ({}), id : {}, totalWork : {}",
-				new Object[] { group, name, description, executionId,
+				"Start task <{}> ({}), id : {}, totalWork : {}",
+				new Object[] { name, description, executionId,
 						String.valueOf(totalWork) });
 	}
 
@@ -135,6 +136,17 @@ public abstract class AbstractBatchProgressMonitor implements
 	 * {@inheritDoc}
 	 */
 	public void done() {
+		endBatch();
+
+		success = true;
+		getLogger()
+				.info("End task <{}> [totalTime : {} ms, total items : {}, processed : {}, rejected : {}]",
+						new Object[] { name,
+								System.currentTimeMillis() - startTime,
+								totalWork, worked, rejected });
+	}
+
+	protected void endBatch() {
 		if (parent != null) {
 			parent.worked(parentWork);
 			parent.currentChild = null;
@@ -143,12 +155,19 @@ public abstract class AbstractBatchProgressMonitor implements
 
 		currentItem = null;
 		done = true;
+	}
 
-		getLogger()
-				.info("End task <{}> [totalTime : {} ms, total items : {}, processed : {}, rejected : {}]",
-						new Object[] { name,
-								System.currentTimeMillis() - startTime,
-								totalWork, worked, rejected });
+	public void fail(String reason) {
+		getLogger().error("Task has success  <{}>-<{}>, id : {}, reason : {}",
+				new Object[] { taskGroup, taskName, executionId, reason });
+
+		message("Failed: " + reason);
+
+		// Mark job as finished
+		endBatch();
+
+		this.success = false;
+
 	}
 
 	public IBatch getBatch() {
@@ -169,7 +188,7 @@ public abstract class AbstractBatchProgressMonitor implements
 
 	public float getProgress() {
 		return worked;
-	};
+	}
 
 	public String getTaskDescription() {
 		return taskDescription;
@@ -181,7 +200,7 @@ public abstract class AbstractBatchProgressMonitor implements
 
 	public String getTaskName() {
 		return taskName;
-	}
+	};
 
 	/**
 	 * {@inheritDoc}
@@ -213,6 +232,10 @@ public abstract class AbstractBatchProgressMonitor implements
 		return false;
 	}
 
+	public boolean isSuccess() {
+		return success;
+	}
+
 	/**
 	 * {@inheritDoc}
 	 */
@@ -232,19 +255,35 @@ public abstract class AbstractBatchProgressMonitor implements
 	/**
 	 * {@inheritDoc}
 	 */
-	public void reject(Object item, String reason, String getIdMethod) {
-		rejected++;
-		getLogger().info("Task <{}> rejected item : {}. reason : {}",
-				new Object[] { name, item, reason });
+	public void reject(String itemId, String reason) {
+		reject(itemId, reason, null);
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
-	public void reject(Object[] items, String reason, String getIdMethod) {
-		rejected = rejected + items.length;
-		getLogger().info("Task <{}> rejected items : {}. reason : {}",
-				new Object[] { name, items, reason });
+	public void reject(String itemId, String reason, Exception e) {
+		rejected++;
+		getLogger().warn("Task <{}> rejected item : {}. reason : {}",
+				new Object[] { name, itemId, reason }, e);
+
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public void reject(String[] itemIds, String reason) {
+		reject(itemIds, reason, null);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public void reject(String[] itemIds, String reason, Exception e) {
+		rejected = rejected + itemIds.length;
+		getLogger().warn("Task <{}> rejected items : {}. reason : {}",
+				new Object[] { name, itemIds, reason }, e);
+
 	}
 
 	/**
