@@ -68,6 +68,10 @@ public class Batch implements IBatch {
 		return uuid;
 	}
 
+	public boolean isSuccess() {
+		return monitor.isSuccess();
+	}
+
 	public void setGroup(String group2) {
 		this.group = group2;
 

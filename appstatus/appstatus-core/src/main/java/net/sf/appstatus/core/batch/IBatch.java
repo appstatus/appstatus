@@ -97,5 +97,7 @@ public interface IBatch {
 	 */
 	String getUuid();
 
+	boolean isSuccess();
+
 	void setProgressMonitor(IBatchProgressMonitor monitor);
 }
