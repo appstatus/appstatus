@@ -36,7 +36,7 @@ public abstract class AbstractBatchProgressMonitor implements
 	/**
 	 * Reference to the batch description
 	 */
-	private IBatch batch;
+	private final IBatch batch;
 	protected IBatchProgressMonitor currentChild;
 
 	protected int currentChildWork = 0;
@@ -107,6 +107,7 @@ public abstract class AbstractBatchProgressMonitor implements
 		this.executionId = executionId;
 		this.parent = (AbstractBatchProgressMonitor) parent;
 		this.parentWork = parentWork;
+		this.batch = batch;
 	}
 
 	/**
