@@ -40,6 +40,7 @@ import net.sf.appstatus.core.services.IService;
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.util.StringUtils;
 
 public class StatusServlet extends HttpServlet {
 
@@ -135,16 +136,19 @@ public class StatusServlet extends HttpServlet {
 
 		os.write("<h2>Batchs</h2>".getBytes(ENCODING));
 		os.write("<table>".getBytes(ENCODING));
-		os.write("<tr><th></th><th>Category</th><th>Name</th><th>Start</th><th>Progress</th><th>End (est.)</th><th>Status</th><th>Task</th><th>Last Msg</th><th>Rejected</th></tr>"
-				.getBytes(ENCODING));
+		os.write(("<tr><th></th><th>Category</th><th>Name</th><th>Start</th><th>Progress</th><th>End (est.)</th>"
+				+ "<th>Status</th><th>Task</th><th>Last Msg</th><th>Rejected</th>"
+				+ "<th>Last Update</th>" + "</tr>").getBytes(ENCODING));
 
 		for (IBatch batch : status.getRunningBatches()) {
 			generateRow(os, STATUS_JOB, batch.getGroup(), batch.getName(),
 					batch.getStartDate(), batch.getProgressStatus() + "%",
 					batch.getEndDate(), batch.getStatus(),
-					batch.getCurrentTask(), batch.getLastMessage(), batch
-							.getRejectedItemsId().size());
+					batch.getCurrentTask(), batch.getLastMessage(),
+					StringUtils.collectionToCommaDelimitedString(batch
+							.getRejectedItemsId()), batch.getLastUpdate());
 		}
+
 		os.write("</table>".getBytes(ENCODING));
 
 		os.write("<h2>Services</h2>".getBytes(ENCODING));

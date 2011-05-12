@@ -23,6 +23,9 @@ import java.util.List;
  * 
  */
 public interface IBatch {
+	String STATUS_FAILURE = "failure";
+	String STATUS_RUNNING = "running";
+	String STATUS_SUCCESS = "success";
 
 	String getCurrentItem();
 
@@ -49,6 +52,8 @@ public interface IBatch {
 	 * @return list of messages
 	 */
 	String getLastMessage();
+
+	Date getLastUpdate();
 
 	String getName();
 

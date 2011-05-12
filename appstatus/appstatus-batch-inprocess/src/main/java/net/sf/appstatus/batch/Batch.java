@@ -1,6 +1,5 @@
 package net.sf.appstatus.batch;
 
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -12,7 +11,6 @@ public class Batch implements IBatch {
 	String group;
 	InProcessBatchProgressMonitor monitor;
 	String name;
-	Date startDate = new Date();
 	String uuid;
 
 	public String getCurrentItem() {
@@ -24,7 +22,7 @@ public class Batch implements IBatch {
 	}
 
 	public Date getEndDate() {
-		return monitor.getEstimateEndDate();
+		return monitor.getEndDate();
 	}
 
 	public String getGroup() {
@@ -33,6 +31,10 @@ public class Batch implements IBatch {
 
 	public String getLastMessage() {
 		return monitor.getLastMessage();
+	}
+
+	public Date getLastUpdate() {
+		return monitor.getLastUpdate();
 	}
 
 	public String getName() {
@@ -52,16 +54,24 @@ public class Batch implements IBatch {
 	}
 
 	public List<String> getRejectedItemsId() {
-
-		return new ArrayList<String>();
+		return monitor.getRejectedItems();
 	}
 
 	public Date getStartDate() {
-		return startDate;
+		return monitor.getStartDate();
 	}
 
 	public String getStatus() {
-		return monitor.isDone() ? "Completed" : "Running";
+
+		if (!monitor.isDone()) {
+			return STATUS_RUNNING;
+		}
+
+		if (monitor.isSuccess()) {
+			return STATUS_SUCCESS;
+		}
+
+		return STATUS_FAILURE;
 	}
 
 	public String getUuid() {
