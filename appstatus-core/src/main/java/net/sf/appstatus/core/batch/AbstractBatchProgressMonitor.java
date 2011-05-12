@@ -95,7 +95,7 @@ public abstract class AbstractBatchProgressMonitor implements
 		this.batch = batch;
 		this.batch.setProgressMonitor(this);
 		startTime = System.currentTimeMillis();
-		getLogger().info("Init [{}] {}",
+		getLogger().info("[{}] {}: Init",
 				new Object[] { this.batch.getGroup(), batch.getName() });
 		touch();
 	}
@@ -129,8 +129,10 @@ public abstract class AbstractBatchProgressMonitor implements
 		this.totalWork = totalWork;
 		this.taskName = name;
 		this.taskDescription = description;
-		getLogger().info("{}: Begin {} ({}), steps : {}",
-				new Object[] { name, description, String.valueOf(totalWork) });
+		getLogger().info(
+				"[{}] {}: Begin {} ({}), steps : {}",
+				new Object[] { getBatch().getGroup(), getBatch().getName(),
+						name, description, String.valueOf(totalWork) });
 		touch();
 
 	}
@@ -151,8 +153,10 @@ public abstract class AbstractBatchProgressMonitor implements
 	public void done() {
 		endTask(true);
 
-		getLogger().info("End <{}>: {} ms",
-				new Object[] { name, System.currentTimeMillis() - startTime });
+		getLogger().info(
+				"[{}] {}: End {}, {} ms",
+				new Object[] { getBatch().getGroup(), getBatch().getName(),
+						name, System.currentTimeMillis() - startTime });
 		touch();
 
 	}
@@ -415,8 +419,13 @@ public abstract class AbstractBatchProgressMonitor implements
 
 		if (isLoggable(lastWriteTimestamp)) {
 			lastWriteTimestamp = System.currentTimeMillis();
-			getLogger().info("{}: progress {}%", name,
-					getProgress() * 100f / getTotalWork());
+			getLogger().info(
+					"[{}] {}: progress {}%",
+					new Object[] {
+							getBatch().getGroup(),
+							getBatch().getName(),
+							getMainMonitor().getProgress() * 100f
+									/ getMainMonitor().getTotalWork() });
 		}
 		touch();
 	}
