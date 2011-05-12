@@ -15,6 +15,8 @@
  */
 package net.sf.appstatus.core.batch;
 
+import java.util.Date;
+
 import org.slf4j.Logger;
 
 /**
@@ -68,6 +70,8 @@ public interface IBatchProgressMonitor {
 	 * @param reason
 	 */
 	void fail(String reason);
+
+	Date getLastUpdate();
 
 	/**
 	 * Retrieve the total amount of work for this task.

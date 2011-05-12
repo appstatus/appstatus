@@ -39,8 +39,6 @@ public class InProcessBatchProgressMonitor extends AbstractBatchProgressMonitor
 	private static Logger logger = LoggerFactory
 			.getLogger(InProcessBatchProgressMonitor.class);
 
-	float speed = 0;
-
 	/**
 	 * Default constructor.
 	 * 
@@ -75,33 +73,14 @@ public class InProcessBatchProgressMonitor extends AbstractBatchProgressMonitor
 		return (InProcessBatchProgressMonitor) currentChild;
 	}
 
-	public Date getEstimateEndDate() {
-		long currentTime = System.currentTimeMillis();
-
-		long elapsed = currentTime - startTime;
-
-		if (totalWork == UNKNOW) {
-			return null;
-		}
-
-		long endTime = currentTime
-				+ (long) (totalWork * elapsed / getProgress());
-
-		return new Date(endTime);
+	@Override
+	public Date getEndDate() {
+		return super.getEndDate();
 	}
 
 	@Override
-	public float getProgress() {
-		if (currentChild != null && currentChild.getTotalWork() > 0) {
-
-			float childProgress = currentChildWork
-					* getCurrentChild().getProgress()
-					/ currentChild.getTotalWork();
-
-			return worked + childProgress;
-		}
-
-		return worked;
+	public Date getStartDate() {
+		return super.getStartDate();
 	}
 
 	@Override
@@ -117,8 +96,6 @@ public class InProcessBatchProgressMonitor extends AbstractBatchProgressMonitor
 	public void worked(int work) {
 		super.worked(work);
 
-		long seconds = (System.currentTimeMillis() - startTime) / 1000;
-		speed = (float) worked / (float) seconds;
 	}
 
 }

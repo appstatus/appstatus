@@ -86,7 +86,7 @@ public class BatchSample implements Runnable {
 		stepMonitor.beginTask("step2", 
 				"Write the items in the console output.", items.size());
 		for (String item : items) {
-			AppStatusStatic.getInstance().getServiceMonitor("Console Write",
+			appstatus.getServiceMonitor("Console Write",
 					"Console");
 			stepMonitor.message("Writing item : " + item);
 			stepMonitor.worked(1);
