@@ -56,10 +56,10 @@ public class AppStatus {
 	private static Logger logger = LoggerFactory.getLogger(AppStatus.class);
 
 	private IBatchManager batchManager = null;
+	protected List<ICheck> checkers;
 	private boolean initDone = false;
 	private IObjectInstantiationListener objectInstanciationListener = null;
-	protected final List<ICheck> probes;
-	private final List<IPropertyProvider> propertyProviders;
+	private List<IPropertyProvider> propertyProviders;
 	private IServiceManager serviceManager = null;
 	private IServletContextProvider servletContextProvider = null;
 
@@ -67,7 +67,7 @@ public class AppStatus {
 	 * Status Service creator.
 	 */
 	public AppStatus() {
-		probes = new ArrayList<ICheck>();
+		checkers = new ArrayList<ICheck>();
 		propertyProviders = new ArrayList<IPropertyProvider>();
 	}
 
@@ -99,7 +99,7 @@ public class AppStatus {
 							.getServletContext());
 		}
 
-		probes.add(check);
+		checkers.add(check);
 		logger.info("Registered status checker " + clazz);
 	}
 
@@ -107,7 +107,7 @@ public class AppStatus {
 		checkInit();
 
 		ArrayList<ICheckResult> statusList = new ArrayList<ICheckResult>();
-		for (ICheck check : probes) {
+		for (ICheck check : checkers) {
 			injectServletContext(check);
 			statusList.add(check.checkStatus());
 		}
@@ -222,6 +222,9 @@ public class AppStatus {
 			return;
 		}
 
+		checkers = new ArrayList<ICheck>();
+		propertyProviders = new ArrayList<IPropertyProvider>();
+
 		try {
 			// Load and init all probes
 			Enumeration<URL> configFiles;
@@ -316,9 +319,17 @@ public class AppStatus {
 		return p;
 	}
 
+	public void setCheckers(List<ICheck> checkers) {
+		this.checkers = checkers;
+	}
+
 	public void setObjectInstanciationListener(
 			IObjectInstantiationListener objectInstanciationListener) {
 		this.objectInstanciationListener = objectInstanciationListener;
+	}
+
+	public void setPropertyProviders(List<IPropertyProvider> propertyProviders) {
+		this.propertyProviders = propertyProviders;
 	}
 
 	public void setServletContextProvider(IServletContextProvider servletContext) {
