@@ -13,6 +13,6 @@ public class StatusServiceTest extends AppStatus {
   @Test
   public void testInitialization() throws Exception {
     this.init();
-    assertTrue(probes.size() > 0);
+    assertTrue(checkers.size() > 0);
   }
 }
