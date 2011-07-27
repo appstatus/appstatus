@@ -3,13 +3,13 @@
  	<parent>
 		<artifactId>appstatus-parent</artifactId>
 		<groupId>net.sf.appstatus</groupId>
-		<version>0.0.5-SNAPSHOT</version>
+		<version>0.0.5</version>
 	</parent>
 	 <groupId>net.sf.appstatus</groupId>
   <artifactId>appstatus-demo</artifactId>
   <packaging>war</packaging>
   <name>Demo Webapp</name>
-  <version>0.0.5-SNAPSHOT</version>
+  <version>0.0.5</version>
   <dependencies>
     <dependency>
       <groupId>junit</groupId>
@@ -20,7 +20,7 @@
     <dependency>
     	<groupId>net.sf.appstatus </groupId>
     	<artifactId>appstatus-web</artifactId>
-    	<version>0.0.5-SNAPSHOT</version>
+    	<version>0.0.5</version>
     	<scope>compile</scope>
     </dependency>
     <dependency>
@@ -40,13 +40,13 @@
     <dependency>
     	<groupId>net.sf.appstatus</groupId>
     	<artifactId>appstatus-batch-inprocess</artifactId>
-    	<version>0.0.5-SNAPSHOT</version>
+    	<version>0.0.5</version>
     	<scope>compile</scope>
     </dependency>
     <dependency>
     	<groupId>net.sf.appstatus</groupId>
     	<artifactId>appstatus-services-inprocess</artifactId>
-    	<version>0.0.5-SNAPSHOT</version>
+    	<version>0.0.5</version>
     	<type>jar</type>
     	<scope>compile</scope>
     </dependency>
