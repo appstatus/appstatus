@@ -19,7 +19,7 @@ package net.sf.appstatus.core.batch;
  * Monitor dedicated to monitor a job execution.
  * <p>
  * Usage :
- * 
+ * </p>
  * 
  * 
  * @author Guillaume Mary
@@ -27,6 +27,8 @@ package net.sf.appstatus.core.batch;
  * 
  */
 public interface IBatchProgressMonitorExt extends IBatchProgressMonitor {
+
+	long getItemCount();
 
 	String getLastMessage();
 

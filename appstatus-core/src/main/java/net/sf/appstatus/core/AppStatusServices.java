@@ -16,19 +16,11 @@ package net.sf.appstatus.core;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
-import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
-import java.util.Map;
 import java.util.Properties;
-import java.util.Set;
-import java.util.TreeMap;
 
-import net.sf.appstatus.core.batch.IBatch;
-import net.sf.appstatus.core.batch.IBatchManager;
-import net.sf.appstatus.core.batch.IBatchProgressMonitor;
 import net.sf.appstatus.core.check.ICheck;
-import net.sf.appstatus.core.check.ICheckResult;
 import net.sf.appstatus.core.property.IPropertyProvider;
 import net.sf.appstatus.core.services.IService;
 import net.sf.appstatus.core.services.IServiceManager;
@@ -50,68 +42,21 @@ import org.slf4j.LoggerFactory;
  * @author Nicolas Richeton
  * 
  */
-public class AppStatus {
+public class AppStatusServices {
 	private static final String CONFIG_LOCATION = "status-check.properties";
 
-	private static Logger logger = LoggerFactory.getLogger(AppStatus.class);
+	private static Logger logger = LoggerFactory
+			.getLogger(AppStatusServices.class);
 
-	private IBatchManager batchManager = null;
-	protected List<ICheck> checkers;
 	private boolean initDone = false;
 	private IObjectInstantiationListener objectInstanciationListener = null;
-	private List<IPropertyProvider> propertyProviders;
 	private IServiceManager serviceManager = null;
 	private IServletContextProvider servletContextProvider = null;
 
 	/**
 	 * Status Service creator.
 	 */
-	public AppStatus() {
-		checkers = new ArrayList<ICheck>();
-		propertyProviders = new ArrayList<IPropertyProvider>();
-	}
-
-	private void addPropertyProvider(String clazz) {
-		IPropertyProvider provider = (IPropertyProvider) getClassInstance(clazz);
-
-		if (provider != null) {
-			propertyProviders.add(provider);
-			logger.info("Registered property provider " + clazz);
-		} else {
-			logger.error(
-					"cannot instanciate class {}, Please configure \"{}\" file properly",
-					clazz, CONFIG_LOCATION);
-		}
-	}
-
-	private void addStatusChecker(String clazz) {
-		ICheck check = (ICheck) getClassInstance(clazz);
-		if (check == null) {
-			logger.error(
-					"cannot instanciate class {}, Please configure \"{}\" file properly",
-					clazz, CONFIG_LOCATION);
-			return;
-		}
-
-		if (check instanceof IServletContextAware) {
-			((IServletContextAware) check)
-					.setServletContext(servletContextProvider
-							.getServletContext());
-		}
-
-		checkers.add(check);
-		logger.info("Registered status checker " + clazz);
-	}
-
-	public List<ICheckResult> checkAll() {
-		checkInit();
-
-		ArrayList<ICheckResult> statusList = new ArrayList<ICheckResult>();
-		for (ICheck check : checkers) {
-			injectServletContext(check);
-			statusList.add(check.checkStatus());
-		}
-		return statusList;
+	public AppStatusServices() {
 	}
 
 	private void checkInit() {
@@ -120,24 +65,6 @@ public class AppStatus {
 			init();
 
 		}
-	}
-
-	public IBatchManager getBatchManager() {
-		return batchManager;
-	}
-
-	public IBatchProgressMonitor getBatchProgressMonitor(String name,
-			String group, String uuid) {
-
-		checkInit();
-
-		IBatch batch = null;
-		if (batchManager != null) {
-			batch = batchManager.addBatch(name, group, uuid);
-			return batchManager.getMonitor(batch);
-		}
-
-		return null;
 	}
 
 	/**
@@ -174,32 +101,6 @@ public class AppStatus {
 		return obj;
 	}
 
-	public Map<String, Map<String, String>> getProperties() {
-		checkInit();
-
-		TreeMap<String, Map<String, String>> categories = new TreeMap<String, Map<String, String>>();
-
-		for (IPropertyProvider provider : propertyProviders) {
-			injectServletContext(provider);
-
-			// Init Category
-			if (categories.get(provider.getCategory()) == null) {
-				categories.put(provider.getCategory(),
-						new TreeMap<String, String>());
-			}
-
-			// Add all properties
-			Map<String, String> l = categories.get(provider.getCategory());
-			l.putAll(provider.getProperties());
-		}
-		return categories;
-	}
-
-	@Deprecated
-	public List<IBatch> getRunningBatches() {
-		return batchManager.getRunningBatches();
-	}
-
 	public IServiceMonitor getServiceMonitor(String name, String group) {
 		checkInit();
 
@@ -227,37 +128,7 @@ public class AppStatus {
 			return;
 		}
 
-		checkers = new ArrayList<ICheck>();
-		propertyProviders = new ArrayList<IPropertyProvider>();
-
 		try {
-			// Load and init all probes
-			Enumeration<URL> configFiles;
-
-			configFiles = AppStatus.class.getClassLoader().getResources(
-					CONFIG_LOCATION);
-
-			if (configFiles == null) {
-				logger.info("config file {} not found in classpath",
-						CONFIG_LOCATION);
-				return;
-			}
-
-			while (configFiles.hasMoreElements()) {
-				Properties p = loadProperties(configFiles.nextElement());
-
-				Set<String> keys = p.stringPropertyNames();
-				for (String name : keys) {
-					String clazz = (String) p.get(name);
-					if (name.startsWith("check")) {
-						addStatusChecker(clazz);
-					} else if (name.startsWith("property")) {
-						addPropertyProvider(clazz);
-					} else {
-						logger.warn("unknown propery  {} : {} ", name, clazz);
-					}
-				}
-			}
 
 			// Load plugins
 			loadPlugins();
@@ -281,18 +152,12 @@ public class AppStatus {
 
 	private void loadPlugins() {
 		try {
-			Enumeration<URL> plugins = AppStatus.class.getClassLoader()
+			Enumeration<URL> plugins = AppStatusServices.class.getClassLoader()
 					.getResources("net/sf/appstatus/plugin.properties");
 			while (plugins.hasMoreElements()) {
 				URL url = plugins.nextElement();
 				logger.info(url.toString());
 				Properties p = loadProperties(url);
-
-				// batchManager
-				String batchManagerClass = p.getProperty("batchManager");
-				if (batchManagerClass != null) {
-					batchManager = (IBatchManager) getClassInstance(batchManagerClass);
-				}
 
 				// serviceManager
 				String serviceManagerClass = p.getProperty("serviceManager");

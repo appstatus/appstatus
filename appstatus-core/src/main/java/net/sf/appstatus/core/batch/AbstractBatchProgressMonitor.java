@@ -45,11 +45,12 @@ public abstract class AbstractBatchProgressMonitor implements
 	 * Current item being processed
 	 */
 	protected Object currentItem;
-
 	protected boolean done = false;
 
 	protected Long endTime = null;
+
 	protected final String executionId;
+	protected long itemCount = 0;
 	private String lastMessage;
 
 	private long lastUpdate = -1;
@@ -151,7 +152,11 @@ public abstract class AbstractBatchProgressMonitor implements
 	 * {@inheritDoc}
 	 */
 	public void done() {
-		endTask(true);
+		if (parent != null) {
+			endTask(true);
+		} else {
+			endBatch(true);
+		}
 
 		getLogger().info(
 				"[{}] {}: End {}, {} ms",
@@ -166,6 +171,8 @@ public abstract class AbstractBatchProgressMonitor implements
 		getMainMonitor().done = true;
 		getMainMonitor().endTime = System.currentTimeMillis();
 		getMainMonitor().currentItem = null;
+
+		onBatchEnd();
 	}
 
 	protected void endTask(boolean success) {
@@ -182,18 +189,22 @@ public abstract class AbstractBatchProgressMonitor implements
 	}
 
 	public void fail(String reason) {
-		message("Failed: " + reason);
+		fail(reason, null);
+
+	}
+
+	public void fail(String reason, Throwable t) {
+		message("Failed: " + reason + " " + (t != null ? t.getMessage() : t));
 
 		// Mark job as finished
 		endTask(false);
 		endBatch(false);
 
-		getLogger().info(
+		getLogger().error(
 				"Failed [{}] {}: {}, duration: {}",
 				new Object[] { this.batch.getGroup(), batch.getName(), reason,
-						String.valueOf(endTime - startTime) });
+						String.valueOf(endTime - startTime) }, t);
 		touch();
-
 	}
 
 	public IBatch getBatch() {
@@ -235,6 +246,10 @@ public abstract class AbstractBatchProgressMonitor implements
 
 		// No end date ?
 		return null;
+	}
+
+	public long getItemCount() {
+		return itemCount;
 	}
 
 	public String getLastMessage() {
@@ -337,6 +352,10 @@ public abstract class AbstractBatchProgressMonitor implements
 
 	protected abstract IBatchProgressMonitor newInstance(int work);
 
+	protected void onBatchEnd() {
+
+	}
+
 	/**
 	 * {@inheritDoc}
 	 */
@@ -347,7 +366,7 @@ public abstract class AbstractBatchProgressMonitor implements
 	/**
 	 * {@inheritDoc}
 	 */
-	public void reject(String itemId, String reason, Exception e) {
+	public void reject(String itemId, String reason, Throwable e) {
 		getMainMonitor().rejectedItems.add(itemId);
 		getLogger()
 				.warn(name + ": rejected " + itemId + " (" + reason + ")", e);
@@ -364,7 +383,7 @@ public abstract class AbstractBatchProgressMonitor implements
 	/**
 	 * {@inheritDoc}
 	 */
-	public void reject(String[] itemIds, String reason, Exception e) {
+	public void reject(String[] itemIds, String reason, Throwable e) {
 		if (itemIds != null) {
 			for (String id : itemIds) {
 				reject(id, reason, e);
@@ -376,11 +395,16 @@ public abstract class AbstractBatchProgressMonitor implements
 	 * {@inheritDoc}
 	 */
 	public void setCurrentItem(Object item) {
+		if (currentItem != item) {
+			getMainMonitor().itemCount++;
+		}
+
 		currentItem = item;
 
 		if (isLoggable(lastWriteTimestamp)) {
 			lastWriteTimestamp = System.currentTimeMillis();
-			getLogger().info("{}: working on {}", name, item);
+			getLogger().info("{}: working on {} (#{})",
+					new Object[] { name, item, itemCount });
 		}
 		touch();
 

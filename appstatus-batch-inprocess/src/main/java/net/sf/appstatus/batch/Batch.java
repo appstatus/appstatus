@@ -29,6 +29,10 @@ public class Batch implements IBatch {
 		return group;
 	}
 
+	public long getItemCount() {
+		return monitor.getItemCount();
+	}
+
 	public String getLastMessage() {
 		return monitor.getLastMessage();
 	}

@@ -6,6 +6,8 @@ public interface IBatchManager {
 
 	IBatch addBatch(String name, String group, String uuid);
 
+	List<IBatch> getErrorBatches();
+
 	List<IBatch> getFinishedBatches();
 
 	IBatchProgressMonitor getMonitor(IBatch batch);
