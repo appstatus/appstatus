@@ -8,8 +8,6 @@ import java.util.List;
 
 import javax.servlet.ServletOutputStream;
 
-import org.springframework.util.CollectionUtils;
-
 /**
  * Support class for generating Html tables.
  * 
@@ -20,7 +18,7 @@ public class HtmlUtils {
     private static final String ENCODING = "UTF-8";
 
     public static String collectionToDelimitedString(Collection coll, String delim, String prefix, String suffix) {
-        if (CollectionUtils.isEmpty(coll)) {
+        if (isEmpty(coll)) {
             return "";
         }
         StringBuilder sb = new StringBuilder();
@@ -112,5 +110,9 @@ public class HtmlUtils {
 
         }
         os.write("</tr>".getBytes());
+    }
+
+    public static boolean isEmpty(Collection collection) {
+        return (collection == null || collection.isEmpty());
     }
 }
