@@ -7,100 +7,114 @@ import net.sf.appstatus.core.batch.IBatch;
 import net.sf.appstatus.core.batch.IBatchProgressMonitor;
 
 public class Batch implements IBatch {
-	Date endDate;
-	String group;
-	InProcessBatchProgressMonitor monitor;
-	String name;
-	String uuid;
+    Date endDate;
+    String group;
+    InProcessBatchProgressMonitor monitor;
+    String name;
+    String uuid;
 
-	public String getCurrentItem() {
-		return monitor.getCurrentItem().toString();
-	}
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (!(obj instanceof Batch)) {
+            return false;
+        }
 
-	public String getCurrentTask() {
-		return monitor.getTaskName();
-	}
+        Batch objBatch = (Batch) obj;
 
-	public Date getEndDate() {
-		return monitor.getEndDate();
-	}
+        return this.getUuid().equals(objBatch.getUuid());
+    }
 
-	public String getGroup() {
-		return group;
-	}
+    public String getCurrentItem() {
+        return monitor.getCurrentItem().toString();
+    }
 
-	public long getItemCount() {
-		return monitor.getItemCount();
-	}
+    public String getCurrentTask() {
+        return monitor.getTaskName();
+    }
 
-	public String getLastMessage() {
-		return monitor.getLastMessage();
-	}
+    public Date getEndDate() {
+        return monitor.getEndDate();
+    }
 
-	public Date getLastUpdate() {
-		return monitor.getLastUpdate();
-	}
+    public String getGroup() {
+        return group;
+    }
 
-	public String getName() {
-		return name;
-	}
+    public long getItemCount() {
+        return monitor.getItemCount();
+    }
 
-	public IBatchProgressMonitor getProgressMonitor() {
-		return monitor;
-	}
+    public String getLastMessage() {
+        return monitor.getLastMessage();
+    }
 
-	public float getProgressStatus() {
-		if (monitor == null || monitor.getTotalWork() <= 0) {
-			return -1;
-		}
+    public Date getLastUpdate() {
+        return monitor.getLastUpdate();
+    }
 
-		return monitor.getProgress() * 100f / monitor.getTotalWork();
-	}
+    public String getName() {
+        return name;
+    }
 
-	public List<String> getRejectedItemsId() {
-		return monitor.getRejectedItems();
-	}
+    public IBatchProgressMonitor getProgressMonitor() {
+        return monitor;
+    }
 
-	public Date getStartDate() {
-		return monitor.getStartDate();
-	}
+    public float getProgressStatus() {
+        if (monitor == null || monitor.getTotalWork() <= 0) {
+            return -1;
+        }
 
-	public String getStatus() {
+        return monitor.getProgress() * 100f / monitor.getTotalWork();
+    }
 
-		if (!monitor.isDone()) {
-			return STATUS_RUNNING;
-		}
+    public List<String> getRejectedItemsId() {
+        return monitor.getRejectedItems();
+    }
 
-		if (monitor.isSuccess()) {
-			return STATUS_SUCCESS;
-		}
+    public Date getStartDate() {
+        return monitor.getStartDate();
+    }
 
-		return STATUS_FAILURE;
-	}
+    public String getStatus() {
 
-	public String getUuid() {
-		return uuid;
-	}
+        if (!monitor.isDone()) {
+            return STATUS_RUNNING;
+        }
 
-	public boolean isSuccess() {
-		return monitor.isSuccess();
-	}
+        if (monitor.isSuccess()) {
+            return STATUS_SUCCESS;
+        }
 
-	public void setGroup(String group2) {
-		this.group = group2;
+        return STATUS_FAILURE;
+    }
 
-	}
+    public String getUuid() {
+        return uuid;
+    }
 
-	public void setName(String name2) {
-		this.name = name2;
-	}
+    public boolean isSuccess() {
+        return monitor.isSuccess();
+    }
 
-	public void setProgressMonitor(IBatchProgressMonitor monitor) {
-		this.monitor = (InProcessBatchProgressMonitor) monitor;
-	}
+    public void setGroup(String group2) {
+        this.group = group2;
 
-	public void setUuid(String uuid) {
-		this.uuid = uuid;
-	}
+    }
+
+    public void setName(String name2) {
+        this.name = name2;
+    }
+
+    public void setProgressMonitor(IBatchProgressMonitor monitor) {
+        this.monitor = (InProcessBatchProgressMonitor) monitor;
+    }
+
+    public void setUuid(String uuid) {
+        this.uuid = uuid;
+    }
 
 }

@@ -107,14 +107,8 @@ public class InProcessBatchManager implements IBatchManager {
 
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see
-     * net.sf.appstatus.core.batch.IBatchManager#removeBatch(net.sf.appstatus
-     * .core.batch.IBatch)
-     */
-    public void removeBatch(IBatch b) {
+    private void removeBatch(IBatch b) {
+
         // Remove only finished jobs
         if (!runningBatches.contains(b)) {
 
@@ -128,6 +122,21 @@ public class InProcessBatchManager implements IBatchManager {
                 finishedBatches.remove(b);
             }
         }
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * net.sf.appstatus.core.batch.IBatchManager#removeBatch(net.sf.appstatus
+     * .core.batch.IBatch)
+     */
+    public void removeBatch(String uuid) {
+
+        Batch b = new Batch();
+        b.setUuid(uuid);
+        removeBatch(b);
+
     }
 
     public void setMaxSize(long maxSize) {
