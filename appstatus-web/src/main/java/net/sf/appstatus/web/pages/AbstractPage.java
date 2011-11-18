@@ -15,7 +15,8 @@ public abstract class AbstractPage {
     private static final String styleSheet = "<style type=\"text/css\" media=\"screen\">" + "h1 { font-size: 120%; }"
             + "h2 { font-size: 110%; }" + "p { font-size: 90%; }" + "table { font-size: 80%; }"
             + "table ,th, td {  border: 1px solid black; border-collapse:collapse; padding: 2px; }"
-            + "th { background-color: #DDDDDD; }" + ".logo { float: right; font-size: 120%; }"
+            + "th { background-color: #DDDDDD; }" + "td form { margin: 0; }"
+            + ".logo { float: right; font-size: 120%; }"
             + ".menu {  padding: 5px; width: 15em; text-align: center;  border: 1px dashed black;  font-size: 90%; }"
             + "</style>";
     private static final String URL = "http://appstatus.sourceforge.net/";
@@ -31,6 +32,9 @@ public abstract class AbstractPage {
                 .getBytes(ENCODING));
     }
 
+    public abstract void doGet(AppStatus status, HttpServletRequest req, HttpServletResponse resp)
+            throws UnsupportedEncodingException, IOException;
+
     public abstract void doPost(AppStatus status, HttpServletRequest req, HttpServletResponse resp);
 
     protected void end(ServletOutputStream os) throws UnsupportedEncodingException, IOException {
@@ -45,9 +49,6 @@ public abstract class AbstractPage {
     public String getId() {
         return null;
     }
-
-    public abstract void doGet(AppStatus status, HttpServletRequest req, HttpServletResponse resp) throws UnsupportedEncodingException,
-            IOException;
 
     protected void setup(HttpServletResponse resp) throws IOException {
         resp.setContentType("text/html");
