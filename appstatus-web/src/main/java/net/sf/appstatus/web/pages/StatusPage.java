@@ -37,18 +37,8 @@ public class StatusPage extends AbstractPage {
     }
 
     @Override
-    public void doPost(AppStatus status, HttpServletRequest req, HttpServletResponse resp) {
-        // TODO Auto-generated method stub
-
-    }
-
-    @Override
-    public String getId() {
-        return "status";
-    }
-
-    @Override
-    public void doGet(AppStatus status, HttpServletRequest req, HttpServletResponse resp) throws UnsupportedEncodingException, IOException {
+    public void doGet(AppStatus status, HttpServletRequest req, HttpServletResponse resp)
+            throws UnsupportedEncodingException, IOException {
 
         setup(resp);
         ServletOutputStream os = resp.getOutputStream();
@@ -100,5 +90,15 @@ public class StatusPage extends AbstractPage {
         }
 
         end(os);
+    }
+
+    @Override
+    public void doPost(AppStatus status, HttpServletRequest req, HttpServletResponse resp) {
+        // TODO Auto-generated method stub
+    }
+
+    @Override
+    public String getId() {
+        return "status";
     }
 }

@@ -37,10 +37,11 @@ public class BatchPage extends AbstractPage {
                     "Task", "Last Msg", "Items", "Rejected", "Last Update");
 
             for (IBatch batch : runningBatches) {
-                HtmlUtils.generateRow(os, Icons.STATUS_JOB, batch.getUuid(), batch.getGroup(), batch.getName(),
-                        batch.getStartDate(), Math.round(batch.getProgressStatus()) + "%", batch.getEndDate(),
-                        batch.getStatus(), batch.getCurrentTask(), batch.getLastMessage(), batch.getItemCount(),
-                        HtmlUtils.countAndDetail(batch.getRejectedItemsId()), batch.getLastUpdate());
+                HtmlUtils.generateRow(os, Icons.STATUS_JOB, generateId(resp, batch.getUuid()), batch.getGroup(),
+                        batch.getName(), batch.getStartDate(), Math.round(batch.getProgressStatus()) + "%",
+                        batch.getEndDate(), batch.getStatus(), batch.getCurrentTask(), batch.getLastMessage(),
+                        batch.getItemCount(), HtmlUtils.countAndDetail(batch.getRejectedItemsId()),
+                        batch.getLastUpdate());
             }
 
             HtmlUtils.generateEndTable(os, runningBatches.size());
@@ -59,7 +60,7 @@ public class BatchPage extends AbstractPage {
                         .generateRow(
                                 os,
                                 Icons.STATUS_JOB,
-                                batch.getUuid(),
+                                generateId(resp, batch.getUuid()),
                                 batch.getGroup(),
                                 batch.getName(),
                                 batch.getStartDate(),
@@ -91,7 +92,7 @@ public class BatchPage extends AbstractPage {
                         .generateRow(
                                 os,
                                 Icons.STATUS_JOB,
-                                batch.getUuid(),
+                                generateId(resp, batch.getUuid()),
                                 batch.getGroup(),
                                 batch.getName(),
                                 batch.getStartDate(),
@@ -129,6 +130,20 @@ public class BatchPage extends AbstractPage {
         resp.getOutputStream()
                 .write("<p>Actions :</p><form action='?p=batch' method='post'><input type='submit' name='clear-old' value='Delete old (6 months)' /><input type='submit' name='clear-success' value='Delete Success w/o rejected'/></form>"
                         .getBytes());
+    }
+
+    private String generateId(HttpServletResponse resp, String id) throws IOException {
+
+        if (id == null) {
+            return "";
+        }
+
+        if (id.length() < 15) {
+            return id;
+        } else {
+            return "<span title='" + id + "'>" + id.substring(0, 10) + "...</span";
+        }
+
     }
 
     @Override
