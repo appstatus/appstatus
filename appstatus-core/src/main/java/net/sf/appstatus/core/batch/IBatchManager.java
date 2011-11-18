@@ -54,5 +54,5 @@ public interface IBatchManager {
      * 
      * @param b
      */
-    void removeBatch(IBatch b);
+    void removeBatch(String uuid);
 }
