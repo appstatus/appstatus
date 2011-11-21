@@ -13,31 +13,23 @@
  * limitations under the License. 
  * 
  */
-package net.sf.appstatus.core.batch;
+package net.sf.appstatus.demo.property;
 
-/**
- * Monitor dedicated to monitor a job execution.
- * <p>
- * Usage :
- * </p>
- * 
- * 
- * @author Guillaume Mary
- * @author Nicolas Richeton
- * 
- */
-public interface IBatchProgressMonitorExt extends IBatchProgressMonitor {
+import java.util.HashMap;
+import java.util.Map;
 
-	long getItemCount();
+import net.sf.appstatus.core.property.IPropertyProvider;
 
-	String getLastMessage();
+public class DummyPropertyProvider implements IPropertyProvider {
 
-	float getProgress();
+	public String getCategory() {
+		return "Dummy";
+	}
 
-	/**
-	 * Retrieve the total amount of work for this task.
-	 * 
-	 * @return the total amount of work
-	 */
-	int getTotalWork();
+	public Map<String, String> getProperties() {
+		HashMap<String, String> hm = new HashMap<String, String>();
+		hm.put("id", "webapp-demo");
+		return hm;
+	}
+
 }

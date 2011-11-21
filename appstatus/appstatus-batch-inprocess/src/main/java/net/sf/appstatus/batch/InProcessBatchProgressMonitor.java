@@ -38,6 +38,7 @@ public class InProcessBatchProgressMonitor extends AbstractBatchProgressMonitor
 
 	private static Logger logger = LoggerFactory
 			.getLogger(InProcessBatchProgressMonitor.class);
+	private InProcessBatchManager manager;
 
 	/**
 	 * Default constructor.
@@ -45,8 +46,10 @@ public class InProcessBatchProgressMonitor extends AbstractBatchProgressMonitor
 	 * @param executionId
 	 *            job execution id
 	 */
-	public InProcessBatchProgressMonitor(String executionId, IBatch batch) {
+	public InProcessBatchProgressMonitor(String executionId, IBatch batch,
+			InProcessBatchManager manager) {
 		super(executionId, batch);
+		this.manager = manager;
 	}
 
 	/**
@@ -87,6 +90,11 @@ public class InProcessBatchProgressMonitor extends AbstractBatchProgressMonitor
 	protected IBatchProgressMonitor newInstance(int work) {
 		return new InProcessBatchProgressMonitor(executionId, this, work,
 				getBatch());
+	}
+
+	@Override
+	protected void onBatchEnd() {
+		manager.batchEnd(getBatch());
 	}
 
 	/**

@@ -111,6 +111,10 @@ public class BatchSample implements Runnable {
 		step2(items, jobMonitor.createSubTask(1));
 
 		// end the job
+		if( System.currentTimeMillis() % 4 == 0){
+			jobMonitor.fail("Just to test failure");
+			
+		}else
 		jobMonitor.done();
 	}
 
