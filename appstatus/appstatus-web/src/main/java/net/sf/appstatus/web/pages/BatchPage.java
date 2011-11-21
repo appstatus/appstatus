@@ -57,8 +57,8 @@ public class BatchPage extends AbstractPage {
 
         if (HtmlUtils.generateBeginTable(os, finishedBatches.size())) {
 
-            HtmlUtils.generateHeaders(os, "", "Id", "Category", "Name", "Start", "Progress", "End (est.)", "Status",
-                    "Task", "Last Msg", "Items", "Rejected", "Last Update", "");
+            HtmlUtils.generateHeaders(os, "", "Id", "Category", "Name", "Start", "Progress", "End", "Status", "Task",
+                    "Last Msg", "Items", "Rejected", "Last Update", "");
             for (IBatch batch : finishedBatches) {
                 HtmlUtils.generateRow(os, getIcon(batch), generateId(resp, batch.getUuid()), batch.getGroup(),
                         batch.getName(), batch.getStartDate(), Math.round(batch.getProgressStatus()) + "%",
@@ -77,8 +77,8 @@ public class BatchPage extends AbstractPage {
 
         if (HtmlUtils.generateBeginTable(os, errorBatches.size())) {
 
-            HtmlUtils.generateHeaders(os, "", "Id", "Category", "Name", "Start", "Progress", "End (est.)", "Status",
-                    "Task", "Last Msg", "Items", "Rejected", "Last Update", "");
+            HtmlUtils.generateHeaders(os, "", "Id", "Category", "Name", "Start", "Progress", "End", "Status", "Task",
+                    "Last Msg", "Items", "Rejected", "Last Update", "");
 
             for (IBatch batch : errorBatches) {
                 HtmlUtils.generateRow(os, getIcon(batch), generateId(resp, batch.getUuid()), batch.getGroup(),

@@ -8,6 +8,7 @@ import org.apache.commons.io.IOUtils;
 
 public class Icons {
 
+    public static final String LOGO = "logo";
     public static final String STATUS_ERROR = "error";
     public static final String STATUS_JOB = "job";
     public static final String STATUS_JOB_ERROR = "job-error";
@@ -32,6 +33,8 @@ public class Icons {
             location = "/org/freedesktop/tango/22x22/status/dialog-error.png";
         } else if (STATUS_JOB_WARNING.equals(id)) {
             location = "/org/freedesktop/tango/22x22/status/dialog-warning.png";
+        } else if (LOGO.equals(id)) {
+            location = "/appstatus-logo.png";
         }
 
         InputStream is = Icons.class.getResourceAsStream(location);
