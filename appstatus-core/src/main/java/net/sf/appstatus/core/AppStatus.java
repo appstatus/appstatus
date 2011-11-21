@@ -122,6 +122,10 @@ public class AppStatus {
 		}
 	}
 
+	public IBatchManager getBatchManager() {
+		return batchManager;
+	}
+
 	public IBatchProgressMonitor getBatchProgressMonitor(String name,
 			String group, String uuid) {
 
@@ -191,6 +195,7 @@ public class AppStatus {
 		return categories;
 	}
 
+	@Deprecated
 	public List<IBatch> getRunningBatches() {
 		return batchManager.getRunningBatches();
 	}

@@ -7,96 +7,114 @@ import net.sf.appstatus.core.batch.IBatch;
 import net.sf.appstatus.core.batch.IBatchProgressMonitor;
 
 public class Batch implements IBatch {
-	Date endDate;
-	String group;
-	InProcessBatchProgressMonitor monitor;
-	String name;
-	String uuid;
+    Date endDate;
+    String group;
+    InProcessBatchProgressMonitor monitor;
+    String name;
+    String uuid;
 
-	public String getCurrentItem() {
-		return monitor.getCurrentItem().toString();
-	}
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (!(obj instanceof Batch)) {
+            return false;
+        }
 
-	public String getCurrentTask() {
-		return monitor.getTaskName();
-	}
+        Batch objBatch = (Batch) obj;
 
-	public Date getEndDate() {
-		return monitor.getEndDate();
-	}
+        return this.getUuid().equals(objBatch.getUuid());
+    }
 
-	public String getGroup() {
-		return group;
-	}
+    public String getCurrentItem() {
+        return monitor.getCurrentItem().toString();
+    }
 
-	public String getLastMessage() {
-		return monitor.getLastMessage();
-	}
+    public String getCurrentTask() {
+        return monitor.getTaskName();
+    }
 
-	public Date getLastUpdate() {
-		return monitor.getLastUpdate();
-	}
+    public Date getEndDate() {
+        return monitor.getEndDate();
+    }
 
-	public String getName() {
-		return name;
-	}
+    public String getGroup() {
+        return group;
+    }
 
-	public IBatchProgressMonitor getProgressMonitor() {
-		return monitor;
-	}
+    public long getItemCount() {
+        return monitor.getItemCount();
+    }
 
-	public float getProgressStatus() {
-		if (monitor == null || monitor.getTotalWork() <= 0) {
-			return -1;
-		}
+    public String getLastMessage() {
+        return monitor.getLastMessage();
+    }
 
-		return monitor.getProgress() * 100f / monitor.getTotalWork();
-	}
+    public Date getLastUpdate() {
+        return monitor.getLastUpdate();
+    }
 
-	public List<String> getRejectedItemsId() {
-		return monitor.getRejectedItems();
-	}
+    public String getName() {
+        return name;
+    }
 
-	public Date getStartDate() {
-		return monitor.getStartDate();
-	}
+    public IBatchProgressMonitor getProgressMonitor() {
+        return monitor;
+    }
 
-	public String getStatus() {
+    public float getProgressStatus() {
+        if (monitor == null || monitor.getTotalWork() <= 0) {
+            return -1;
+        }
 
-		if (!monitor.isDone()) {
-			return STATUS_RUNNING;
-		}
+        return monitor.getProgress() * 100f / monitor.getTotalWork();
+    }
 
-		if (monitor.isSuccess()) {
-			return STATUS_SUCCESS;
-		}
+    public List<String> getRejectedItemsId() {
+        return monitor.getRejectedItems();
+    }
 
-		return STATUS_FAILURE;
-	}
+    public Date getStartDate() {
+        return monitor.getStartDate();
+    }
 
-	public String getUuid() {
-		return uuid;
-	}
+    public String getStatus() {
 
-	public boolean isSuccess() {
-		return monitor.isSuccess();
-	}
+        if (!monitor.isDone()) {
+            return STATUS_RUNNING;
+        }
 
-	public void setGroup(String group2) {
-		this.group = group2;
+        if (monitor.isSuccess()) {
+            return STATUS_SUCCESS;
+        }
 
-	}
+        return STATUS_FAILURE;
+    }
 
-	public void setName(String name2) {
-		this.name = name2;
-	}
+    public String getUuid() {
+        return uuid;
+    }
 
-	public void setProgressMonitor(IBatchProgressMonitor monitor) {
-		this.monitor = (InProcessBatchProgressMonitor) monitor;
-	}
+    public boolean isSuccess() {
+        return monitor.isSuccess();
+    }
 
-	public void setUuid(String uuid) {
-		this.uuid = uuid;
-	}
+    public void setGroup(String group2) {
+        this.group = group2;
+
+    }
+
+    public void setName(String name2) {
+        this.name = name2;
+    }
+
+    public void setProgressMonitor(IBatchProgressMonitor monitor) {
+        this.monitor = (InProcessBatchProgressMonitor) monitor;
+    }
+
+    public void setUuid(String uuid) {
+        this.uuid = uuid;
+    }
 
 }

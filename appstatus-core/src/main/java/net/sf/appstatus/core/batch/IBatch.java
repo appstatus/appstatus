@@ -42,6 +42,8 @@ public interface IBatch {
 
 	String getGroup();
 
+	long getItemCount();
+
 	/**
 	 * Retrieve the last messages.
 	 * 

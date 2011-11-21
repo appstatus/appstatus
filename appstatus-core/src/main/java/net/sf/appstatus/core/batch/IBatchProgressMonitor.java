@@ -71,6 +71,8 @@ public interface IBatchProgressMonitor {
 	 */
 	void fail(String reason);
 
+	void fail(String reason, Throwable t);
+
 	Date getLastUpdate();
 
 	/**
@@ -106,7 +108,7 @@ public interface IBatchProgressMonitor {
 	 */
 	void reject(String itemId, String reason);
 
-	void reject(String itemId, String reason, Exception e);
+	void reject(String itemId, String reason, Throwable e);
 
 	/**
 	 * Reject a set of items during the task processing.
@@ -118,7 +120,7 @@ public interface IBatchProgressMonitor {
 	 */
 	void reject(String[] itemIds, String reason);
 
-	void reject(String[] itemIds, String reason, Exception e);
+	void reject(String[] itemIds, String reason, Throwable e);
 
 	/**
 	 * Set the current item which is being processed.
