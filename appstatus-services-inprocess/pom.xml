@@ -3,16 +3,16 @@
   <parent>
     <artifactId>appstatus-parent</artifactId>
     <groupId>net.sf.appstatus</groupId>
-    <version>0.0.6-SNAPSHOT</version>
+    <version>0.0.6</version>
   </parent>
   <groupId>net.sf.appstatus</groupId>
   <artifactId>appstatus-services-inprocess</artifactId>
-  <version>0.0.6-SNAPSHOT</version>
+  <version>0.0.6</version>
   <dependencies>
   	<dependency>
   		<groupId>net.sf.appstatus</groupId>
   		<artifactId>appstatus-core</artifactId>
-  		<version>0.0.6-SNAPSHOT</version>
+  		<version>0.0.6</version>
   		<type>jar</type>
   		<scope>compile</scope>
   	</dependency>
