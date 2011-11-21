@@ -131,11 +131,11 @@ public class BatchPage extends AbstractPage {
 
     private String getIcon(IBatch b) {
 
-        if (b.getStatus() == IBatch.STATUS_FAILURE) {
+        if (IBatch.STATUS_FAILURE.equals(b.getStatus())) {
             return Icons.STATUS_JOB_ERROR;
         }
 
-        if (b.getStatus() == IBatch.STATUS_SUCCESS && b.getRejectedItemsId() != null
+        if (IBatch.STATUS_SUCCESS.equals(b.getStatus()) && b.getRejectedItemsId() != null
                 && b.getRejectedItemsId().size() > 0) {
             return Icons.STATUS_JOB_WARNING;
         }
