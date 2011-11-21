@@ -40,6 +40,7 @@ import org.slf4j.LoggerFactory;
  * @author Nicolas Richeton
  * 
  */
+@Deprecated
 public class AppStatusServices {
 
     private static Logger logger = LoggerFactory.getLogger(AppStatusServices.class);
