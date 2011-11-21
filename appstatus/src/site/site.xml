@@ -2,7 +2,7 @@
 <project name="App Status Toolkit">
 	<bannerLeft>
 		<name>App Status Toolkit</name>
-
+        <src>images/appstatus-logo.png</src>
 	</bannerLeft>
 
 	<bannerRight>
