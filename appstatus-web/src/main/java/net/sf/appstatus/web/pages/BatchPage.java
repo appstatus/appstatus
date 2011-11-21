@@ -65,8 +65,8 @@ public class BatchPage extends AbstractPage {
                         batch.getEndDate(), batch.getStatus(), batch.getCurrentTask(), batch.getLastMessage(),
                         batch.getItemCount(), HtmlUtils.countAndDetail(batch.getRejectedItemsId()),
                         batch.getLastUpdate(), "<form action='?p=batch' method='post'><input type='submit' name='"
-                                + CLEAR_ITEM + "' value='Delete' /><input type=hidden name='" + CLEAR_ITEM
-                                + "' value='" + batch.getUuid() + "'/></form>");
+                                + CLEAR_ITEM + "' value='Delete' /><input type=hidden name='" + ITEM_UUID + "' value='"
+                                + batch.getUuid() + "'/></form>");
             }
 
             HtmlUtils.generateEndTable(os, finishedBatches.size());
@@ -86,8 +86,8 @@ public class BatchPage extends AbstractPage {
                         batch.getEndDate(), batch.getStatus(), batch.getCurrentTask(), batch.getLastMessage(),
                         batch.getItemCount(), HtmlUtils.countAndDetail(batch.getRejectedItemsId()),
                         batch.getLastUpdate(), "<form action='?p=batch' method='post'><input type='submit' name='"
-                                + CLEAR_ITEM + "' value='Delete' /><input type=hidden name='" + CLEAR_ITEM
-                                + "' value='" + batch.getUuid() + "'/></form>");
+                                + CLEAR_ITEM + "' value='Delete' /><input type=hidden name='" + ITEM_UUID + "' value='"
+                                + batch.getUuid() + "'/></form>");
             }
             HtmlUtils.generateEndTable(os, errorBatches.size());
         }
