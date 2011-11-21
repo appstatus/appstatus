@@ -27,7 +27,8 @@ public abstract class AbstractPage {
         os.write("</head>".getBytes(ENCODING));
         os.write("<body>".getBytes(ENCODING));
 
-        os.write(("<div class=\"logo\"><a href=\"" + URL + "\">AppStatus</a></div>").getBytes(ENCODING));
+        os.write(("<div class=\"logo\"><a href=\"" + URL + "\"><img src='?icon=" + Icons.LOGO + "'/></a></div>")
+                .getBytes(ENCODING));
         os.write("<div class=\"menu\"><a href=\"?\">Status</a> | <a href=\"?p=services\">Services</a> | <a href=\"?p=batch\">Batches</a></div>"
                 .getBytes(ENCODING));
     }
