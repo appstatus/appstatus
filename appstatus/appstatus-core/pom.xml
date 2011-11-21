@@ -2,13 +2,13 @@
 	<parent>
 		<artifactId>appstatus-parent</artifactId>
 		<groupId>net.sf.appstatus</groupId>
-		<version>0.0.6</version>
+		<version>0.0.7-SNAPSHOT</version>
 	</parent>
 	<modelVersion>4.0.0</modelVersion>
   <groupId>net.sf.appstatus</groupId>
   <artifactId>appstatus-core</artifactId>
   <name>Core</name>
-  <version>0.0.6</version>
+  <version>0.0.7-SNAPSHOT</version>
   <dependencies>
   	<dependency> 
   		<groupId>org.slf4j</groupId>
