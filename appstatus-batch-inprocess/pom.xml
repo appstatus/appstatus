@@ -17,4 +17,5 @@
   		<scope>compile</scope>
   	</dependency>
   </dependencies>
+  <name>In-process Batch Monitor</name>
 </project>
