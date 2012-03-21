@@ -16,15 +16,12 @@ package net.sf.appstatus.batch;
  * 
  */
 
-import java.util.Date;
-
 import net.sf.appstatus.core.batch.AbstractBatchProgressMonitor;
 import net.sf.appstatus.core.batch.IBatch;
 import net.sf.appstatus.core.batch.IBatchProgressMonitor;
 import net.sf.appstatus.core.batch.IBatchProgressMonitorExt;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import java.util.Date;
 
 /**
  * Log job progress agent.
@@ -36,8 +33,6 @@ import org.slf4j.LoggerFactory;
 public class InProcessBatchProgressMonitor extends AbstractBatchProgressMonitor
 		implements IBatchProgressMonitorExt {
 
-	private static Logger logger = LoggerFactory
-			.getLogger(InProcessBatchProgressMonitor.class);
 	private InProcessBatchManager manager;
 
 	/**
@@ -45,6 +40,8 @@ public class InProcessBatchProgressMonitor extends AbstractBatchProgressMonitor
 	 * 
 	 * @param executionId
 	 *            job execution id
+     * @param manager batch manager
+     * @param batch current batch
 	 */
 	public InProcessBatchProgressMonitor(String executionId, IBatch batch,
 			InProcessBatchManager manager) {
@@ -61,10 +58,12 @@ public class InProcessBatchProgressMonitor extends AbstractBatchProgressMonitor
 	 *            parent monitor
 	 * @param parentWork
 	 *            parent amount of work
+     * @param batch current batch
 	 */
 	private InProcessBatchProgressMonitor(String executionId,
 			InProcessBatchProgressMonitor parent, int parentWork, Batch batch) {
 		super(executionId, parent, parentWork, batch);
+        this.manager = parent.manager;
 	}
 
 	@Override
