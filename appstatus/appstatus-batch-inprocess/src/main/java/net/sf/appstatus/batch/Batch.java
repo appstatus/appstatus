@@ -1,120 +1,197 @@
 package net.sf.appstatus.batch;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
 import net.sf.appstatus.core.batch.IBatch;
 import net.sf.appstatus.core.batch.IBatchProgressMonitor;
 
+/**
+ * Bean batch implementation, it used a progress monitor to track the batch
+ * status informations.
+ * 
+ */
 public class Batch implements IBatch {
-    Date endDate;
-    String group;
-    InProcessBatchProgressMonitor monitor;
-    String name;
-    String uuid;
+	private static final String NONE = "none";
 
-    @Override
-    public boolean equals(Object obj) {
-        if (this == obj) {
-            return true;
-        }
-        if (!(obj instanceof Batch)) {
-            return false;
-        }
+	private static final String UNKNOWN = "unknown";
+	private final String group;
+	private InProcessBatchProgressMonitor monitor;
+	private final String name;
 
-        Batch objBatch = (Batch) obj;
+	private final String uuid;
 
-        return this.getUuid().equals(objBatch.getUuid());
-    }
+	/**
+	 * Default contructor.
+	 * 
+	 * @param uuid
+	 *            unique batch identifier
+	 */
+	public Batch(String uuid) {
+		this.uuid = uuid;
+		this.group = UNKNOWN;
+		this.name = UNKNOWN;
+	}
 
-    public String getCurrentItem() {
-        return monitor.getCurrentItem().toString();
-    }
+	/**
+	 * Constructor with a name and a group.
+	 * 
+	 * @param uuid
+	 *            unique batch identifier
+	 * @param name
+	 *            batch name
+	 * @param group
+	 *            batch group name
+	 */
+	public Batch(String uuid, String name, String group) {
+		this.uuid = uuid;
+		this.name = name;
+		this.group = group;
+	}
 
-    public String getCurrentTask() {
-        return monitor.getTaskName();
-    }
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj) {
+			return true;
+		}
+		if (!(obj instanceof Batch)) {
+			return false;
+		}
 
-    public Date getEndDate() {
-        return monitor.getEndDate();
-    }
+		Batch objBatch = (Batch) obj;
 
-    public String getGroup() {
-        return group;
-    }
+		return this.getUuid().equals(objBatch.getUuid());
+	}
 
-    public long getItemCount() {
-        return monitor.getItemCount();
-    }
+	/**
+	 * Retrieve the current processed item.
+	 */
+	public String getCurrentItem() {
+		if (monitor == null) {
+			return NONE;
+		}
+		final Object currentItem = monitor.getCurrentItem();
+		if (currentItem == null) {
+			return NONE;
+		}
+		return currentItem.toString();
+	}
 
-    public String getLastMessage() {
-        return monitor.getLastMessage();
-    }
+	/**
+	 * Retrieve the current task.
+	 */
+	public String getCurrentTask() {
+		if (monitor == null) {
+			return NONE;
+		}
+		final String taskName = monitor.getTaskName();
+		if (taskName == null) {
+			return NONE;
+		}
+		return taskName;
+	}
 
-    public Date getLastUpdate() {
-        return monitor.getLastUpdate();
-    }
+	public Date getEndDate() {
+		if (monitor == null) {
+			return null;
+		}
+		return monitor.getEndDate();
+	}
 
-    public String getName() {
-        return name;
-    }
+	public String getGroup() {
+		return group;
+	}
 
-    public IBatchProgressMonitor getProgressMonitor() {
-        return monitor;
-    }
+	public long getItemCount() {
+		if (monitor == null) {
+			return 0;
+		}
+		return monitor.getItemCount();
+	}
 
-    public float getProgressStatus() {
-        if (monitor == null || monitor.getTotalWork() <= 0) {
-            return -1;
-        }
+	public String getLastMessage() {
+		if (monitor == null) {
+			return NONE;
+		}
+		final String lastMessage = monitor.getLastMessage();
+		if (lastMessage == null) {
+			return NONE;
+		}
+		return lastMessage;
+	}
 
-        return monitor.getProgress() * 100f / monitor.getTotalWork();
-    }
+	public Date getLastUpdate() {
+		if (monitor == null) {
+			return null;
+		}
+		return monitor.getLastUpdate();
+	}
 
-    public List<String> getRejectedItemsId() {
-        return monitor.getRejectedItems();
-    }
+	public String getName() {
+		return name;
+	}
 
-    public Date getStartDate() {
-        return monitor.getStartDate();
-    }
+	public IBatchProgressMonitor getProgressMonitor() {
+		return monitor;
+	}
 
-    public String getStatus() {
+	public float getProgressStatus() {
+		if (monitor == null || monitor.getTotalWork() <= 0
+				|| monitor.getProgress() < 0) {
+			return -1;
+		}
 
-        if (!monitor.isDone()) {
-            return STATUS_RUNNING;
-        }
+		return monitor.getProgress() * 100f / monitor.getTotalWork();
+	}
 
-        if (monitor.isSuccess()) {
-            return STATUS_SUCCESS;
-        }
+	public List<String> getRejectedItemsId() {
+		if (monitor == null) {
+			return new ArrayList<String>();
+		}
+		final List<String> rejectedItems = monitor.getRejectedItems();
+		if (rejectedItems == null) {
+			return new ArrayList<String>();
+		}
+		return rejectedItems;
+	}
 
-        return STATUS_FAILURE;
-    }
+	public Date getStartDate() {
+		if (monitor == null) {
+			return null;
+		}
+		return monitor.getStartDate();
+	}
 
-    public String getUuid() {
-        return uuid;
-    }
+	public String getStatus() {
+		if (monitor == null) {
+			return UNKNOWN;
+		}
 
-    public boolean isSuccess() {
-        return monitor.isSuccess();
-    }
+		if (!monitor.isDone()) {
+			return STATUS_RUNNING;
+		}
 
-    public void setGroup(String group2) {
-        this.group = group2;
+		if (monitor.isSuccess()) {
+			return STATUS_SUCCESS;
+		}
 
-    }
+		return STATUS_FAILURE;
+	}
 
-    public void setName(String name2) {
-        this.name = name2;
-    }
+	public String getUuid() {
+		return uuid;
+	}
 
-    public void setProgressMonitor(IBatchProgressMonitor monitor) {
-        this.monitor = (InProcessBatchProgressMonitor) monitor;
-    }
+	public boolean isSuccess() {
+		if (monitor == null) {
+			return false;
+		}
+		return monitor.isSuccess();
+	}
 
-    public void setUuid(String uuid) {
-        this.uuid = uuid;
-    }
+	public void setProgressMonitor(IBatchProgressMonitor monitor) {
+		this.monitor = (InProcessBatchProgressMonitor) monitor;
+	}
 
 }
