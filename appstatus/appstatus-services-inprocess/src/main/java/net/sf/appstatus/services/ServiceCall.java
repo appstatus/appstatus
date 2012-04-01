@@ -14,7 +14,7 @@ public class ServiceCall implements IServiceMonitor {
 	public void cacheHit() {
 		if (!this.cacheHit) {
 			this.cacheHit = true;
-			service.cacheHits++;
+			service.cacheHits.incrementAndGet();
 		}
 	}
 
@@ -33,14 +33,19 @@ public class ServiceCall implements IServiceMonitor {
 
 	public void beginCall(Object... parameters) {
 		this.parameters = parameters;
-		service.hits++;
-		service.running++;
+		service.hits.incrementAndGet();
+		service.running.incrementAndGet();
 	}
-
+ 
 	public void endCall() {
+		if (endTime != null)	{
+			// endCall was called twice ! returning directly.
+			return;
+		}
+		
 		endTime = System.currentTimeMillis();
+		service.running.decrementAndGet();
 
-		service.running--;
 		long response = endTime - startTime;
 
 		if (cacheHit) {
@@ -53,10 +58,12 @@ public class ServiceCall implements IServiceMonitor {
 					|| service.minResponseTimeWithCache > response) {
 				service.minResponseTimeWithCache = response;
 			}
-			
-			service.avgResponseTimeWithCache = ( service.avgResponseTimeWithCache * (service.cacheHits -1) + response ) / service.cacheHits;
+
+			service.avgResponseTimeWithCache = (service.avgResponseTimeWithCache
+					* (service.cacheHits.get() - 1) + response)
+					/ service.cacheHits.get();
 		} else {
-			
+
 			if (service.maxResponseTime == null
 					|| service.maxResponseTime < response) {
 				service.maxResponseTime = response;
@@ -66,8 +73,10 @@ public class ServiceCall implements IServiceMonitor {
 					|| service.minResponseTime > response) {
 				service.minResponseTime = response;
 			}
-			
-			service.avgResponseTime = ( service.avgResponseTime * (service.hits - service.cacheHits -1) + response ) / (service.hits - service.cacheHits);
+
+			service.avgResponseTime = (service.avgResponseTime
+					* (service.hits.get() - service.cacheHits.get() - 1) + response)
+					/ (service.hits.get() - service.cacheHits.get());
 		}
 
 	}

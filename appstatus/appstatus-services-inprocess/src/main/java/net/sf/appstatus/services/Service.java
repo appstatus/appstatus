@@ -1,30 +1,22 @@
 package net.sf.appstatus.services;
 
+import java.util.concurrent.atomic.AtomicLong;
+
 import net.sf.appstatus.core.services.IService;
 
 public class Service implements IService {
 
 	public long getRunning() {
-		return running;
+		return running.get();
 	}
 
-	public void setRunning(long running) {
-		this.running = running;
-	}
-
-	public void setCacheHits(long cacheHits) {
-		this.cacheHits = cacheHits;
-	}
-
-	public void setHits(long hits) {
-		this.hits = hits;
-	}
+	
 
 	protected double avgResponseTime = 0;
 	protected double avgResponseTimeWithCache = 0;
-	protected long cacheHits;
-	protected long hits;
-	protected long running;
+	protected AtomicLong cacheHits = new AtomicLong();
+	protected AtomicLong hits = new AtomicLong();
+	protected AtomicLong running = new AtomicLong();
 	protected Long maxResponseTime;
 	protected Long minResponseTimeWithCache;
 	protected Long maxResponseTimeWithCache;
@@ -53,11 +45,11 @@ public class Service implements IService {
 	}
 
 	public long getCacheHits() {
-		return cacheHits;
+		return cacheHits.get();
 	}
 
 	public long getHits() {
-		return hits;
+		return hits.get();
 	}
 
 	public Long getMaxResponseTime() {
