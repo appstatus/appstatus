@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document xmlns="http://maven.apache.org/XDOC/2.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/XDOC/2.0 http://maven.apache.org/xsd/xdoc-2.0.xsd">
+
+	<properties>
+		<title>Batchs monitoring</title>
+		<author email="nicolas.richeton@capgemini.com">Nicolas Richeton</author>
+	</properties>
+
+	<body>
+
+
+		<h1>Batchs monitoring</h1>
+
+		<p>AppStatus provides a batch monitoring API, which can replace log calls and provides a better feedback on overall batch activity.</p>
+		
+		<h2>Usage</h2>
+		
+		<source><![CDATA[
+		
+IBatchProgressMonitor monitor = appstatus.getServiceMonitor( name, group) ;
+
+monitor.beginTask(  "Batch name", "Batch description" , 2 /* steps */ );
+
+monitor.setCurrentItem( "1" ) ;
+
+// Do some work on item 1;
+...
+
+// Set step completed.
+monitor.worked(1);
+
+monitor.setCurrentItem( "2" ) ;
+
+// Do some work on item 2;
+...
+
+// Set step completed.
+monitor.worked(1);
+
+// End batch.
+monitor.done();
+ 
+
+		]]></source>
+
+		<p>Note: API is very close to the Eclipse Job API.</p>
+
+	<h2>Result</h2>
+
+<p>Go to http://&lt;server&gt;/&lt;app-context&gt;/status?p=batch :</p>
+
+<img src="images/appstatus-0.0.7-batchs.png" alt="Batchs page example" style="border: 1px solid black;"/>
+	</body>
+</document>
+  
+  
