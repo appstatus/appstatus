@@ -30,7 +30,8 @@ import org.slf4j.LoggerFactory;
  * @author Nicolas Richeton
  * 
  */
-public abstract class AbstractBatchProgressMonitor implements IBatchProgressMonitorExt {
+public abstract class AbstractBatchProgressMonitor implements
+		IBatchProgressMonitorExt {
 
 	/**
 	 * Reference to the batch description
@@ -55,7 +56,8 @@ public abstract class AbstractBatchProgressMonitor implements IBatchProgressMoni
 	private long lastUpdate = -1;
 	private long lastWriteTimestamp;
 
-	private Logger logger = LoggerFactory.getLogger(AbstractBatchProgressMonitor.class);
+	private Logger logger = LoggerFactory
+			.getLogger(AbstractBatchProgressMonitor.class);
 
 	private String name;
 
@@ -94,7 +96,8 @@ public abstract class AbstractBatchProgressMonitor implements IBatchProgressMoni
 		this.batch = batch;
 		this.batch.setProgressMonitor(this);
 		startTime = System.currentTimeMillis();
-		getLogger().info("[{}] {}: Init", new Object[] { this.batch.getGroup(), batch.getName() });
+		getLogger().info("[{}] {}: Init",
+				new Object[] { this.batch.getGroup(), batch.getName() });
 		touch();
 	}
 
@@ -108,8 +111,8 @@ public abstract class AbstractBatchProgressMonitor implements IBatchProgressMoni
 	 * @param parentWork
 	 *            parent amount of work
 	 */
-	protected AbstractBatchProgressMonitor(String executionId, IBatchProgressMonitor parent, int parentWork,
-			IBatch batch) {
+	protected AbstractBatchProgressMonitor(String executionId,
+			IBatchProgressMonitor parent, int parentWork, IBatch batch) {
 		this.executionId = executionId;
 		this.parent = (AbstractBatchProgressMonitor) parent;
 		this.parentWork = parentWork;
@@ -129,8 +132,8 @@ public abstract class AbstractBatchProgressMonitor implements IBatchProgressMoni
 		this.taskDescription = description;
 		getLogger().info(
 				"[{}] {}: Begin {} ({}), steps : {}",
-				new Object[] { getBatch().getGroup(), getBatch().getName(), name, description,
-						String.valueOf(totalWork) });
+				new Object[] { getBatch().getGroup(), getBatch().getName(),
+						name, description, String.valueOf(totalWork) });
 		touch();
 
 	}
@@ -157,8 +160,8 @@ public abstract class AbstractBatchProgressMonitor implements IBatchProgressMoni
 
 		getLogger().info(
 				"[{}] {}: End {}, {} ms",
-				new Object[] { getBatch().getGroup(), getBatch().getName(), name,
-						System.currentTimeMillis() - startTime });
+				new Object[] { getBatch().getGroup(), getBatch().getName(),
+						name, System.currentTimeMillis() - startTime });
 		touch();
 
 	}
@@ -199,10 +202,10 @@ public abstract class AbstractBatchProgressMonitor implements IBatchProgressMoni
 		endTask(false);
 		endBatch(false);
 
-		getLogger()
-				.error("Failed [{}] {}: {}, duration: {}",
-						new Object[] { this.batch.getGroup(), batch.getName(), reason,
-								String.valueOf(endTime - startTime) }, t);
+		getLogger().error(
+				"Failed [{}] {}: {}, duration: {}",
+				new Object[] { this.batch.getGroup(), batch.getName(), reason,
+						String.valueOf(endTime - startTime) }, t);
 		touch();
 	}
 
@@ -232,7 +235,8 @@ public abstract class AbstractBatchProgressMonitor implements IBatchProgressMoni
 
 			long currentTime = System.currentTimeMillis();
 			long elapsed = currentTime - startTime;
-			long estEndTime = currentTime + (long) (totalWork * elapsed / getProgress());
+			long estEndTime = currentTime
+					+ (long) (totalWork * elapsed / getProgress());
 
 			return new Date(estEndTime);
 		}
@@ -278,9 +282,11 @@ public abstract class AbstractBatchProgressMonitor implements IBatchProgressMoni
 			return UNKNOW;
 		}
 
-		if (currentChild != null && currentChild.getTotalWork() != UNKNOW && !currentChild.isDone()) {
+		if (currentChild != null && currentChild.getTotalWork() != UNKNOW
+				&& !currentChild.isDone()) {
 
-			float childProgress = currentChildWork * currentChild.getProgress() / currentChild.getTotalWork();
+			float childProgress = currentChildWork * currentChild.getProgress()
+					/ currentChild.getTotalWork();
 
 			return worked + childProgress;
 		}
@@ -288,6 +294,11 @@ public abstract class AbstractBatchProgressMonitor implements IBatchProgressMoni
 		return worked;
 	}
 
+	/**
+	 * Get the list of rejected items.
+	 * 
+	 * @return empty list or list of rejected items.
+	 */
 	public List<String> getRejectedItems() {
 		return rejectedItems;
 	}
@@ -370,7 +381,8 @@ public abstract class AbstractBatchProgressMonitor implements IBatchProgressMoni
 	 */
 	public void reject(String itemId, String reason, Throwable e) {
 		getMainMonitor().rejectedItems.add(itemId);
-		getLogger().warn(name + ": rejected " + itemId + " (" + reason + ")", e);
+		getLogger()
+				.warn(name + ": rejected " + itemId + " (" + reason + ")", e);
 		touch();
 	}
 
@@ -404,7 +416,8 @@ public abstract class AbstractBatchProgressMonitor implements IBatchProgressMoni
 
 		if (isLoggable(lastWriteTimestamp)) {
 			lastWriteTimestamp = System.currentTimeMillis();
-			getLogger().info("{}: working on {} (#{})", new Object[] { name, item, itemCount });
+			getLogger().info("{}: working on {} (#{})",
+					new Object[] { name, item, itemCount });
 		}
 		touch();
 
@@ -418,6 +431,11 @@ public abstract class AbstractBatchProgressMonitor implements IBatchProgressMoni
 	 * {@inheritDoc}
 	 */
 	public void setTotalWork(int totalWork) {
+		if (totalWork < 0) {
+			throw new IllegalArgumentException(
+					"totalWork cannot be negative : " + totalWork);
+		}
+
 		this.totalWork = totalWork;
 	}
 
@@ -443,6 +461,10 @@ public abstract class AbstractBatchProgressMonitor implements IBatchProgressMoni
 	 */
 	public void worked(int work) {
 
+		if (work < 0) {
+			throw new IllegalArgumentException("work cannot be negative : "
+					+ work);
+		}
 		worked = worked + work;
 
 		// Ensure work can not exceed totalWork.
@@ -454,10 +476,14 @@ public abstract class AbstractBatchProgressMonitor implements IBatchProgressMoni
 
 		// Log
 		if (isLoggable(lastWriteTimestamp)) {
-			float cp = getMainMonitor().getProgress() * 100f / getMainMonitor().getTotalWork();
+			float cp = getMainMonitor().getProgress() * 100f
+					/ getMainMonitor().getTotalWork();
 
 			lastWriteTimestamp = System.currentTimeMillis();
-			getLogger().info("[{}] {}: progress {}%", new Object[] { getBatch().getGroup(), getBatch().getName(), cp });
+			getLogger().info(
+					"[{}] {}: progress {}%",
+					new Object[] { getBatch().getGroup(), getBatch().getName(),
+							cp });
 
 			if (cp > 100) {
 				throw new RuntimeException();

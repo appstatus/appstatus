@@ -92,12 +92,19 @@ public class BatchSample implements Runnable {
 	 */
 	private static void step2(List<String> items,
 			IBatchProgressMonitor stepMonitor) {
-		stepMonitor.beginTask("step2", "Write the items in the console output.",
-				items.size());
+		stepMonitor.beginTask("step2",
+				"Write the items in the console output.", items.size());
 		for (String item : items) {
-			AppStatusStatic.getInstance().getServiceMonitor("Console Write",
-					"Console");
+			IServiceMonitor sm = AppStatusStatic.getInstance()
+					.getServiceMonitor("Console Write", "Console");
 			stepMonitor.message("Writing item : " + item);
+			sm.beginCall(null);
+			try {
+				Thread.sleep(100);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+			sm.endCall();
 			stepMonitor.worked(1);
 		}
 		stepMonitor.done();

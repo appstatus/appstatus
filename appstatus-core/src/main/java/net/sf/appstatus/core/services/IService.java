@@ -14,7 +14,7 @@
 package net.sf.appstatus.core.services;
 
 /**
- * Job progress agent monitor.
+ * A service with associated metrics.
  * 
  * @author Nicolas Richeton
  * 

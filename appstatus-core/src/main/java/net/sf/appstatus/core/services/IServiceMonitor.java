@@ -16,7 +16,7 @@
 package net.sf.appstatus.core.services;
 
 /**
- * Service agent interface.
+ * Service monitor
  * 
  * @author Guillaume Mary
  * @author Nicolas Richeton
