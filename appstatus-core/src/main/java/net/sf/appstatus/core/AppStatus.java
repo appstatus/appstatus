@@ -246,8 +246,9 @@ public class AppStatus {
 			while (configFiles.hasMoreElements()) {
 				Properties p = loadProperties(configFiles.nextElement());
 
-				Set<String> keys = p.stringPropertyNames();
-				for (String name : keys) {
+				Set<Object> keys = p.keySet();
+				for (Object oName : keys) {
+					String name = (String) oName;
 					String clazz = (String) p.get(name);
 					if (name.startsWith("check")) {
 						addStatusChecker(clazz);
