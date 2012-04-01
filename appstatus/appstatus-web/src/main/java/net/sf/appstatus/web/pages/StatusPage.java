@@ -15,90 +15,147 @@ import net.sf.appstatus.core.check.ICheckResult;
 import net.sf.appstatus.web.HtmlUtils;
 
 public class StatusPage extends AbstractPage {
-    private static final String ENCODING = "UTF-8";
+	private static final String ENCODING = "UTF-8";
 
-    /**
-     * Returns status icon id.
-     * 
-     * @param result
-     * @return
-     */
-    private static String getStatus(ICheckResult result) {
+	/**
+	 * Returns status icon id.
+	 * 
+	 * @param result
+	 * @return
+	 */
+	private static String getStatus(ICheckResult result) {
 
-        if (result.isFatal()) {
-            return Icons.STATUS_ERROR;
-        }
+		if (result.isFatal()) {
+			return Icons.STATUS_ERROR;
+		}
 
-        if (result.getCode() == ICheckResult.OK) {
-            return Icons.STATUS_OK;
-        }
+		if (result.getCode() == ICheckResult.OK) {
+			return Icons.STATUS_OK;
+		}
 
-        return Icons.STATUS_WARN;
-    }
+		return Icons.STATUS_WARN;
+	}
 
-    @Override
-    public void doGet(AppStatus status, HttpServletRequest req, HttpServletResponse resp)
-            throws UnsupportedEncodingException, IOException {
+	@Override
+	public void doGet(AppStatus status, HttpServletRequest req,
+			HttpServletResponse resp) throws UnsupportedEncodingException,
+			IOException {
 
-        setup(resp);
-        ServletOutputStream os = resp.getOutputStream();
-        begin(os);
+		if (req.getParameter("json") != null) {
+			doGetJSON(status, req, resp);
+		} else {
+			doGetHTML(status, req, resp);
+		}
 
-        List<ICheckResult> results = status.checkAll();
-        boolean statusOk = true;
-        int statusCode = 200;
-        for (ICheckResult r : results) {
-            if (r.isFatal()) {
-                resp.setStatus(500);
-                statusCode = 500;
-                statusOk = false;
-                break;
-            }
-        }
+	}
 
-        os.write("<h1>Status Page</h1>".getBytes(ENCODING));
-        os.write(("<p>Online:" + statusOk + "</p>").getBytes(ENCODING));
-        os.write(("<p>Code:" + statusCode + "</p>").getBytes(ENCODING));
+	public void doGetHTML(AppStatus status, HttpServletRequest req,
+			HttpServletResponse resp) throws UnsupportedEncodingException,
+			IOException {
 
-        os.write("<h2 class=\"status\">Status</h2>".getBytes(ENCODING));
-        if (HtmlUtils.generateBeginTable(os, results.size())) {
+		setup(resp, "text/html");
+		ServletOutputStream os = resp.getOutputStream();
+		begin(os);
 
-            HtmlUtils.generateHeaders(os, "", "Name", "Description", "Code", "Resolution");
+		List<ICheckResult> results = status.checkAll();
+		boolean statusOk = true;
+		int statusCode = 200;
+		for (ICheckResult r : results) {
+			if (r.isFatal()) {
+				resp.setStatus(500);
+				statusCode = 500;
+				statusOk = false;
+				break;
+			}
+		}
 
-            for (ICheckResult r : results) {
-                HtmlUtils.generateRow(os, getStatus(r), r.getProbeName(), r.getDescription(),
-                        String.valueOf(r.getCode()), r.getResolutionSteps());
-            }
-            HtmlUtils.generateEndTable(os, results.size());
-        }
+		os.write("<h1>Status Page</h1>".getBytes(ENCODING));
+		os.write(("<p>Online:" + statusOk + "</p>").getBytes(ENCODING));
+		os.write(("<p>Code:" + statusCode + "</p>").getBytes(ENCODING));
 
-        os.write("<h2 class=\"properties\">Properties</h2>".getBytes(ENCODING));
-        Map<String, Map<String, String>> properties = status.getProperties();
-        if (HtmlUtils.generateBeginTable(os, properties.size())) {
+		os.write("<h2 class=\"status\">Status</h2>".getBytes(ENCODING));
+		if (HtmlUtils.generateBeginTable(os, results.size())) {
 
-            HtmlUtils.generateHeaders(os, "", "Category", "Name", "Value");
+			HtmlUtils.generateHeaders(os, "", "Name", "Description", "Code",
+					"Resolution");
 
-            for (Entry<String, Map<String, String>> cat : properties.entrySet()) {
-                String category = cat.getKey();
+			for (ICheckResult r : results) {
+				HtmlUtils.generateRow(os, getStatus(r), r.getProbeName(),
+						r.getDescription(), String.valueOf(r.getCode()),
+						r.getResolutionSteps());
+			}
+			HtmlUtils.generateEndTable(os, results.size());
+		}
 
-                for (Entry<String, String> r : cat.getValue().entrySet()) {
-                    HtmlUtils.generateRow(os, Icons.STATUS_PROP, category, r.getKey(), r.getValue());
-                }
+		os.write("<h2 class=\"properties\">Properties</h2>".getBytes(ENCODING));
+		Map<String, Map<String, String>> properties = status.getProperties();
+		if (HtmlUtils.generateBeginTable(os, properties.size())) {
 
-            }
-            HtmlUtils.generateEndTable(os, properties.size());
-        }
+			HtmlUtils.generateHeaders(os, "", "Category", "Name", "Value");
 
-        end(os);
-    }
+			for (Entry<String, Map<String, String>> cat : properties.entrySet()) {
+				String category = cat.getKey();
 
-    @Override
-    public void doPost(AppStatus status, HttpServletRequest req, HttpServletResponse resp) {
-        // TODO Auto-generated method stub
-    }
+				for (Entry<String, String> r : cat.getValue().entrySet()) {
+					HtmlUtils.generateRow(os, Icons.STATUS_PROP, category,
+							r.getKey(), r.getValue());
+				}
 
-    @Override
-    public String getId() {
-        return "status";
-    }
+			}
+			HtmlUtils.generateEndTable(os, properties.size());
+		}
+
+		end(os);
+	}
+
+	public void doGetJSON(AppStatus status, HttpServletRequest req,
+			HttpServletResponse resp) throws UnsupportedEncodingException,
+			IOException {
+
+		setup(resp, "application/json");
+		ServletOutputStream os = resp.getOutputStream();
+		int statusCode = 200;
+		List<ICheckResult> results = status.checkAll();
+		for (ICheckResult r : results) {
+			if (r.isFatal()) {
+				resp.setStatus(500);
+				statusCode = 500;
+				break;
+			}
+		}
+
+		os.write("{".getBytes(ENCODING));
+
+		os.write(("\"code\" : " + statusCode + ",").getBytes(ENCODING));
+		os.write(("\"status\" : {").getBytes(ENCODING));
+
+		boolean first = true;
+		for (ICheckResult r : results) {
+			if (!first) {
+				os.write((",").getBytes(ENCODING));
+			}
+
+			os.write(("\"" + r.getProbeName() + "\" : " + r.getCode())
+					.getBytes(ENCODING));
+
+			if (first) {
+				first = false;
+			}
+		}
+
+		os.write("}".getBytes(ENCODING));
+		os.write("}".getBytes(ENCODING));
+
+	}
+
+	@Override
+	public void doPost(AppStatus status, HttpServletRequest req,
+			HttpServletResponse resp) {
+		// TODO Auto-generated method stub
+	}
+
+	@Override
+	public String getId() {
+		return "status";
+	}
 }
