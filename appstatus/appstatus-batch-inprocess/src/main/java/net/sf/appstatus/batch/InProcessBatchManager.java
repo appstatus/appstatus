@@ -18,9 +18,23 @@ public class InProcessBatchManager implements IBatchManager {
 	List<IBatch> runningBatches = new Vector<IBatch>();
 
 	public IBatch addBatch(String name, String group, String uuid) {
+
 		// Add batch
-		Batch b = new Batch(uuid, name, group);
-		addTo(runningBatches, b);
+		IBatch b = new Batch(uuid, name, group);
+
+		int currentPosition = runningBatches.indexOf(b);
+		if (currentPosition >= 0) {
+			// Reuse existing object (and keep monitor).
+			b = runningBatches.get(currentPosition);
+		} else {
+			// Add new batch
+
+			// initMonitor
+			getMonitor(b);
+
+			// runningBatches is not limited in size.
+			runningBatches.add(b);
+		}
 
 		return b;
 	}
@@ -53,7 +67,14 @@ public class InProcessBatchManager implements IBatchManager {
 	}
 
 	public IBatchProgressMonitor getMonitor(IBatch batch) {
-		return new InProcessBatchProgressMonitor(batch.getUuid(), batch, this);
+		Batch b = (Batch) batch;
+		// If batch has no progress monitor, create one.
+		if (b.getProgressMonitor() == null) {
+			new InProcessBatchProgressMonitor(batch.getUuid(), batch, this);
+		}
+
+		// Return current monitor.
+		return b.getProgressMonitor();
 	}
 
 	public List<IBatch> getRunningBatches() {
@@ -76,9 +97,7 @@ public class InProcessBatchManager implements IBatchManager {
 		switch (scope) {
 		case REMOVE_SUCCESS:
 			for (IBatch b : finishedBatches) {
-				if (b.isSuccess()
-						&& (b.getRejectedItemsId() == null || b
-								.getRejectedItemsId().size() == 0)) {
+				if (b.isSuccess() && (b.getRejectedItemsId() == null || b.getRejectedItemsId().size() == 0)) {
 					toRemove.add(b);
 				}
 			}

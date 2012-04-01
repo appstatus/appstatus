@@ -59,7 +59,8 @@ public class LaunchClassicBatchSampleServlet extends HttpServlet {
 
 		os.write("<html><head".getBytes(ENCODING));
 		os.write("<body>".getBytes(ENCODING));
-		os.write("<h1>Ok</h1>".getBytes(ENCODING));
+		os.write("<h1>Batch started</h1><p>The demo batch has been sucessfully started </p>"
+				.getBytes(ENCODING));
 		os.write("</body></html>".getBytes(ENCODING));
 	}
 }
