@@ -38,6 +38,8 @@
     
 		<menu name="App Status Toolkit">
 			<item name="Introduction" href="index.html" />
+			<item name="Services performance" href="services.html" />
+			<item name="Batchs" href="batchs.html" />
 		</menu>
 		<menu ref="modules" />
 		<menu ref="reports" />
