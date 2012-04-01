@@ -29,7 +29,7 @@
 <dependency>
     	<groupId>net.sf.appstatus </groupId>
     	<artifactId>appstatus-web</artifactId>
-    	<version>0.0.2</version>
+    	<version>0.0.6</version>
     	<scope>compile</scope>
 </dependency>]]></source>
 
@@ -89,9 +89,9 @@ public class GooglePingStatusChecker implements IStatusChecker {
 check.google.ping=net.sf.appstatus.dummy.GooglePingStatusChecker
 </source>
 
-<p>Got to http://&lt;server&gt;/&lt;app-context&gt;/status :</p>
+<p>Go to http://&lt;server&gt;/&lt;app-context&gt;/status :</p>
 
-<img src="images/appstatus-0.1-example.png" alt="Status page example" style="border: 1px solid black;"/>
+<img src="images/appstatus-0.0.7-status.png" alt="Status page example" style="border: 1px solid black;"/>
 	</body>
 </document>
   
