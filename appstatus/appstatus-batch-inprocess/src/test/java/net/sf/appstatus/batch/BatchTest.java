@@ -4,6 +4,7 @@ import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.hamcrest.Matchers.nullValue;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -19,6 +20,9 @@ import org.junit.Test;
 
 public class BatchTest {
 
+	/**
+	 * Test {@link Batch#equals(Object)}.
+	 */
 	@Test
 	public void testEqualsObject() {
 		Batch batch = new Batch("12345");
@@ -27,38 +31,33 @@ public class BatchTest {
 		assertThat(batch.equals(new Batch("12345")), is(true));
 		assertThat(batch.equals(new Batch("54321")), is(false));
 		assertThat(batch.equals(null), is(false));
-		assertThat(batch.equals(new Batch(null)), is(false));
 	}
 
 	@Test
 	public void testGetCurrentItem() {
 		// assert with response with no monitor
+		assertNull(new Batch("12345", "batchName", "batchGroup").getCurrentItem());
+
 		Batch batch = new Batch("12345");
-		assertThat(batch.getCurrentItem(), is("none"));
-		assertThat(
-				new Batch("12345", "batchName", "batchGroup").getCurrentItem(),
-				is("none"));
+		assertNull(batch.getCurrentItem());
 
 		// create the progress monitor
 		InProcessBatchProgressMonitor mockedProgressMonitor = mock(InProcessBatchProgressMonitor.class);
 		batch.setProgressMonitor(mockedProgressMonitor);
 
 		when(mockedProgressMonitor.getCurrentItem()).thenReturn(null);
-		assertThat(batch.getCurrentItem(), is("none"));
+		assertNull(batch.getCurrentItem());
 
-		when(mockedProgressMonitor.getCurrentItem()).thenReturn(
-				new String("current item"));
+		when(mockedProgressMonitor.getCurrentItem()).thenReturn(new String("current item"));
 		assertThat(batch.getCurrentItem(), is("current item"));
 	}
 
 	@Test
 	public void testGetCurrentTask() {
 		// assert with response with no monitor
+		assertNull(new Batch("12345", "batchName", "batchGroup").getCurrentTask());
 		Batch batch = new Batch("12345");
-		assertThat(batch.getCurrentTask(), is("none"));
-		assertThat(
-				new Batch("12345", "batchName", "batchGroup").getCurrentTask(),
-				is("none"));
+		assertNull(batch.getCurrentTask());
 
 		// create the progress monitor
 		InProcessBatchProgressMonitor mockedProgressMonitor = mock(InProcessBatchProgressMonitor.class);
@@ -66,7 +65,7 @@ public class BatchTest {
 
 		// assert response with the monitor
 		when(mockedProgressMonitor.getTaskName()).thenReturn(null);
-		assertThat(batch.getCurrentItem(), is("none"));
+		assertNull(batch.getCurrentItem());
 
 		when(mockedProgressMonitor.getTaskName()).thenReturn("taskName");
 		assertThat(batch.getCurrentTask(), is("taskName"));
@@ -77,8 +76,7 @@ public class BatchTest {
 		// assert with response with no monitor
 		Batch batch = new Batch("12345");
 		assertThat(batch.getEndDate(), nullValue());
-		assertThat(new Batch("12345", "batchName", "batchGroup").getEndDate(),
-				nullValue());
+		assertThat(new Batch("12345", "batchName", "batchGroup").getEndDate(), nullValue());
 
 		// create the progress monitor
 		InProcessBatchProgressMonitor mockedProgressMonitor = mock(InProcessBatchProgressMonitor.class);
@@ -88,16 +86,14 @@ public class BatchTest {
 		when(mockedProgressMonitor.getEndDate()).thenReturn(null);
 		assertThat(batch.getEndDate(), nullValue());
 
-		when(mockedProgressMonitor.getEndDate()).thenReturn(
-				new DateTime("2012-01-12T12:56:34").toDate());
-		assertThat(batch.getEndDate(),
-				is(new DateTime("2012-01-12T12:56:34").toDate()));
+		when(mockedProgressMonitor.getEndDate()).thenReturn(new DateTime("2012-01-12T12:56:34").toDate());
+		assertThat(batch.getEndDate(), is(new DateTime("2012-01-12T12:56:34").toDate()));
 	}
 
 	@Test
 	public void testGetGroup() {
 		Batch batch = new Batch("12345");
-		assertThat(batch.getGroup(), is("unknown"));
+		assertNull(batch.getGroup());
 
 		batch = new Batch("12345", "name", "group");
 		assertThat(batch.getGroup(), is("group"));
@@ -108,9 +104,7 @@ public class BatchTest {
 		// assert with response with no monitor
 		Batch batch = new Batch("12345");
 		assertThat(batch.getItemCount(), is((long) 0));
-		assertThat(
-				new Batch("12345", "batchName", "batchGroup").getItemCount(),
-				is((long) 0));
+		assertThat(new Batch("12345", "batchName", "batchGroup").getItemCount(), is((long) 0));
 
 		// create the progress monitor
 		InProcessBatchProgressMonitor mockedProgressMonitor = mock(InProcessBatchProgressMonitor.class);
@@ -128,10 +122,8 @@ public class BatchTest {
 	public void testGetLastMessage() {
 		// assert with response with no monitor
 		Batch batch = new Batch("12345");
-		assertThat(batch.getLastMessage(), is("none"));
-		assertThat(
-				new Batch("12345", "batchName", "batchGroup").getLastMessage(),
-				is("none"));
+		assertNull(batch.getLastMessage());
+		assertNull(new Batch("12345", "batchName", "batchGroup").getLastMessage());
 
 		// create the progress monitor
 		InProcessBatchProgressMonitor mockedProgressMonitor = mock(InProcessBatchProgressMonitor.class);
@@ -139,7 +131,7 @@ public class BatchTest {
 
 		// assert response with the monitor
 		when(mockedProgressMonitor.getLastMessage()).thenReturn(null);
-		assertThat(batch.getLastMessage(), is("none"));
+		assertNull(batch.getLastMessage());
 
 		when(mockedProgressMonitor.getLastMessage()).thenReturn("last message");
 		assertThat(batch.getLastMessage(), is("last message"));
@@ -150,9 +142,7 @@ public class BatchTest {
 		// assert with response with no monitor
 		Batch batch = new Batch("12345");
 		assertThat(batch.getLastUpdate(), nullValue());
-		assertThat(
-				new Batch("12345", "batchName", "batchGroup").getLastUpdate(),
-				nullValue());
+		assertThat(new Batch("12345", "batchName", "batchGroup").getLastUpdate(), nullValue());
 
 		// create the progress monitor
 		InProcessBatchProgressMonitor mockedProgressMonitor = mock(InProcessBatchProgressMonitor.class);
@@ -162,16 +152,14 @@ public class BatchTest {
 		when(mockedProgressMonitor.getLastUpdate()).thenReturn(null);
 		assertThat(batch.getLastUpdate(), nullValue());
 
-		when(mockedProgressMonitor.getLastUpdate()).thenReturn(
-				new DateTime("2012-03-02T17:23:30").toDate());
-		assertThat(batch.getLastUpdate(),
-				is(new DateTime("2012-03-02T17:23:30").toDate()));
+		when(mockedProgressMonitor.getLastUpdate()).thenReturn(new DateTime("2012-03-02T17:23:30").toDate());
+		assertThat(batch.getLastUpdate(), is(new DateTime("2012-03-02T17:23:30").toDate()));
 	}
 
 	@Test
 	public void testGetName() {
 		Batch batch = new Batch("12345");
-		assertThat(batch.getName(), is("unknown"));
+		assertNull(batch.getName());
 
 		batch = new Batch("12345", "name", "group");
 		assertThat(batch.getName(), is("name"));
@@ -189,8 +177,7 @@ public class BatchTest {
 		InProcessBatchProgressMonitor mockedProgressMonitor = mock(InProcessBatchProgressMonitor.class);
 		batch.setProgressMonitor(mockedProgressMonitor);
 
-		assertThat(batch.getProgressMonitor(),
-				is(equalTo((IBatchProgressMonitor) mockedProgressMonitor)));
+		assertThat(batch.getProgressMonitor(), is(equalTo((IBatchProgressMonitor) mockedProgressMonitor)));
 	}
 
 	@Test
@@ -204,22 +191,17 @@ public class BatchTest {
 		batch.setProgressMonitor(mockedProgressMonitor);
 
 		// if monitor's total work value is negative
-		when(mockedProgressMonitor.getTotalWork()).thenReturn(-12);
-		assertThat(batch.getProgressStatus(), is(equalTo(-1f)));
+		when(mockedProgressMonitor.getTotalWork()).thenReturn(IBatchProgressMonitor.UNKNOW);
+		assertThat(batch.getProgressStatus(), is(equalTo((float) IBatchProgressMonitor.UNKNOW)));
 
 		// if monitor's total work value is 0
 		when(mockedProgressMonitor.getTotalWork()).thenReturn(0);
-		assertThat(batch.getProgressStatus(), is(equalTo(-1f)));
+		assertThat(batch.getProgressStatus(), is(equalTo((float) IBatchProgressMonitor.UNKNOW)));
 
 		// if monitor's total work value is positive and progress is 0
 		when(mockedProgressMonitor.getTotalWork()).thenReturn(5);
 		when(mockedProgressMonitor.getProgress()).thenReturn(0f);
 		assertThat(batch.getProgressStatus(), is(equalTo(0f)));
-
-		// if monitor's total work value is positive and progress is negative
-		when(mockedProgressMonitor.getTotalWork()).thenReturn(5);
-		when(mockedProgressMonitor.getProgress()).thenReturn(-0.305f);
-		assertThat(batch.getProgressStatus(), is(equalTo(-1f)));
 
 		// if monitor's total work value is positive and progress is positive
 		when(mockedProgressMonitor.getTotalWork()).thenReturn(5);
@@ -233,29 +215,21 @@ public class BatchTest {
 		Batch batch = new Batch("12345");
 		assertThat(batch.getRejectedItemsId(), notNullValue());
 		assertThat(batch.getRejectedItemsId().size(), is(0));
-		assertThat(
-				new Batch("12345", "batchName", "batchGroup")
-						.getRejectedItemsId(),
-				notNullValue());
-		assertThat(new Batch("12345", "batchName", "batchGroup")
-				.getRejectedItemsId().size(), is(0));
+		assertThat(new Batch("12345", "batchName", "batchGroup").getRejectedItemsId(), notNullValue());
+		assertThat(new Batch("12345", "batchName", "batchGroup").getRejectedItemsId().size(), is(0));
 
 		// create the progress monitor
 		InProcessBatchProgressMonitor mockedProgressMonitor = mock(InProcessBatchProgressMonitor.class);
 		batch.setProgressMonitor(mockedProgressMonitor);
 
 		// assert response with the monitor
-		when(mockedProgressMonitor.getRejectedItems()).thenReturn(null);
-		assertThat(batch.getRejectedItemsId(), notNullValue());
-		assertThat(batch.getRejectedItemsId().size(), is(0));
 
 		final List<String> rejectedItems = new ArrayList<String>();
 		rejectedItems.add("1234");
 		rejectedItems.add("4321");
 		rejectedItems.add("3412");
 		rejectedItems.add("2143");
-		when(mockedProgressMonitor.getRejectedItems())
-				.thenReturn(rejectedItems);
+		when(mockedProgressMonitor.getRejectedItems()).thenReturn(rejectedItems);
 		assertThat(batch.getRejectedItemsId(), notNullValue());
 		assertThat(batch.getRejectedItemsId().size(), is(4));
 		assertThat(batch.getRejectedItemsId().get(0), is("1234"));
@@ -269,9 +243,7 @@ public class BatchTest {
 		// assert with response with no monitor
 		Batch batch = new Batch("12345");
 		assertThat(batch.getStartDate(), nullValue());
-		assertThat(
-				new Batch("12345", "batchName", "batchGroup").getStartDate(),
-				nullValue());
+		assertThat(new Batch("12345", "batchName", "batchGroup").getStartDate(), nullValue());
 
 		// create the progress monitor
 		InProcessBatchProgressMonitor mockedProgressMonitor = mock(InProcessBatchProgressMonitor.class);
@@ -281,19 +253,16 @@ public class BatchTest {
 		when(mockedProgressMonitor.getStartDate()).thenReturn(null);
 		assertThat(batch.getStartDate(), nullValue());
 
-		when(mockedProgressMonitor.getStartDate()).thenReturn(
-				new DateTime("2012-01-12T12:56:34").toDate());
-		assertThat(batch.getStartDate(),
-				is(new DateTime("2012-01-12T12:56:34").toDate()));
+		when(mockedProgressMonitor.getStartDate()).thenReturn(new DateTime("2012-01-12T12:56:34").toDate());
+		assertThat(batch.getStartDate(), is(new DateTime("2012-01-12T12:56:34").toDate()));
 	}
 
 	@Test
 	public void testGetStatus() {
 		// assert with response with no monitor
 		Batch batch = new Batch("12345");
-		assertThat(batch.getStatus(), is("unknown"));
-		assertThat(new Batch("12345", "batchName", "batchGroup").getStatus(),
-				is("unknown"));
+		assertNull(batch.getStatus());
+		assertNull(new Batch("12345", "batchName", "batchGroup").getStatus());
 
 		// create the progress monitor
 		InProcessBatchProgressMonitor mockedProgressMonitor = mock(InProcessBatchProgressMonitor.class);
@@ -328,8 +297,7 @@ public class BatchTest {
 		// assert with response with no monitor
 		Batch batch = new Batch("12345");
 		assertThat(batch.isSuccess(), is(false));
-		assertThat(new Batch("12345", "batchName", "batchGroup").isSuccess(),
-				is(false));
+		assertThat(new Batch("12345", "batchName", "batchGroup").isSuccess(), is(false));
 
 		// create the progress monitor
 		InProcessBatchProgressMonitor mockedProgressMonitor = mock(InProcessBatchProgressMonitor.class);
@@ -352,8 +320,7 @@ public class BatchTest {
 		InProcessBatchProgressMonitor mockedProgressMonitor = mock(InProcessBatchProgressMonitor.class);
 		batch.setProgressMonitor(mockedProgressMonitor);
 
-		assertThat(batch.getProgressMonitor(),
-				is(equalTo((IBatchProgressMonitor) mockedProgressMonitor)));
+		assertThat(batch.getProgressMonitor(), is(equalTo((IBatchProgressMonitor) mockedProgressMonitor)));
 	}
 
 }

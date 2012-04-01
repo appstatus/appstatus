@@ -59,8 +59,6 @@ public interface IBatch {
 
 	String getName();
 
-	IBatchProgressMonitor getProgressMonitor();
-
 	/**
 	 * Retrieve the current progress status of the job execution.
 	 * 
@@ -106,5 +104,10 @@ public interface IBatch {
 
 	boolean isSuccess();
 
+	/**
+	 * This method is not intended to be used directly.
+	 * 
+	 * @param monitor
+	 */
 	void setProgressMonitor(IBatchProgressMonitor monitor);
 }

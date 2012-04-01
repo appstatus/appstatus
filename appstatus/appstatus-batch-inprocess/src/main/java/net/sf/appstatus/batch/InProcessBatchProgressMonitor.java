@@ -16,12 +16,12 @@ package net.sf.appstatus.batch;
  * 
  */
 
+import java.util.Date;
+
 import net.sf.appstatus.core.batch.AbstractBatchProgressMonitor;
 import net.sf.appstatus.core.batch.IBatch;
 import net.sf.appstatus.core.batch.IBatchProgressMonitor;
 import net.sf.appstatus.core.batch.IBatchProgressMonitorExt;
-
-import java.util.Date;
 
 /**
  * Log job progress agent.
@@ -30,8 +30,7 @@ import java.util.Date;
  * @author Nicolas Richeton
  * 
  */
-public class InProcessBatchProgressMonitor extends AbstractBatchProgressMonitor
-		implements IBatchProgressMonitorExt {
+public class InProcessBatchProgressMonitor extends AbstractBatchProgressMonitor implements IBatchProgressMonitorExt {
 
 	private InProcessBatchManager manager;
 
@@ -40,11 +39,12 @@ public class InProcessBatchProgressMonitor extends AbstractBatchProgressMonitor
 	 * 
 	 * @param executionId
 	 *            job execution id
-     * @param manager batch manager
-     * @param batch current batch
+	 * @param manager
+	 *            batch manager
+	 * @param batch
+	 *            current batch
 	 */
-	public InProcessBatchProgressMonitor(String executionId, IBatch batch,
-			InProcessBatchManager manager) {
+	public InProcessBatchProgressMonitor(String executionId, IBatch batch, InProcessBatchManager manager) {
 		super(executionId, batch);
 		this.manager = manager;
 	}
@@ -58,12 +58,13 @@ public class InProcessBatchProgressMonitor extends AbstractBatchProgressMonitor
 	 *            parent monitor
 	 * @param parentWork
 	 *            parent amount of work
-     * @param batch current batch
+	 * @param batch
+	 *            current batch
 	 */
-	private InProcessBatchProgressMonitor(String executionId,
-			InProcessBatchProgressMonitor parent, int parentWork, Batch batch) {
+	private InProcessBatchProgressMonitor(String executionId, InProcessBatchProgressMonitor parent, int parentWork,
+			Batch batch) {
 		super(executionId, parent, parentWork, batch);
-        this.manager = parent.manager;
+		this.manager = parent.manager;
 	}
 
 	@Override
@@ -87,8 +88,7 @@ public class InProcessBatchProgressMonitor extends AbstractBatchProgressMonitor
 
 	@Override
 	protected IBatchProgressMonitor newInstance(int work) {
-		return new InProcessBatchProgressMonitor(executionId, this, work,
-				getBatch());
+		return new InProcessBatchProgressMonitor(executionId, this, work, getBatch());
 	}
 
 	@Override
@@ -102,7 +102,6 @@ public class InProcessBatchProgressMonitor extends AbstractBatchProgressMonitor
 	@Override
 	public void worked(int work) {
 		super.worked(work);
-
 	}
 
 }

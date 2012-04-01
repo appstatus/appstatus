@@ -23,7 +23,25 @@ import org.slf4j.Logger;
  * Monitor dedicated to monitor a job execution.
  * <p>
  * Usage :
- * 
+ * <p>
+ * <code>IBatchProgressMonitor monitor, getBatchProgressMonitor("name",
+ * 			"group", "uuid");<br/>
+ * 			<br/>
+ * 			// get item list<br/>
+ * 			monitor.beginTask( "taskName", "taskDescr", 2 );<br/>
+ * 			monitor.setCurrentItem( "1" ) ;<br/>
+ * 			<br/>
+ * 			// Do some work on item 1;<br/>
+ * 			<br/>
+ * 			monitor.worked(1);<br/>
+ * 			monitor.setCurrentItem( "2" ) ;<br/>
+ * 			<br/>
+ * 			// Do some work on item 2;<br/>
+ * 			<br/>
+ * 			monitor.worked(1);<br/>
+ * 			monitor.done();
+ * 			
+ * </code>
  * 
  * 
  * @author Guillaume Mary
@@ -33,7 +51,7 @@ import org.slf4j.Logger;
 public interface IBatchProgressMonitor {
 
 	/**
-	 * Unknow amount of work.
+	 * Unknown amount of work.
 	 */
 	public static final int UNKNOW = -1;
 
@@ -65,12 +83,20 @@ public interface IBatchProgressMonitor {
 	void done();
 
 	/**
-	 * The batch has failed.
+	 * Reports batch failure.
 	 * 
 	 * @param reason
 	 */
 	void fail(String reason);
 
+	/**
+	 * Reports batch failure
+	 * <p>
+	 * Includes reason and exception if any.
+	 * 
+	 * @param reason
+	 * @param t
+	 */
 	void fail(String reason, Throwable t);
 
 	Date getLastUpdate();

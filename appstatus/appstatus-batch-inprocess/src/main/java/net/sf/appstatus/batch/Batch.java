@@ -13,9 +13,7 @@ import net.sf.appstatus.core.batch.IBatchProgressMonitor;
  * 
  */
 public class Batch implements IBatch {
-	private static final String NONE = "none";
 
-	private static final String UNKNOWN = "unknown";
 	private final String group;
 	private InProcessBatchProgressMonitor monitor;
 	private final String name;
@@ -23,19 +21,21 @@ public class Batch implements IBatch {
 	private final String uuid;
 
 	/**
-	 * Default contructor.
+	 * Creates a new Batch.
+	 * <p>
+	 * This method is not intended to be used directly.
 	 * 
 	 * @param uuid
 	 *            unique batch identifier
 	 */
 	public Batch(String uuid) {
-		this.uuid = uuid;
-		this.group = UNKNOWN;
-		this.name = UNKNOWN;
+		this(uuid, null, null);
 	}
 
 	/**
-	 * Constructor with a name and a group.
+	 * Creates a new Batch.
+	 * <p>
+	 * This method is not intended to be used directly.
 	 * 
 	 * @param uuid
 	 *            unique batch identifier
@@ -45,11 +45,19 @@ public class Batch implements IBatch {
 	 *            batch group name
 	 */
 	public Batch(String uuid, String name, String group) {
+		if (uuid == null) {
+			throw new IllegalArgumentException("Batch uuid cannot be null");
+		}
 		this.uuid = uuid;
 		this.name = name;
 		this.group = group;
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see java.lang.Object#equals(java.lang.Object)
+	 */
 	@Override
 	public boolean equals(Object obj) {
 		if (this == obj) {
@@ -59,9 +67,7 @@ public class Batch implements IBatch {
 			return false;
 		}
 
-		Batch objBatch = (Batch) obj;
-
-		return this.getUuid().equals(objBatch.getUuid());
+		return uuid.equals(((Batch) obj).getUuid());
 	}
 
 	/**
@@ -69,11 +75,12 @@ public class Batch implements IBatch {
 	 */
 	public String getCurrentItem() {
 		if (monitor == null) {
-			return NONE;
+			return null;
 		}
-		final Object currentItem = monitor.getCurrentItem();
+
+		Object currentItem = monitor.getCurrentItem();
 		if (currentItem == null) {
-			return NONE;
+			return null;
 		}
 		return currentItem.toString();
 	}
@@ -83,13 +90,9 @@ public class Batch implements IBatch {
 	 */
 	public String getCurrentTask() {
 		if (monitor == null) {
-			return NONE;
+			return null;
 		}
-		final String taskName = monitor.getTaskName();
-		if (taskName == null) {
-			return NONE;
-		}
-		return taskName;
+		return monitor.getTaskName();
 	}
 
 	public Date getEndDate() {
@@ -112,13 +115,9 @@ public class Batch implements IBatch {
 
 	public String getLastMessage() {
 		if (monitor == null) {
-			return NONE;
+			return null;
 		}
-		final String lastMessage = monitor.getLastMessage();
-		if (lastMessage == null) {
-			return NONE;
-		}
-		return lastMessage;
+		return monitor.getLastMessage();
 	}
 
 	public Date getLastUpdate() {
@@ -137,9 +136,8 @@ public class Batch implements IBatch {
 	}
 
 	public float getProgressStatus() {
-		if (monitor == null || monitor.getTotalWork() <= 0
-				|| monitor.getProgress() < 0) {
-			return -1;
+		if (monitor == null || monitor.getTotalWork() == IBatchProgressMonitor.UNKNOW || monitor.getTotalWork() == 0) {
+			return IBatchProgressMonitor.UNKNOW;
 		}
 
 		return monitor.getProgress() * 100f / monitor.getTotalWork();
@@ -149,11 +147,7 @@ public class Batch implements IBatch {
 		if (monitor == null) {
 			return new ArrayList<String>();
 		}
-		final List<String> rejectedItems = monitor.getRejectedItems();
-		if (rejectedItems == null) {
-			return new ArrayList<String>();
-		}
-		return rejectedItems;
+		return monitor.getRejectedItems();
 	}
 
 	public Date getStartDate() {
@@ -165,7 +159,7 @@ public class Batch implements IBatch {
 
 	public String getStatus() {
 		if (monitor == null) {
-			return UNKNOWN;
+			return null;
 		}
 
 		if (!monitor.isDone()) {
@@ -190,6 +184,11 @@ public class Batch implements IBatch {
 		return monitor.isSuccess();
 	}
 
+	/**
+	 * @inheritDoc
+	 * 
+	 * @see net.sf.appstatus.core.batch.IBatch#setProgressMonitor(net.sf.appstatus.core.batch.IBatchProgressMonitor)
+	 */
 	public void setProgressMonitor(IBatchProgressMonitor monitor) {
 		this.monitor = (InProcessBatchProgressMonitor) monitor;
 	}
