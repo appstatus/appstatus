@@ -83,19 +83,22 @@ public interface IBatchProgressMonitor {
 	void done();
 
 	/**
-	 * Reports batch failure.
+	 * Report global failure.
+	 * <p>
+	 * Use this when the batch has issued a major error and cannot continue.
 	 * 
 	 * @param reason
 	 */
 	void fail(String reason);
 
 	/**
-	 * Reports batch failure
+	 * Report global failure.
 	 * <p>
-	 * Includes reason and exception if any.
+	 * Use this when the batch has issued a major error and cannot continue.
 	 * 
 	 * @param reason
 	 * @param t
+	 *            Exception which caused the failure.
 	 */
 	void fail(String reason, Throwable t);
 
@@ -126,6 +129,19 @@ public interface IBatchProgressMonitor {
 
 	/**
 	 * Reject one item during the task processing.
+	 * <p>
+	 * Use this when :
+	 * <ul>
+	 * <li>Item processing has failed (exception, invalid data, connection issue
+	 * ..) and a human action is probably required to before retry.</li>
+	 * <li>The batch is able to go on and process other items (item processing
+	 * is independent).</li>
+	 * </ul>
+	 * <p>
+	 * 
+	 * @see IBatchProgressMonitor#reject(String, String, Throwable)
+	 *      IBatchProgressMonitor#reject(String, String, Throwable) can be used
+	 *      to provide the exception which has caused the failure.
 	 * 
 	 * @param itemId
 	 *            rejected item id
