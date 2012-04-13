@@ -13,7 +13,7 @@
  * limitations under the License. 
  * 
  */
-package net.sf.appstatus.core.check.impl;
+package net.sf.appstatus.demo.check;
 
 import java.io.IOException;
 
