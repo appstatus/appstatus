@@ -5,9 +5,7 @@
     <groupId>net.sf.appstatus</groupId>
     <version>0.0.7-SNAPSHOT</version>
   </parent>
-  <groupId>net.sf.appstatus</groupId>
   <artifactId>appstatus-services-inprocess</artifactId>
-  <version>0.0.7-SNAPSHOT</version>
   <dependencies>
   	<dependency>
   		<groupId>net.sf.appstatus</groupId>

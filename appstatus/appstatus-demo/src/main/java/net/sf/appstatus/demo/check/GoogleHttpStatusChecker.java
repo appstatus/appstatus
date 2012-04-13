@@ -16,7 +16,6 @@
 package net.sf.appstatus.demo.check;
 
 import net.sf.appstatus.core.check.ICheckResult;
-import net.sf.appstatus.core.check.impl.AbstractHttpCheck;
 
 public class GoogleHttpStatusChecker extends AbstractHttpCheck {
 
