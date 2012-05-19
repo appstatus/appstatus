@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document xmlns="http://maven.apache.org/XDOC/2.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/XDOC/2.0 http://maven.apache.org/xsd/xdoc-2.0.xsd">
+
+    <properties>
+        <title>Spring integration</title>
+        <author>Nicolas Richeton</author>
+    </properties>
+
+    <body>
+
+
+        <h1>Spring integration</h1>
+
+        <p>App Status integrates nicely with Spring. Instead of using AppStatusStatic.getInstance() and
+            status-check.properties, you can use Spring to create and inject the main AppStatus object.</p>
+
+<source><![CDATA[
+   <bean id="appStatus" class="net.sf.appstatus.core.AppStatus"
+        init-method="init" scope="singleton">
+        <property name="objectInstanciationListener" ref="appStatusInstanciation" />
+        <property name="checkers">
+            <list>
+                <ref bean="statusCheck1" />
+                <ref bean="statusCheck2" />
+            </list>
+        </property>
+        <property name="propertyProviders">
+            <list>
+                <ref bean="property1" />
+                <ref bean="property2" />
+            </list>
+        </property>
+    </bean>
+
+    <bean id="appStatusInstanciation"
+        class="net.sf.appstatus.core.spring.SpringObjectInstantiationListener"
+        scope="singleton" />
+    
+    <bean id="statusCheck1" class="your.package.StatusCheck1" scope="prototype"/>
+    <bean id="statusCheck2" class="your.package.StatusCheck2" scope="prototype"/>
+    
+    <bean id="property1" class="your.package.PropertyProvider1" scope="prototype"/>
+    <bean id="property2" class="your.package.PropertyProvider2" scope="prototype"/>
+      
+]]></source>
+
+        <p>When using appstatus-web, you have to tell AppStatus which bean is the entry point :</p>
+        <source><![CDATA[
+ <servlet>
+        <servlet-name>status</servlet-name>
+        <servlet-class>net.sf.appstatus.web.StatusServlet</servlet-class>
+        <init-param>
+            <param-name>bean</param-name>
+            <param-value>appStatus</param-value>
+        </init-param>
+        <load-on-startup>1</load-on-startup>
+</servlet>
+]]></source>
+
+        </body>
+</document>
+  
+  

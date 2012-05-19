@@ -1,24 +1,44 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <document xmlns="http://maven.apache.org/XDOC/2.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/XDOC/2.0 http://maven.apache.org/xsd/xdoc-2.0.xsd">
+    xsi:schemaLocation="http://maven.apache.org/XDOC/2.0 http://maven.apache.org/xsd/xdoc-2.0.xsd">
 
-	<properties>
-		<title>Services performance monitoring</title>
-		<author email="nicolas.richeton@capgemini.com">Nicolas Richeton</author>
-	</properties>
+    <properties>
+        <title>Services performance monitoring</title>
+        <author>Nicolas Richeton</author>
+    </properties>
 
-	<body>
+    <body>
 
-		<h1>Services performance monitoring</h1>
+        <h1>Services performance monitoring</h1>
 
-		<p>App status allows to simply monitor external services performance, including cache efficiency. The overhead of service monitoring should be very low, but don't use this on very simple code (no external calls, single line implementation, ...), where overhead could become significant.</p>
-		
-		
-		<h2>Usage</h2>
-		
-		<p>Call appstatus before and after calls</p>
-		<source><![CDATA[
-IServiceMonitor monitor = appstatus.getServiceMonitor( name, group) ;
+        <p>App status allows to simply monitor external services performance, including cache efficiency. The overhead
+            of service monitoring should be very low, but don't use this on very simple code (no external calls, single
+            line implementation, ...), where overhead could become significant.</p>
+
+
+        <h2>Add dependency</h2>
+        <p> Service performance monitoring is modular feature of App Status. This allows to implement custom persistence
+            for these data.</p>
+
+        <p>App Status provides a default implementation, appstatus-services-inprocess, which stores data in the current
+            JVM. This means the overhead is very small but data are not shared between JVMs if your application runs on
+            multiple servers and are lost when the application stops.</p>
+            
+<source><![CDATA[
+<dependency>
+            <groupId>net.sf.appstatus</groupId>
+            <artifactId>appstatus-services-inprocess</artifactId>
+            <version>0.0.7</version>
+            <scope>compile</scope>
+</dependency>
+]]></source>
+
+        
+        <h2>Usage</h2>
+
+        <p>Call appstatus before and after calls</p>
+        <source><![CDATA[
+IServiceMonitor monitor = AppStatusStatic.getInstance().getServiceMonitor( name, group) ;
 monitor.beginCall();
 
 // If cache is used :
@@ -28,16 +48,16 @@ monitor.cacheHit();
 
 monitor.endCall();
 
-]]></source>	
+]]></source>
 
-<h2>Result</h2>
-<p>AppStatus will now monitor : hits, cache hits, running calls, min/max/avg times with and without cache.</p>
+        <h2>Result</h2>
+        <p>AppStatus will now monitor : hits, cache hits, running calls, min/max/avg times with and without cache.</p>
 
-<p>Go to http://&lt;server&gt;/&lt;app-context&gt;/status?p=services :</p>
+        <p>Go to http://&lt;server&gt;/&lt;app-context&gt;/status?p=services :</p>
 
-<img src="images/appstatus-0.0.7-services.png" alt="Services page example" style="border: 1px solid black;"/>
+        <img src="images/appstatus-0.0.7-services.png" alt="Services page example" style="border: 1px solid black;" />
 
-	</body>
+    </body>
 </document>
   
   
