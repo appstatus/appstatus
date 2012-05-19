@@ -16,7 +16,8 @@
 		
 		<h2>Quickstart for webapps</h2>
 		
-		<p>Add maven dependencies</p>
+		<p>This project is best used with Maven.</p>
+        <p>Add Maven dependency :</p>
 		<source><![CDATA[
 <repository>
 	<id>appstatus-repository</id>
@@ -92,6 +93,13 @@ check.google.ping=net.sf.appstatus.dummy.GooglePingStatusChecker
 <p>Go to http://&lt;server&gt;/&lt;app-context&gt;/status :</p>
 
 <img src="images/appstatus-0.0.7-status.png" alt="Status page example" style="border: 1px solid black;"/>
+    <h2>Reporting war details for webapps built whith Maven</h2>
+    <p>If you are using Maven to build your webapp, AppStatus provides a property provider which reports artifactId, groupId and version. Just add the following property provider :</p>
+<source>
+property.maven=net.sf.appstatus.core.property.impl.WarMavenVersionProvider
+</source>
+    
+    
 	</body>
 </document>
   
