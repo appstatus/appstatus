@@ -1,26 +1,47 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <document xmlns="http://maven.apache.org/XDOC/2.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/XDOC/2.0 http://maven.apache.org/xsd/xdoc-2.0.xsd">
+    xsi:schemaLocation="http://maven.apache.org/XDOC/2.0 http://maven.apache.org/xsd/xdoc-2.0.xsd">
 
-	<properties>
-		<title>Batchs monitoring</title>
-		<author email="nicolas.richeton@capgemini.com">Nicolas Richeton</author>
-	</properties>
+    <properties>
+        <title>Batchs monitoring</title>
+        <author>Nicolas Richeton</author>
+    </properties>
 
-	<body>
+    <body>
 
 
-		<h1>Batchs monitoring</h1>
+        <h1>Batchs monitoring</h1>
 
-		<p>AppStatus provides a batch monitoring API, which can replace log calls and provides a better feedback on overall batch activity.</p>
+        <p>AppStatus provides a batch monitoring API, which can replace log calls and provides a better feedback on
+            overall batch activity.</p>
+
+        <h2>Add dependency</h2>
+        <p> Batch monitoring is modular feature of App Status. This allows to implement custom persistence
+            for these
+            data.
+        </p>
+
+        <p>App Status provides a default implementation, appstatus-batch-inprocess, which stores data in the current
+            JVM. This means the overhead is very small but data are not shared between JVMs if your application runs on
+            multiple servers and are lost when the application stops.
+        </p>
+
+        <source><![CDATA[
+<dependency>
+            <groupId>net.sf.appstatus</groupId>
+            <artifactId>appstatus-batch-inprocess</artifactId>
+            <version>0.0.7</version>
+            <scope>compile</scope>
+</dependency>
+]]></source>
+
+        <h2>Usage</h2>
+
+        <source><![CDATA[
 		
-		<h2>Usage</h2>
-		
-		<source><![CDATA[
-		
-IBatchProgressMonitor monitor = appstatus.getServiceMonitor( name, group) ;
+IBatchProgressMonitor monitor = AppStatusStatic.getInstance().getBatchProgressMonitor( "Batch name", "Batch group", "Unique Id");
 
-monitor.beginTask(  "Batch name", "Batch description" , 2 /* steps */ );
+monitor.beginTask(  "Task name", "Task description" , 2 /* steps */ );
 
 monitor.setCurrentItem( "1" ) ;
 
@@ -44,14 +65,17 @@ monitor.done();
 
 		]]></source>
 
-		<p>Note: API is very close to the Eclipse Job API.</p>
+        <p>The batch UUID is used to get the IBatchProgressMonitor object back when you have no way to keep it
+            accessible within the different parts of your code. One example is when using Spring Batch. The same UUID always returns the same
+            monitor.</p>
+        <p>Note: API is very close to the Eclipse Job API.</p>
 
-	<h2>Result</h2>
+        <h2>Result</h2>
 
-<p>Go to http://&lt;server&gt;/&lt;app-context&gt;/status?p=batch :</p>
+        <p>Go to http://&lt;server&gt;/&lt;app-context&gt;/status?p=batch :</p>
 
-<img src="images/appstatus-0.0.7-batchs.png" alt="Batchs page example" style="border: 1px solid black;"/>
-	</body>
+        <img src="images/appstatus-0.0.7-batchs.png" alt="Batchs page example" style="border: 1px solid black;" />
+    </body>
 </document>
   
   
