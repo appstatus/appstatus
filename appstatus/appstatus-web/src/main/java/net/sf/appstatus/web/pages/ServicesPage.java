@@ -8,23 +8,23 @@ import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import net.sf.appstatus.core.AppStatus;
 import net.sf.appstatus.core.services.IService;
 import net.sf.appstatus.web.HtmlUtils;
+import net.sf.appstatus.web.StatusWebHandler;
 
 public class ServicesPage extends AbstractPage {
 	private static final String ENCODING = "UTF-8";
 
 	@Override
-	public void doGet(AppStatus status, HttpServletRequest req,
+	public void doGet(StatusWebHandler webHandler, HttpServletRequest req,
 			HttpServletResponse resp) throws UnsupportedEncodingException,
 			IOException {
 
 		setup(resp, "text/html");
 		ServletOutputStream os = resp.getOutputStream();
-		begin(os);
+		begin(webHandler, os);
 
-		List<IService> services = status.getServices();
+		List<IService> services = webHandler.getAppStatus().getServices();
 
 		os.write("<h1>Services</h1>".getBytes(ENCODING));
 
@@ -52,14 +52,18 @@ public class ServicesPage extends AbstractPage {
 	}
 
 	@Override
-	public void doPost(AppStatus status, HttpServletRequest req,
+	public void doPost(StatusWebHandler webHandler, HttpServletRequest req,
 			HttpServletResponse resp) {
-		// TODO Auto-generated method stub
 
 	}
 
 	@Override
 	public String getId() {
 		return "services";
+	}
+
+	@Override
+	public String getName() {
+		return "Services";
 	}
 }
