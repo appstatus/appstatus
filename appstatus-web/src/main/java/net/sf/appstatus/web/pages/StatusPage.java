@@ -10,9 +10,9 @@ import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import net.sf.appstatus.core.AppStatus;
 import net.sf.appstatus.core.check.ICheckResult;
 import net.sf.appstatus.web.HtmlUtils;
+import net.sf.appstatus.web.StatusWebHandler;
 
 public class StatusPage extends AbstractPage {
 	private static final String ENCODING = "UTF-8";
@@ -37,27 +37,27 @@ public class StatusPage extends AbstractPage {
 	}
 
 	@Override
-	public void doGet(AppStatus status, HttpServletRequest req,
+	public void doGet(StatusWebHandler webHandler, HttpServletRequest req,
 			HttpServletResponse resp) throws UnsupportedEncodingException,
 			IOException {
 
 		if (req.getParameter("json") != null) {
-			doGetJSON(status, req, resp);
+			doGetJSON(webHandler, req, resp);
 		} else {
-			doGetHTML(status, req, resp);
+			doGetHTML(webHandler, req, resp);
 		}
 
 	}
 
-	public void doGetHTML(AppStatus status, HttpServletRequest req,
+	public void doGetHTML(StatusWebHandler webHandler, HttpServletRequest req,
 			HttpServletResponse resp) throws UnsupportedEncodingException,
 			IOException {
 
 		setup(resp, "text/html");
 		ServletOutputStream os = resp.getOutputStream();
-		begin(os);
+		begin(webHandler, os);
 
-		List<ICheckResult> results = status.checkAll();
+		List<ICheckResult> results = webHandler.getAppStatus().checkAll();
 		boolean statusOk = true;
 		int statusCode = 200;
 		for (ICheckResult r : results) {
@@ -88,7 +88,8 @@ public class StatusPage extends AbstractPage {
 		}
 
 		os.write("<h2 class=\"properties\">Properties</h2>".getBytes(ENCODING));
-		Map<String, Map<String, String>> properties = status.getProperties();
+		Map<String, Map<String, String>> properties = webHandler.getAppStatus()
+				.getProperties();
 		if (HtmlUtils.generateBeginTable(os, properties.size())) {
 
 			HtmlUtils.generateHeaders(os, "", "Category", "Name", "Value");
@@ -108,14 +109,14 @@ public class StatusPage extends AbstractPage {
 		end(os);
 	}
 
-	public void doGetJSON(AppStatus status, HttpServletRequest req,
+	public void doGetJSON(StatusWebHandler webHandler, HttpServletRequest req,
 			HttpServletResponse resp) throws UnsupportedEncodingException,
 			IOException {
 
 		setup(resp, "application/json");
 		ServletOutputStream os = resp.getOutputStream();
 		int statusCode = 200;
-		List<ICheckResult> results = status.checkAll();
+		List<ICheckResult> results = webHandler.getAppStatus().checkAll();
 		for (ICheckResult r : results) {
 			if (r.isFatal()) {
 				resp.setStatus(500);
@@ -149,13 +150,17 @@ public class StatusPage extends AbstractPage {
 	}
 
 	@Override
-	public void doPost(AppStatus status, HttpServletRequest req,
+	public void doPost(StatusWebHandler webHandler, HttpServletRequest req,
 			HttpServletResponse resp) {
-		// TODO Auto-generated method stub
 	}
 
 	@Override
 	public String getId() {
 		return "status";
+	}
+
+	@Override
+	public String getName() {
+		return "Status";
 	}
 }

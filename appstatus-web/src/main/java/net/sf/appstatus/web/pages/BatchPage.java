@@ -8,10 +8,10 @@ import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import net.sf.appstatus.core.AppStatus;
 import net.sf.appstatus.core.batch.IBatch;
 import net.sf.appstatus.core.batch.IBatchManager;
 import net.sf.appstatus.web.HtmlUtils;
+import net.sf.appstatus.web.StatusWebHandler;
 
 public class BatchPage extends AbstractPage {
 	private static final String CLEAR_ITEM = "clear-item";
@@ -21,16 +21,16 @@ public class BatchPage extends AbstractPage {
 	private static final String ITEM_UUID = "item-uuid";
 
 	@Override
-	public void doGet(AppStatus status, HttpServletRequest req,
+	public void doGet(StatusWebHandler webHandler, HttpServletRequest req,
 			HttpServletResponse resp) throws UnsupportedEncodingException,
 			IOException {
 
 		setup(resp, "text/html");
 		ServletOutputStream os = resp.getOutputStream();
-		begin(os);
+		begin(webHandler, os);
 
 		os.write("<h1>Batchs</h1>".getBytes(ENCODING));
-		IBatchManager manager = status.getBatchManager();
+		IBatchManager manager = webHandler.getAppStatus().getBatchManager();
 
 		os.write("<h2>Running</h2>".getBytes(ENCODING));
 
@@ -135,15 +135,17 @@ public class BatchPage extends AbstractPage {
 	}
 
 	@Override
-	public void doPost(AppStatus status, HttpServletRequest req,
+	public void doPost(StatusWebHandler webHandler, HttpServletRequest req,
 			HttpServletResponse resp) {
 		if (req.getParameter(CLEAR_OLD) != null) {
-			status.getBatchManager().removeAllBatches(IBatchManager.REMOVE_OLD);
+			webHandler.getAppStatus().getBatchManager()
+					.removeAllBatches(IBatchManager.REMOVE_OLD);
 		} else if (req.getParameter(CLEAR_SUCCESS) != null) {
-			status.getBatchManager().removeAllBatches(
-					IBatchManager.REMOVE_SUCCESS);
+			webHandler.getAppStatus().getBatchManager()
+					.removeAllBatches(IBatchManager.REMOVE_SUCCESS);
 		} else if (req.getParameter(CLEAR_ITEM) != null) {
-			status.getBatchManager().removeBatch(req.getParameter(ITEM_UUID));
+			webHandler.getAppStatus().getBatchManager()
+					.removeBatch(req.getParameter(ITEM_UUID));
 		}
 
 	}
@@ -193,5 +195,10 @@ public class BatchPage extends AbstractPage {
 	@Override
 	public String getId() {
 		return "batch";
+	}
+
+	@Override
+	public String getName() {
+		return "Batch";
 	}
 }

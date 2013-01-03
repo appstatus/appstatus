@@ -306,12 +306,15 @@ public class AppStatus {
 	}
 
 	private void loadPlugins() {
+		int count = 0;
 		try {
-			Enumeration<URL> plugins = AppStatus.class.getClassLoader()
+			Enumeration<URL> plugins = Thread.currentThread()
+					.getContextClassLoader()
 					.getResources("net/sf/appstatus/plugin.properties");
+
 			while (plugins.hasMoreElements()) {
 				URL url = plugins.nextElement();
-				logger.info(url.toString());
+				logger.info("AppStatus: found plugin: " + url.toString());
 				Properties p = loadProperties(url);
 
 				// batchManager
@@ -325,11 +328,12 @@ public class AppStatus {
 				if (serviceManagerClass != null) {
 					serviceManager = (IServiceManager) getClassInstance(serviceManagerClass);
 				}
-
+				count++;
 			}
 		} catch (IOException e) {
-			logger.warn("Error loading plugins", e);
+			logger.warn("AppStatus: Error loading plugins", e);
 		}
+		logger.info("AppStatus: found {} plugins", count);
 	}
 
 	/**

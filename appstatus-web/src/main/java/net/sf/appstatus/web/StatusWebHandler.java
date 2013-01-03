@@ -17,7 +17,7 @@ package net.sf.appstatus.web;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Properties;
 
@@ -71,10 +71,10 @@ public class StatusWebHandler {
 
 		if (req.getParameter("p") != null
 				&& pages.containsKey(req.getParameter("p"))) {
-			pages.get(req.getParameter("p")).doGet(appStatus, req, resp);
+			pages.get(req.getParameter("p")).doGet(this, req, resp);
 
 		} else {
-			pages.get("status").doGet(appStatus, req, resp);
+			pages.get("status").doGet(this, req, resp);
 		}
 	}
 
@@ -96,13 +96,21 @@ public class StatusWebHandler {
 
 		if (req.getParameter("p") != null
 				&& pages.containsKey(req.getParameter("p"))) {
-			pages.get(req.getParameter("p")).doPost(appStatus, req, resp);
+			pages.get(req.getParameter("p")).doPost(this, req, resp);
 
 		} else {
-			pages.get("status").doPost(appStatus, req, resp);
+			pages.get("status").doPost(this, req, resp);
 		}
 
 		doGet(req, resp);
+	}
+
+	public AppStatus getAppStatus() {
+		return appStatus;
+	}
+
+	public Map<String, AbstractPage> getPages() {
+		return pages;
 	}
 
 	/**
@@ -122,20 +130,22 @@ public class StatusWebHandler {
 		if (appStatus == null) {
 			appStatus = AppStatusStatic.getInstance();
 		}
+
 		appStatus.init();
 
 		if (pages == null) {
-			pages = new HashMap<String, AbstractPage>();
+			pages = new LinkedHashMap<String, AbstractPage>();
 
-			if (appStatus.getBatchManager() != null) {
-				pages.put("batch", new BatchPage());
-			}
+			pages.put("status", new StatusPage());
 
 			if (appStatus.getServiceManager() != null) {
 				pages.put("services", new ServicesPage());
 			}
 
-			pages.put("status", new StatusPage());
+			if (appStatus.getBatchManager() != null) {
+				pages.put("batch", new BatchPage());
+			}
+
 		}
 
 		try {
@@ -188,5 +198,4 @@ public class StatusWebHandler {
 	public void setPages(Map<String, AbstractPage> pages) {
 		this.pages = pages;
 	}
-
 }
