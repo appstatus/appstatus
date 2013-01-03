@@ -217,19 +217,27 @@ public class AppStatus {
 		return batchManager.getRunningBatches();
 	}
 
+	public IServiceManager getServiceManager() {
+		return serviceManager;
+	}
+
 	public IServiceMonitor getServiceMonitor(String name, String group) {
 		checkInit();
 
-		IService batch = null;
+		IService service = null;
 		if (serviceManager != null) {
-			batch = serviceManager.getService(name, group);
-			return serviceManager.getMonitor(batch);
+			service = serviceManager.getService(name, group);
+			return serviceManager.getMonitor(service);
 		}
 
 		return null;
 	}
 
 	public List<IService> getServices() {
+		if (serviceManager == null) {
+			return null;
+		}
+
 		return serviceManager.getServices();
 	}
 

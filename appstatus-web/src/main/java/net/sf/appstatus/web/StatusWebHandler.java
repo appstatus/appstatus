@@ -44,8 +44,8 @@ import org.slf4j.LoggerFactory;
 public class StatusWebHandler {
 	private static Logger logger = LoggerFactory.getLogger(AppStatus.class);
 	private String allowIp = null;
-	private Map<String, AbstractPage> pages = null;
 	private AppStatus appStatus = null;
+	private Map<String, AbstractPage> pages = null;
 
 	/**
 	 * Handle a GET request.
@@ -118,10 +118,23 @@ public class StatusWebHandler {
 	 * </ul>
 	 */
 	public void init() {
+		// Use default instance if not set
+		if (appStatus == null) {
+			appStatus = AppStatusStatic.getInstance();
+		}
+		appStatus.init();
+
 		if (pages == null) {
 			pages = new HashMap<String, AbstractPage>();
-			pages.put("batch", new BatchPage());
-			pages.put("services", new ServicesPage());
+
+			if (appStatus.getBatchManager() != null) {
+				pages.put("batch", new BatchPage());
+			}
+
+			if (appStatus.getServiceManager() != null) {
+				pages.put("services", new ServicesPage());
+			}
+
 			pages.put("status", new StatusPage());
 		}
 
@@ -147,12 +160,6 @@ public class StatusWebHandler {
 					e);
 		}
 
-		// Use default instance if not set
-		if (appStatus == null) {
-			appStatus = AppStatusStatic.getInstance();
-		}
-		appStatus.init();
-
 	}
 
 	/**
@@ -165,21 +172,21 @@ public class StatusWebHandler {
 	}
 
 	/**
-	 * Set the available pages in the web interface.
-	 * 
-	 * @param pages
-	 */
-	public void setPages(Map<String, AbstractPage> pages) {
-		this.pages = pages;
-	}
-
-	/**
 	 * Set the AppStatus object to use in the web interface.
 	 * 
 	 * @param appStatus
 	 */
 	public void setAppStatus(AppStatus appStatus) {
 		this.appStatus = appStatus;
+	}
+
+	/**
+	 * Set the available pages in the web interface.
+	 * 
+	 * @param pages
+	 */
+	public void setPages(Map<String, AbstractPage> pages) {
+		this.pages = pages;
 	}
 
 }
