@@ -259,7 +259,8 @@ public class AppStatus {
 			// Load and init all probes
 			Enumeration<URL> configFiles;
 
-			configFiles = AppStatus.class.getClassLoader().getResources(
+			configFiles = Thread.currentThread()
+					.getContextClassLoader().getResources(
 					CONFIG_LOCATION);
 
 			if (configFiles == null) {

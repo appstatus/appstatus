@@ -35,7 +35,7 @@ public class ServicesPage extends AbstractPage {
 					"max (cached)", "avg (cached");
 
 			for (IService service : services) {
-				HtmlUtils.generateRow(os, Icons.STATUS_JOB, service.getGroup(),
+				HtmlUtils.generateRow(os, Resources.STATUS_JOB, service.getGroup(),
 						service.getName(), service.getHits(),
 						service.getCacheHits(), service.getRunning(),
 						service.getMinResponseTime(),

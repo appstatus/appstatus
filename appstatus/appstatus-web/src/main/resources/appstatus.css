@@ -1,0 +1,42 @@
+h1 {
+	font-size: 120%;
+}
+
+h2 {
+	font-size: 110%;
+}
+
+p {
+	font-size: 90%;
+}
+
+table {
+	font-size: 80%;
+}
+
+table,th,td {
+	border: 1px solid black;
+	border-collapse: collapse;
+	padding: 2px;
+}
+
+th {
+	background-color: #DDDDDD;
+}
+
+td form {
+	margin: 0;
+}
+
+.logo {
+	float: right;
+	font-size: 120%;
+}
+
+.menu {
+	padding: 5px;
+	width: 15em;
+	text-align: center;
+	border: 1px dashed black;
+	font-size: 90%;
+}

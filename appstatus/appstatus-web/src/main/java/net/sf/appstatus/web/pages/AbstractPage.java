@@ -12,31 +12,23 @@ import net.sf.appstatus.web.StatusWebHandler;
 public abstract class AbstractPage {
 	private static final String ENCODING = "UTF-8";
 
-	private static final String styleSheet = "<style type=\"text/css\" media=\"screen\">"
-			+ "h1 { font-size: 120%; }"
-			+ "h2 { font-size: 110%; }"
-			+ "p { font-size: 90%; }"
-			+ "table { font-size: 80%; }"
-			+ "table ,th, td {  border: 1px solid black; border-collapse:collapse; padding: 2px; }"
-			+ "th { background-color: #DDDDDD; }"
-			+ "td form { margin: 0; }"
-			+ ".logo { float: right; font-size: 120%; }"
-			+ ".menu {  padding: 5px; width: 15em; text-align: center;  border: 1px dashed black;  font-size: 90%; }"
-			+ "</style>";
 	private static final String URL = "http://appstatus.sourceforge.net/";
 
 	protected void begin(StatusWebHandler webHandler, ServletOutputStream os)
 			throws UnsupportedEncodingException, IOException {
 		os.write("<html><head>".getBytes(ENCODING));
-		os.write(styleSheet.getBytes(ENCODING));
+		os.write(("<link href=\"" + webHandler.getCssLocation() + "\" rel=\"stylesheet\">")
+				.getBytes(ENCODING));
 		os.write("</head>".getBytes(ENCODING));
 		os.write("<body>".getBytes(ENCODING));
 
+		// Add Logo
 		os.write(("<div class=\"logo\"><a href=\"" + URL
-				+ "\"><img src='?icon=" + Icons.LOGO + "'/></a></div>")
+				+ "\"><img src='?icon=" + Resources.LOGO + "'/></a></div>")
 				.getBytes(ENCODING));
-		os.write("<div class=\"menu\">".getBytes(ENCODING));
 
+		// Add pages quick links
+		os.write("<div class=\"menu\">".getBytes(ENCODING));
 		boolean first = true;
 		for (String pageId : webHandler.getPages().keySet()) {
 			AbstractPage page = webHandler.getPages().get(pageId);

@@ -28,7 +28,7 @@ import net.sf.appstatus.core.AppStatus;
 import net.sf.appstatus.core.AppStatusStatic;
 import net.sf.appstatus.web.pages.AbstractPage;
 import net.sf.appstatus.web.pages.BatchPage;
-import net.sf.appstatus.web.pages.Icons;
+import net.sf.appstatus.web.pages.Resources;
 import net.sf.appstatus.web.pages.ServicesPage;
 import net.sf.appstatus.web.pages.StatusPage;
 
@@ -45,6 +45,7 @@ public class StatusWebHandler {
 	private static Logger logger = LoggerFactory.getLogger(AppStatus.class);
 	private String allowIp = null;
 	private AppStatus appStatus = null;
+	private String cssLocation = null;
 	private Map<String, AbstractPage> pages = null;
 
 	/**
@@ -64,8 +65,9 @@ public class StatusWebHandler {
 			}
 		}
 
-		if (req.getParameter("icon") != null) {
-			Icons.render(resp.getOutputStream(), req.getParameter("icon"));
+		if (req.getParameter("icon") != null
+				|| req.getParameter("resource") != null) {
+			Resources.doGet(this, req, resp);
 			return;
 		}
 
@@ -109,6 +111,10 @@ public class StatusWebHandler {
 		return appStatus;
 	}
 
+	public String getCssLocation() {
+		return cssLocation;
+	}
+
 	public Map<String, AbstractPage> getPages() {
 		return pages;
 	}
@@ -123,16 +129,19 @@ public class StatusWebHandler {
 	 * <ul>
 	 * <li>{@link #setPages(Map)}</li>
 	 * <li>{@link #setAppStatus(AppStatus)}</li>
+	 * <li>{@link #setCssLocation(String)}</li>
 	 * </ul>
 	 */
 	public void init() {
-		// Use default instance if not set
+
+		// init AppStatus
 		if (appStatus == null) {
+			// Use default instance if not set
 			appStatus = AppStatusStatic.getInstance();
 		}
-
 		appStatus.init();
 
+		// Init pages
 		if (pages == null) {
 			pages = new LinkedHashMap<String, AbstractPage>();
 
@@ -148,9 +157,9 @@ public class StatusWebHandler {
 
 		}
 
+		// Load specific configuration
 		try {
-
-			InputStream is = StatusWebHandler.class
+			InputStream is = Thread.currentThread().getContextClassLoader()
 					.getResourceAsStream("/status-web-conf.properties");
 
 			if (is == null) {
@@ -170,6 +179,11 @@ public class StatusWebHandler {
 					e);
 		}
 
+		// Init css
+		if (cssLocation == null) {
+			cssLocation = "?resource=appstatus.css";
+			Resources.addResource("appstatus.css", "/appstatus.css");
+		}
 	}
 
 	/**
@@ -188,6 +202,15 @@ public class StatusWebHandler {
 	 */
 	public void setAppStatus(AppStatus appStatus) {
 		this.appStatus = appStatus;
+	}
+
+	/**
+	 * Set the location of the css to use.
+	 * 
+	 * @param cssLocation
+	 */
+	public void setCssLocation(String cssLocation) {
+		this.cssLocation = cssLocation;
 	}
 
 	/**

@@ -26,14 +26,14 @@ public class StatusPage extends AbstractPage {
 	private static String getStatus(ICheckResult result) {
 
 		if (result.isFatal()) {
-			return Icons.STATUS_ERROR;
+			return Resources.STATUS_ERROR;
 		}
 
 		if (result.getCode() == ICheckResult.OK) {
-			return Icons.STATUS_OK;
+			return Resources.STATUS_OK;
 		}
 
-		return Icons.STATUS_WARN;
+		return Resources.STATUS_WARN;
 	}
 
 	@Override
@@ -98,7 +98,7 @@ public class StatusPage extends AbstractPage {
 				String category = cat.getKey();
 
 				for (Entry<String, String> r : cat.getValue().entrySet()) {
-					HtmlUtils.generateRow(os, Icons.STATUS_PROP, category,
+					HtmlUtils.generateRow(os, Resources.STATUS_PROP, category,
 							r.getKey(), r.getValue());
 				}
 
