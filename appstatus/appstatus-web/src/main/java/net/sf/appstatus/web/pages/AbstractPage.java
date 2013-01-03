@@ -7,7 +7,7 @@ import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import net.sf.appstatus.core.AppStatus;
+import net.sf.appstatus.web.StatusWebHandler;
 
 public abstract class AbstractPage {
 	private static final String ENCODING = "UTF-8";
@@ -25,7 +25,7 @@ public abstract class AbstractPage {
 			+ "</style>";
 	private static final String URL = "http://appstatus.sourceforge.net/";
 
-	protected void begin(ServletOutputStream os)
+	protected void begin(StatusWebHandler webHandler, ServletOutputStream os)
 			throws UnsupportedEncodingException, IOException {
 		os.write("<html><head>".getBytes(ENCODING));
 		os.write(styleSheet.getBytes(ENCODING));
@@ -35,16 +35,31 @@ public abstract class AbstractPage {
 		os.write(("<div class=\"logo\"><a href=\"" + URL
 				+ "\"><img src='?icon=" + Icons.LOGO + "'/></a></div>")
 				.getBytes(ENCODING));
-		os.write("<div class=\"menu\"><a href=\"?\">Status</a> | <a href=\"?p=services\">Services</a> | <a href=\"?p=batch\">Batches</a></div>"
-				.getBytes(ENCODING));
+		os.write("<div class=\"menu\">".getBytes(ENCODING));
+
+		boolean first = true;
+		for (String pageId : webHandler.getPages().keySet()) {
+			AbstractPage page = webHandler.getPages().get(pageId);
+
+			if (!first) {
+				os.write(" | ".getBytes(ENCODING));
+			}
+
+			os.write(("<a href=\"?p=" + page.getId() + "\">" + page.getName() + "</a>")
+					.getBytes(ENCODING));
+
+			first = false;
+		}
+
+		os.write("</div>".getBytes(ENCODING));
 	}
 
-	public abstract void doGet(AppStatus status, HttpServletRequest req,
-			HttpServletResponse resp) throws UnsupportedEncodingException,
-			IOException;
+	public abstract void doGet(StatusWebHandler webHandler,
+			HttpServletRequest req, HttpServletResponse resp)
+			throws UnsupportedEncodingException, IOException;
 
-	public abstract void doPost(AppStatus status, HttpServletRequest req,
-			HttpServletResponse resp);
+	public abstract void doPost(StatusWebHandler webHandler,
+			HttpServletRequest req, HttpServletResponse resp);
 
 	protected void end(ServletOutputStream os)
 			throws UnsupportedEncodingException, IOException {
@@ -58,6 +73,10 @@ public abstract class AbstractPage {
 	 */
 	public String getId() {
 		return null;
+	}
+
+	public String getName() {
+		return getId();
 	}
 
 	protected void setup(HttpServletResponse resp, String type)
