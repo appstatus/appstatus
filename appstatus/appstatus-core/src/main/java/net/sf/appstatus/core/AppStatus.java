@@ -156,7 +156,24 @@ public class AppStatus {
 
 		if (obj == null) {
 			try {
+				obj = Thread.currentThread().getContextClassLoader()
+						.loadClass(className).newInstance();
+			} catch (ClassNotFoundException e) {
+				logger.warn("Class {} not found ", className, e);
+			} catch (InstantiationException e) {
+				logger.warn("Cannot instanciate {} ", className, e);
+			} catch (IllegalAccessException e) {
+				logger.warn("Cannot access class {} for instantiation ",
+						className, e);
+			}
+		}
+
+		if (obj == null) {
+			try {
 				obj = Class.forName(className).newInstance();
+				logger.warn(
+						"Class {} loaded using a deprecated method. Please report to http://sourceforge.net/apps/mantisbt/appstatus/login_select_proj_page.php?ref=bug_report_page.php",
+						className);
 			} catch (ClassNotFoundException e) {
 				logger.warn("Class {} not found ", className, e);
 			} catch (InstantiationException e) {
