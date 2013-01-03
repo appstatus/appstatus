@@ -16,10 +16,6 @@
 package net.sf.appstatus.web;
 
 import java.io.IOException;
-import java.io.InputStream;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Properties;
 
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
@@ -30,30 +26,15 @@ import javax.servlet.http.HttpServletResponse;
 import net.sf.appstatus.core.AppStatus;
 import net.sf.appstatus.core.AppStatusStatic;
 import net.sf.appstatus.core.IServletContextProvider;
-import net.sf.appstatus.web.pages.AbstractPage;
-import net.sf.appstatus.web.pages.BatchPage;
-import net.sf.appstatus.web.pages.Icons;
-import net.sf.appstatus.web.pages.ServicesPage;
-import net.sf.appstatus.web.pages.StatusPage;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class StatusServlet extends HttpServlet {
 
-	private static final String ENCODING = "UTF-8";
 	private static Logger logger = LoggerFactory.getLogger(AppStatus.class);
 	private static final long serialVersionUID = 3912325072098291029L;
-	private static AppStatus status = null;
-	private static AppStatus statusBatches = null;
-	private static AppStatus statusServices = null;
-	private String allow = null;
-	private final Map<String, AbstractPage> pages = new HashMap<String, AbstractPage>();
-
-	private final String styleSheet = "<style type=\"text/css\" media=\"screen\">"
-			+ "table { font-size: 80%; }"
-			+ "table ,th, td {  border: 1px solid black; border-collapse:collapse;}"
-			+ "th { background-color: #DDDDDD; }" + "</style>";
+	private static StatusWebHandler statusWeb = null;
 
 	/*
 	 * (non-Javadoc)
@@ -65,78 +46,36 @@ public class StatusServlet extends HttpServlet {
 	@Override
 	protected void doGet(HttpServletRequest req, HttpServletResponse resp)
 			throws ServletException, IOException {
-
-		if (allow != null) {
-			if (!req.getRemoteAddr().equals(allow)) {
-				resp.sendError(401, "IP not authorized");
-				return;
-			}
-		}
-
-		if (req.getParameter("icon") != null) {
-			Icons.render(resp.getOutputStream(), req.getParameter("icon"));
-			return;
-		}
-
-		if (req.getParameter("p") != null
-				&& pages.containsKey(req.getParameter("p"))) {
-			pages.get(req.getParameter("p")).doGet(status, req, resp);
-
-		} else {
-			pages.get("status").doGet(status, req, resp);
-		}
+		statusWeb.doGet(req, resp);
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * javax.servlet.http.HttpServlet#doPost(javax.servlet.http.HttpServletRequest
+	 * , javax.servlet.http.HttpServletResponse)
+	 */
 	@Override
 	protected void doPost(HttpServletRequest req, HttpServletResponse resp)
 			throws ServletException, IOException {
-		if (allow != null) {
-			if (!req.getRemoteAddr().equals(allow)) {
-				resp.sendError(401, "IP not authorized");
-				return;
-			}
-		}
-
-		if (req.getParameter("p") != null
-				&& pages.containsKey(req.getParameter("p"))) {
-			pages.get(req.getParameter("p")).doPost(status, req, resp);
-
-		} else {
-			pages.get("status").doPost(status, req, resp);
-		}
-
-		doGet(req, resp);
+		statusWeb.doPost(req, resp);
 	}
 
+	/**
+	 * Init the AppStatus Web UI.
+	 * <p>
+	 * Read <b>bean</> init parameter. If defined, switch to Spring-enabled
+	 * behavior.
+	 */
 	@Override
 	public void init() throws ServletException {
+
 		super.init();
 
-		pages.put("batch", new BatchPage());
-		pages.put("services", new ServicesPage());
-		pages.put("status", new StatusPage());
+		String beanName = getInitParameter("bean");
 
-		String beanName = null;
-		try {
-			beanName = getInitParameter("bean");
-
-			InputStream is = StatusServlet.class
-					.getResourceAsStream("/status-web-conf.properties");
-
-			if (is == null) {
-				logger.warn("/status-web-conf.properties not found in classpath. Using default configuration");
-			} else {
-				Properties p = new Properties();
-				p.load(is);
-				is.close();
-				allow = (String) p.get("ip.allow");
-			}
-		} catch (Exception e) {
-			logger.error(
-					"Error loading configuration from /status-web-conf.properties.",
-					e);
-		}
-
+		AppStatus status;
 		if (beanName != null) {
 			status = (AppStatus) (new SpringObjectInstantiationListener(
 					this.getServletContext()).getInstance(beanName));
@@ -149,9 +88,9 @@ public class StatusServlet extends HttpServlet {
 				return StatusServlet.this.getServletContext();
 			}
 		});
-		status.init();
 
-		statusServices = status;
-		statusBatches = status;
+		statusWeb = new StatusWebHandler();
+		statusWeb.setAppStatus(status);
+		statusWeb.init();
 	}
 }
