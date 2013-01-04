@@ -34,8 +34,8 @@
 		
 	</developers>
 	<scm>
-		<connection>scm:svn:https://appstatus.svn.sourceforge.net/svnroot/appstatus/trunk/appstatus</connection>
-		<developerConnection>scm:svn:https://appstatus.svn.sourceforge.net/svnroot/appstatus/trunk/appstatus</developerConnection>
+		<connection>scm:svn:svn+ssh://svn.code.sf.net/p/appstatus/code/trunk/appstatus</connection>
+		<developerConnection>scm:svn:svn+ssh://svn.code.sf.net/p/appstatus/code/trunk/appstatus</developerConnection>
 		<url>http://appstatus.svn.sourceforge.net/viewvc/appstatus/trunk/</url>
 	</scm>
 	<build>
