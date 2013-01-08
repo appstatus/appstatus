@@ -17,6 +17,8 @@ public class Service implements IService {
 	protected AtomicLong cacheHits = new AtomicLong();
 	protected AtomicLong hits = new AtomicLong();
 	protected AtomicLong running = new AtomicLong();
+	protected AtomicLong failures = new AtomicLong();
+	protected AtomicLong errors = new AtomicLong();
 	protected Long maxResponseTime;
 	protected Long minResponseTimeWithCache;
 	protected Long maxResponseTimeWithCache;
@@ -50,6 +52,14 @@ public class Service implements IService {
 
 	public long getHits() {
 		return hits.get();
+	}
+	
+	public long getFailures() {
+		return failures.get();
+	}
+	
+	public long getErrors() {
+		return errors.get();
 	}
 
 	public Long getMaxResponseTime() {
