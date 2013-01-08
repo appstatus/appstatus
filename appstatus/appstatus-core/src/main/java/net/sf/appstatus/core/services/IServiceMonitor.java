@@ -47,4 +47,26 @@ public interface IServiceMonitor {
 	 * 
 	 */
 	void endCall();
+
+	/**
+	 * Reports an error : the call has succeed but returns an error (with data).
+	 * 
+	 * @param message
+	 */
+	void error(String message);
+
+	/**
+	 * Reports a failure : the call has failed completely
+	 * 
+	 * @param reason
+	 */
+	void failure(String reason);
+
+	/**
+	 * Reports a failure : the call has failed completely with exception e.
+	 * 
+	 * @param reason
+	 * @param e
+	 */
+	void failure(String reason, Exception e);
 }

@@ -58,14 +58,14 @@ public class BatchSample implements Runnable {
 		List<String> items = new ArrayList<String>();
 		String item = null;
 		for (int i = 0; i < 100; i++) {
-			IServiceMonitor monitor = AppStatusStatic.getInstance()
+			IServiceMonitor serviceMonitor = AppStatusStatic.getInstance()
 					.getServiceMonitor("Dummy service", "dummy");
 
-			monitor.beginCall("item");
+			serviceMonitor.beginCall("item");
 			item = "item" + i;
-			monitor.endCall();
 			stepMonitor.setCurrentItem(item);
 			if (i % 5 == 0) {
+				serviceMonitor.failure("Oups");
 				stepMonitor.reject(item, "Test the reject feature");
 			} else {
 				try {
@@ -76,6 +76,7 @@ public class BatchSample implements Runnable {
 					stepMonitor.reject(item, e.getMessage());
 				}
 			}
+			serviceMonitor.endCall();
 			stepMonitor.worked(1);
 		}
 		stepMonitor.done();

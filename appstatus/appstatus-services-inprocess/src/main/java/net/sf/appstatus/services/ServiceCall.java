@@ -1,24 +1,23 @@
 package net.sf.appstatus.services;
 
-import net.sf.appstatus.core.services.IServiceMonitor;
+import net.sf.appstatus.core.services.AbstractLoggingServiceMonitor;
 
-public class ServiceCall implements IServiceMonitor {
+public class ServiceCall extends AbstractLoggingServiceMonitor {
 
 	String id;
-	long startTime;
-	boolean cacheHit;
-	Long endTime = null;
 	Service service;
-	Object[] parameters;
 
 	public void cacheHit() {
 		if (!this.cacheHit) {
-			this.cacheHit = true;
 			service.cacheHits.incrementAndGet();
 		}
+		
+		// register cache hit
+		super.cacheHit();
 	}
 
 	public ServiceCall(Service service) {
+		super(service, true);
 		this.service = service;
 		startTime = System.currentTimeMillis();
 	}
@@ -32,7 +31,9 @@ public class ServiceCall implements IServiceMonitor {
 	}
 
 	public void beginCall(Object... parameters) {
-		this.parameters = parameters;
+		//Register parameters
+		super.beginCall( parameters );
+		
 		service.hits.incrementAndGet();
 		service.running.incrementAndGet();
 	}
@@ -43,11 +44,13 @@ public class ServiceCall implements IServiceMonitor {
 			return;
 		}
 		
-		endTime = System.currentTimeMillis();
+		// Register end time
+		super.endCall();
+		
 		service.running.decrementAndGet();
 
+		// Update statistics
 		long response = endTime - startTime;
-
 		if (cacheHit) {
 			if (service.maxResponseTimeWithCache == null
 					|| service.maxResponseTimeWithCache < response) {
@@ -78,6 +81,14 @@ public class ServiceCall implements IServiceMonitor {
 					* (service.hits.get() - service.cacheHits.get() - 1) + response)
 					/ (service.hits.get() - service.cacheHits.get());
 		}
+		
+		if( failure)
+			service.failures.incrementAndGet();
+		
+		if( error){
+			
+		}
 
 	}
+	
 }

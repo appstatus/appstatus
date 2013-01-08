@@ -27,6 +27,10 @@ public interface IService {
 
 	long getCacheHits();
 
+	long getErrors();
+
+	long getFailures();
+
 	String getGroup();
 
 	long getHits();

@@ -32,18 +32,31 @@ public class ServicesPage extends AbstractPage {
 
 			HtmlUtils.generateHeaders(os, "", "Category", "Name", "Hits",
 					"Cache", "Running", "min", "max", "avg", "min (cached)",
-					"max (cached)", "avg (cached");
+					"max (cached)", "avg (cached)", "Errors", "Failures");
 
 			for (IService service : services) {
-				HtmlUtils.generateRow(os, Resources.STATUS_JOB, service.getGroup(),
-						service.getName(), service.getHits(),
-						service.getCacheHits(), service.getRunning(),
+				HtmlUtils.generateRow(
+						os,
+						Resources.STATUS_JOB,
+						service.getGroup(),
+						service.getName(),
+						service.getHits(),
+						service.getCacheHits()
+								+ getPercent(service.getCacheHits(),
+										service.getHits()),
+						service.getRunning(),
 						service.getMinResponseTime(),
 						service.getMaxResponseTime(),
 						Math.round(service.getAvgResponseTime()),
 						service.getMinResponseTimeWithCache(),
 						service.getMaxResponseTimeWithCache(),
-						Math.round(service.getAvgResponseTimeWithCache()));
+						Math.round(service.getAvgResponseTimeWithCache()),
+						service.getErrors()
+								+ getPercent(service.getErrors(),
+										service.getHits()),
+						service.getFailures()
+								+ getPercent(service.getFailures(),
+										service.getHits()));
 			}
 
 			HtmlUtils.generateEndTable(os, services.size());
@@ -65,5 +78,16 @@ public class ServicesPage extends AbstractPage {
 	@Override
 	public String getName() {
 		return "Services";
+	}
+
+	/**
+	 * Returns a percentage string (including '%'), build with value1/value2.
+	 * 
+	 * @param value1
+	 * @param value2
+	 * @return
+	 */
+	private String getPercent(long value1, long value2) {
+		return " (" + ((100 * value1) / value2) + "%)";
 	}
 }
