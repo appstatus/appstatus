@@ -25,7 +25,7 @@ package net.sf.appstatus.core.services;
 public interface IServiceMonitor {
 
 	/**
-	 * Notify the beginning of a call to a service.
+	 * Notify of the beginning of a call to a service.
 	 * 
 	 * @param operationName
 	 *            operation name
