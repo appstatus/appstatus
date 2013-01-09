@@ -1,7 +1,7 @@
 package net.sf.appstatus.services;
 
 import net.sf.appstatus.core.services.AbstractLoggingServiceMonitor;
-
+ 
 public class ServiceCall extends AbstractLoggingServiceMonitor {
 
 	String id;
