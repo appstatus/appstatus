@@ -20,7 +20,6 @@ import java.util.List;
 import java.util.UUID;
 
 import net.sf.appstatus.core.AppStatus;
-import net.sf.appstatus.core.AppStatusStatic;
 import net.sf.appstatus.core.batch.IBatchProgressMonitor;
 import net.sf.appstatus.core.services.IServiceMonitor;
 
@@ -37,6 +36,12 @@ import org.slf4j.LoggerFactory;
 public class BatchSample implements Runnable {
 	private static Logger logger = LoggerFactory.getLogger(BatchSample.class);
 
+	private ServiceSample service;
+
+	public void setService(ServiceSample service) {
+		this.service = service;
+	}
+
 	/**
 	 * Create item list.
 	 * 
@@ -45,13 +50,11 @@ public class BatchSample implements Runnable {
 	 * @return items
 	 */
 	private List<String> step1(IBatchProgressMonitor stepMonitor) {
-		stepMonitor.beginTask("step1",  "Create the item list",
-				100);
+		stepMonitor.beginTask("step1", "Create the item list", 100);
 		List<String> items = new ArrayList<String>();
 		String item = null;
 		for (int i = 0; i < 100; i++) {
-			IServiceMonitor monitor = appstatus.getServiceMonitor(
-					"Dummy service", "dummy");
+			IServiceMonitor monitor = appstatus.getServiceMonitor("Dummy service", "dummy");
 
 			monitor.beginCall("item");
 			item = "item" + i;
@@ -69,6 +72,11 @@ public class BatchSample implements Runnable {
 				}
 			}
 			stepMonitor.worked(1);
+
+			monitor = appstatus.getServiceMonitor("Refs service", "getRef");
+			monitor.beginCall();
+			service.getRefs();
+			monitor.endCall();
 		}
 		stepMonitor.done();
 		return items;
@@ -83,11 +91,9 @@ public class BatchSample implements Runnable {
 	 *            step monitor
 	 */
 	private void step2(List<String> items, IBatchProgressMonitor stepMonitor) {
-		stepMonitor.beginTask("step2", 
-				"Write the items in the console output.", items.size());
+		stepMonitor.beginTask("step2", "Write the items in the console output.", items.size());
 		for (String item : items) {
-			appstatus.getServiceMonitor("Console Write",
-					"Console");
+			appstatus.getServiceMonitor("Console Write", "Console");
 			stepMonitor.message("Writing item : " + item);
 			stepMonitor.worked(1);
 		}
@@ -97,8 +103,8 @@ public class BatchSample implements Runnable {
 	public void run() {
 
 		// retrieve the job monitor
-		IBatchProgressMonitor jobMonitor = appstatus.getBatchProgressMonitor(
-				"Sample job", "sample", UUID.randomUUID().toString());
+		IBatchProgressMonitor jobMonitor = appstatus.getBatchProgressMonitor("Sample job", "sample", UUID.randomUUID()
+				.toString());
 
 		jobMonitor.setLogger(logger);
 		// start the job
@@ -111,11 +117,11 @@ public class BatchSample implements Runnable {
 		step2(items, jobMonitor.createSubTask(1));
 
 		// end the job
-		if( System.currentTimeMillis() % 4 == 0){
+		if (System.currentTimeMillis() % 4 == 0) {
 			jobMonitor.fail("Just to test failure");
-			
-		}else
-		jobMonitor.done();
+
+		} else
+			jobMonitor.done();
 	}
 
 	private AppStatus appstatus;
