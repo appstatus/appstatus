@@ -15,7 +15,7 @@ import org.slf4j.LoggerFactory;
  * @author Nicolas Richeton
  * 
  */
-public abstract class AbstractLoggingServiceMonitor implements IServiceMonitor {
+public abstract class AbstractLoggingServiceMonitor extends AbstractServiceMonitor {
 	private static Logger stdLogger = LoggerFactory.getLogger(AbstractLoggingServiceMonitor.class);
 
 	protected boolean cacheHit = false;
@@ -34,12 +34,15 @@ public abstract class AbstractLoggingServiceMonitor implements IServiceMonitor {
 	private final IService service;
 	protected long startTime;
 
-	public AbstractLoggingServiceMonitor(IService service, boolean enableLog) {
+	public AbstractLoggingServiceMonitor(IService service, boolean enableLog, boolean useThreadLocal) {
+		super(useThreadLocal);
 		this.service = service;
 		this.enableLog = enableLog;
 	}
 
+	@Override
 	public void beginCall(Object... parameters) {
+		super.beginCall(parameters);
 		this.parameters = parameters;
 	}
 
@@ -62,11 +65,14 @@ public abstract class AbstractLoggingServiceMonitor implements IServiceMonitor {
 		this.correlationId = correlationId;
 	}
 
+	@Override
 	public void endCall() {
 		if (endTime != null) {
 			// endCall was called twice ! returning directly.
 			return;
 		}
+
+		super.endCall();
 
 		endTime = System.currentTimeMillis();
 
