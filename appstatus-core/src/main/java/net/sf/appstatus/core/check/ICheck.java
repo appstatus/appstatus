@@ -26,4 +26,5 @@ public interface ICheck {
 	String getGroup();
 
 	String getName();
+
 }

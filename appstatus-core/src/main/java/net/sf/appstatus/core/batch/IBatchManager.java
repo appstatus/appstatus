@@ -1,6 +1,7 @@
 package net.sf.appstatus.core.batch;
 
 import java.util.List;
+import java.util.Properties;
 
 import net.sf.appstatus.core.AppStatus;
 
@@ -23,7 +24,7 @@ public interface IBatchManager {
 	public int REMOVE_SUCCESS = 2;
 
 	/**
-	 * Adds a new Batch to the batch manager.
+	 * Creates and adds a new Batch to the batch manager.
 	 * <p>
 	 * If the batch already exists (same uuid). The existing one is returned.
 	 * 
@@ -59,6 +60,11 @@ public interface IBatchManager {
 	 */
 	IBatchProgressMonitor getMonitor(IBatch batch);
 
+	/**
+	 * Returns the list of batchs which are currently running.
+	 * 
+	 * @return
+	 */
 	List<IBatch> getRunningBatches();
 
 	/**
@@ -75,4 +81,11 @@ public interface IBatchManager {
 	 * @param b
 	 */
 	void removeBatch(String uuid);
+
+	/**
+	 * Inject configuration for service manager.
+	 * 
+	 * @param configuration
+	 */
+	void setConfiguration(Properties configuration);
 }

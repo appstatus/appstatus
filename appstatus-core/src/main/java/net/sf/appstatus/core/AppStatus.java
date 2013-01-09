@@ -245,6 +245,9 @@ public class AppStatus {
 		propertyProviders = new ArrayList<IPropertyProvider>();
 
 		try {
+			// Load plugins
+			loadPlugins();
+
 			// Load and init all probes
 			Enumeration<URL> configFiles;
 
@@ -255,8 +258,12 @@ public class AppStatus {
 				return;
 			}
 
+			Properties allConfig = new Properties();
+
 			while (configFiles.hasMoreElements()) {
 				Properties p = loadProperties(configFiles.nextElement());
+
+				allConfig.putAll(p);
 
 				Set<Object> keys = p.keySet();
 				for (Object oName : keys) {
@@ -266,16 +273,16 @@ public class AppStatus {
 						addStatusChecker(clazz);
 					} else if (name.startsWith("property")) {
 						addPropertyProvider(clazz);
-					} else if ("services.log.format".equals(name)) {
-						// Use log message
 					} else {
 						logger.warn("unknown propery  {} : {} ", name, clazz);
 					}
 				}
 			}
 
-			// Load plugins
-			loadPlugins();
+			// Give all configuration properties to managers.
+			getBatchManager().setConfiguration(allConfig);
+			getServiceManager().setConfiguration(allConfig);
+
 		} catch (Exception e) {
 			logger.error("Initialization error", e);
 		}

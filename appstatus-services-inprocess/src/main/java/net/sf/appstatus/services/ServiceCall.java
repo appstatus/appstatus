@@ -11,13 +11,13 @@ public class ServiceCall extends AbstractLoggingServiceMonitor {
 		if (!this.cacheHit) {
 			service.cacheHits.incrementAndGet();
 		}
-		
+
 		// register cache hit
 		super.cacheHit();
 	}
 
-	public ServiceCall(Service service) {
-		super(service, true);
+	public ServiceCall(Service service, boolean log) {
+		super(service, log);
 		this.service = service;
 		startTime = System.currentTimeMillis();
 	}
@@ -31,64 +31,58 @@ public class ServiceCall extends AbstractLoggingServiceMonitor {
 	}
 
 	public void beginCall(Object... parameters) {
-		//Register parameters
-		super.beginCall( parameters );
-		
+		// Register parameters
+		super.beginCall(parameters);
+
 		service.hits.incrementAndGet();
 		service.running.incrementAndGet();
 	}
- 
+
 	public void endCall() {
-		if (endTime != null)	{
+		if (endTime != null) {
 			// endCall was called twice ! returning directly.
 			return;
 		}
-		
+
 		// Register end time
 		super.endCall();
-		
+
 		service.running.decrementAndGet();
 
 		// Update statistics
 		long response = endTime - startTime;
 		if (cacheHit) {
-			if (service.maxResponseTimeWithCache == null
-					|| service.maxResponseTimeWithCache < response) {
+			if (service.maxResponseTimeWithCache == null || service.maxResponseTimeWithCache < response) {
 				service.maxResponseTimeWithCache = response;
 			}
 
-			if (service.minResponseTimeWithCache == null
-					|| service.minResponseTimeWithCache > response) {
+			if (service.minResponseTimeWithCache == null || service.minResponseTimeWithCache > response) {
 				service.minResponseTimeWithCache = response;
 			}
 
-			service.avgResponseTimeWithCache = (service.avgResponseTimeWithCache
-					* (service.cacheHits.get() - 1) + response)
+			service.avgResponseTimeWithCache = (service.avgResponseTimeWithCache * (service.cacheHits.get() - 1) + response)
 					/ service.cacheHits.get();
 		} else {
 
-			if (service.maxResponseTime == null
-					|| service.maxResponseTime < response) {
+			if (service.maxResponseTime == null || service.maxResponseTime < response) {
 				service.maxResponseTime = response;
 			}
 
-			if (service.minResponseTime == null
-					|| service.minResponseTime > response) {
+			if (service.minResponseTime == null || service.minResponseTime > response) {
 				service.minResponseTime = response;
 			}
 
-			service.avgResponseTime = (service.avgResponseTime
-					* (service.hits.get() - service.cacheHits.get() - 1) + response)
+			service.avgResponseTime = (service.avgResponseTime * (service.hits.get() - service.cacheHits.get() - 1) + response)
 					/ (service.hits.get() - service.cacheHits.get());
 		}
-		
-		if( failure)
+
+		if (failure)
 			service.failures.incrementAndGet();
-		
-		if( error){
-			
+
+		if (error) {
+
 		}
 
 	}
-	
+
 }
