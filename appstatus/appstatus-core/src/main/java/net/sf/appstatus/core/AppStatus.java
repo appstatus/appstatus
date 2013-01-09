@@ -290,8 +290,12 @@ public class AppStatus {
 		}
 
 		// Give all configuration properties to managers.
-		getBatchManager().setConfiguration(configuration);
-		getServiceManager().setConfiguration(configuration);
+		if (getBatchManager() != null) {
+			getBatchManager().setConfiguration(configuration);
+		}
+		if (getServiceManager() != null) {
+			getServiceManager().setConfiguration(configuration);
+		}
 
 		initDone = true;
 
