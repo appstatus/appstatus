@@ -40,8 +40,9 @@ public class InProcessServiceManager implements IServiceManager {
 	public IServiceMonitor getMonitor(IService service) {
 		ServiceCall call = new ServiceCall((Service) service, log, useThreadLocal);
 
-		if (format != null)
+		if (format != null){
 			call.setMessageFormat(format);
+		}
 		return call;
 	}
 
