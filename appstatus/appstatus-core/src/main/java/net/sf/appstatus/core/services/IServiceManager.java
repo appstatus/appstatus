@@ -1,6 +1,7 @@
 package net.sf.appstatus.core.services;
 
 import java.util.List;
+import java.util.Properties;
 
 /**
  * Service manager. Entry point for using services.
@@ -39,4 +40,10 @@ public interface IServiceManager {
 	 */
 	List<IService> getServices();
 
+	/**
+	 * Inject configuration for service manager.
+	 * 
+	 * @param configuration
+	 */
+	void setConfiguration(Properties configuration);
 }
