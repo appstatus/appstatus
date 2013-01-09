@@ -1,6 +1,7 @@
 <beans xmlns="http://www.springframework.org/schema/beans"
-	xmlns:batch="http://www.springframework.org/schema/batch" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd http://www.springframework.org/schema/batch http://www.springframework.org/schema/batch/spring-batch-2.1.xsd">
+	xmlns:p="http://www.springframework.org/schema/p" xmlns:batch="http://www.springframework.org/schema/batch"
+	xmlns:cache="http://www.springframework.org/schema/cache" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd http://www.springframework.org/schema/batch http://www.springframework.org/schema/batch/spring-batch-2.1.xsd http://www.springframework.org/schema/cache http://www.springframework.org/schema/cache/spring-cache.xsd">
 
 	<bean id="appstatus" class="net.sf.appstatus.core.AppStatus"
 		init-method="init" scope="singleton">
@@ -25,8 +26,8 @@
 		<!-- Configuration -->
 		<property name="configuration">
 			<props>
-				<prop key="services.log.format">spring:${correlationId}|${group}|${name}|${responseTime}|${cache}|${status}|${statusMessage}
-				</prop>
+				<prop key="services.log.format">spring:${correlationId}|${group}|${name}|${responseTime}|${cache}|${status}|${statusMessage}</prop>
+				<prop key="services.useThreadLocal">true</prop>
 			</props>
 		</property>
 
@@ -38,6 +39,10 @@
 
 	<bean id="batch" class="net.sf.appstatus.demo.batch.BatchSample">
 		<property name="appstatus" ref="appstatus" />
+		<property name="service" ref="service"/>
+	</bean>
+
+	<bean id="service" class="net.sf.appstatus.demo.batch.ServiceSample">
 	</bean>
 
 	<!-- Status Checkers -->
@@ -55,4 +60,15 @@
 		scope="singleton" />
 
 
+	<bean id="cacheManager" class="net.sf.appstatus.support.cache.AppStatusCacheManager"
+		p:cache-manager-ref="ehcacheCacheManager" />
+	<bean id="ehcacheCacheManager" class="org.springframework.cache.ehcache.EhCacheCacheManager"
+		p:cache-manager-ref="ehcache" />
+
+	<!-- Ehcache library setup -->
+	<bean id="ehcache"
+		class="org.springframework.cache.ehcache.EhCacheManagerFactoryBean"
+		p:config-location="classpath:/ehcache.xml" />
+
+	<cache:annotation-driven proxy-target-class="true"/>
 </beans>
