@@ -2,6 +2,7 @@ package net.sf.appstatus.web.pages;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.util.Collections;
 import java.util.List;
 
 import javax.servlet.ServletOutputStream;
@@ -25,13 +26,14 @@ public class ServicesPage extends AbstractPage {
 		begin(webHandler, os);
 
 		List<IService> services = webHandler.getAppStatus().getServices();
+		Collections.sort(services);
 
 		os.write("<h1>Services</h1>".getBytes(ENCODING));
 
 		if (HtmlUtils.generateBeginTable(os, services.size())) {
 
-			HtmlUtils.generateHeaders(os, "", "Category", "Name", "Hits",
-					"Cache", "Running", "min", "max", "avg", "min (cached)",
+			HtmlUtils.generateHeaders(os, "", "Group", "Name", "Hits", "Cache",
+					"Running", "min", "max", "avg", "min (cached)",
 					"max (cached)", "avg (cached)", "Errors", "Failures");
 
 			for (IService service : services) {

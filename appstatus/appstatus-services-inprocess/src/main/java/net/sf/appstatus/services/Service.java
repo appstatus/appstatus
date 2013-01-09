@@ -2,6 +2,9 @@ package net.sf.appstatus.services;
 
 import java.util.concurrent.atomic.AtomicLong;
 
+import org.apache.commons.lang3.ObjectUtils;
+
+import net.sf.appstatus.core.check.ICheckResult;
 import net.sf.appstatus.core.services.IService;
 
 public class Service implements IService {
@@ -81,5 +84,14 @@ public class Service implements IService {
 	public Long getMinResponseTimeWithCache() {
 		return minResponseTimeWithCache;
 	}
+
+	public int compareTo(IService otherService) {
+			int groupCompare = ObjectUtils.compare(group, otherService.getGroup());
+			if (groupCompare != 0) {
+				return groupCompare;
+			}
+
+			return ObjectUtils.compare(name, otherService.getName());
+		}
 
 }

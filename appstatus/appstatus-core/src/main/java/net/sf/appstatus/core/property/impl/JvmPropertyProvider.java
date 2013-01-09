@@ -13,6 +13,21 @@ import java.util.TreeMap;
 
 import org.apache.commons.lang3.time.DurationFormatUtils;
 
+/**
+ * Provides JVM informations :
+ * <ul>
+ * <li>name</li>
+ * <li>vendor</li>
+ * <li>version</li>
+ * <li>uptime</li>
+ * <li>start time</li>
+ * <li>heap memory</li>
+ * <li><non heap memory/li>
+ * </ul>
+ * 
+ * @author Nicolas Richeton
+ * 
+ */
 public class JvmPropertyProvider extends AbstractPropertyProvider {
 
 	private static String readableFileSize(long size) {
@@ -21,7 +36,9 @@ public class JvmPropertyProvider extends AbstractPropertyProvider {
 		}
 		final String[] units = new String[] { "B", "KB", "MB", "GB", "TB" };
 		int digitGroups = (int) (Math.log10(size) / Math.log10(1024));
-		return new DecimalFormat("#,##0.#").format(size / Math.pow(1024, digitGroups)) + " " + units[digitGroups];
+		return new DecimalFormat("#,##0.#").format(size
+				/ Math.pow(1024, digitGroups))
+				+ " " + units[digitGroups];
 	}
 
 	public String getCategory() {
@@ -39,23 +56,28 @@ public class JvmPropertyProvider extends AbstractPropertyProvider {
 		}
 		map.put("params", parameters);
 
-		map.put("VM name", RuntimemxBean.getVmName());
-		map.put("VM vendor", RuntimemxBean.getVmVendor());
-		map.put("VM version", RuntimemxBean.getVmVersion());
-		map.put("VM uptime", DurationFormatUtils.formatDurationHMS(RuntimemxBean.getUptime()));
+		map.put("name", RuntimemxBean.getVmName());
+		map.put("vendor", RuntimemxBean.getVmVendor());
+		map.put("version", RuntimemxBean.getVmVersion());
+		map.put("uptime", DurationFormatUtils.formatDurationHMS(RuntimemxBean
+				.getUptime()));
 
 		Date date = new Date(RuntimemxBean.getStartTime());
 		SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy hh:mm:ss");
-		map.put("VM start time", sdf.format(date));
+		map.put("start time", sdf.format(date));
 
 		MemoryMXBean memory = ManagementFactory.getMemoryMXBean();
 
 		MemoryUsage heap = memory.getHeapMemoryUsage();
-		map.put("Heap", readableFileSize(heap.getUsed()) + "/" + readableFileSize(heap.getCommitted()) + " min:"
-				+ readableFileSize(heap.getInit()) + " max:" + readableFileSize(heap.getMax()));
+		map.put("memory. (heap)", readableFileSize(heap.getUsed()) + "/"
+				+ readableFileSize(heap.getCommitted()) + " min:"
+				+ readableFileSize(heap.getInit()) + " max:"
+				+ readableFileSize(heap.getMax()));
 		MemoryUsage nonheap = memory.getNonHeapMemoryUsage();
-		map.put("Non Heap", readableFileSize(nonheap.getUsed()) + "/" + readableFileSize(nonheap.getCommitted())
-				+ " min:" + readableFileSize(nonheap.getInit()) + " max:" + readableFileSize(nonheap.getMax()));
+		map.put("memory (non heap)", readableFileSize(nonheap.getUsed()) + "/"
+				+ readableFileSize(nonheap.getCommitted()) + " min:"
+				+ readableFileSize(nonheap.getInit()) + " max:"
+				+ readableFileSize(nonheap.getMax()));
 
 		return map;
 	}

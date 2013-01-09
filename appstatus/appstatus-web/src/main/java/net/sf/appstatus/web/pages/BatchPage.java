@@ -38,9 +38,9 @@ public class BatchPage extends AbstractPage {
 
 		if (HtmlUtils.generateBeginTable(os, runningBatches.size())) {
 
-			HtmlUtils.generateHeaders(os, "", "Id", "Category", "Name",
-					"Start", "Progress", "End (est.)", "Status", "Task",
-					"Last Msg", "Items", "Rejected", "Last Update");
+			HtmlUtils.generateHeaders(os, "", "Id", "Group", "Name", "Start",
+					"Progress", "End (est.)", "Status", "Task", "Last Msg",
+					"Items", "Rejected", "Last Update");
 
 			for (IBatch batch : runningBatches) {
 				HtmlUtils.generateRow(os, getIcon(batch),
@@ -63,9 +63,9 @@ public class BatchPage extends AbstractPage {
 
 		if (HtmlUtils.generateBeginTable(os, finishedBatches.size())) {
 
-			HtmlUtils.generateHeaders(os, "", "Id", "Category", "Name",
-					"Start", "Progress", "End", "Status", "Task", "Last Msg",
-					"Items", "Rejected", "Last Update", "");
+			HtmlUtils.generateHeaders(os, "", "Id", "Group", "Name", "Start",
+					"Progress", "End", "Status", "Task", "Last Msg", "Items",
+					"Rejected", "Last Update", "");
 			for (IBatch batch : finishedBatches) {
 				HtmlUtils
 						.generateRow(
@@ -99,9 +99,9 @@ public class BatchPage extends AbstractPage {
 
 		if (HtmlUtils.generateBeginTable(os, errorBatches.size())) {
 
-			HtmlUtils.generateHeaders(os, "", "Id", "Category", "Name",
-					"Start", "Progress", "End", "Status", "Task", "Last Msg",
-					"Items", "Rejected", "Last Update", "");
+			HtmlUtils.generateHeaders(os, "", "Id", "Group", "Name", "Start",
+					"Progress", "End", "Status", "Task", "Last Msg", "Items",
+					"Rejected", "Last Update", "");
 
 			for (IBatch batch : errorBatches) {
 				HtmlUtils

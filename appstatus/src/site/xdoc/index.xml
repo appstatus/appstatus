@@ -46,10 +46,10 @@
         <url-pattern>/status</url-pattern>
 </servlet-mapping>]]></source>
 		
-			<p>Create a test for your application (implementing IStatusChecker):</p>
+			<p>Create a test for your application (implementing ICheck):</p>
 			
 		<source>
-public class GooglePingStatusChecker implements IStatusChecker {
+public class GooglePingStatusChecker implements ICheck {
 
 	public IStatusResult checkStatus() {
 
