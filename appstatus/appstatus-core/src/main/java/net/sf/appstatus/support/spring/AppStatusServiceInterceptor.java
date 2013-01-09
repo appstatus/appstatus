@@ -7,7 +7,10 @@ import org.aopalliance.intercept.MethodInterceptor;
 import org.aopalliance.intercept.MethodInvocation;
 
 /**
- * AOP Interceptor for AppStatus.
+ * AOP AppStatus interceptor for services. Allows to remove references to
+ * AppStatus in services calls (replaces
+ * getMonitor/beginCall/cacheHit/failure/endCall).
+ * 
  * <p>
  * Supports failure and cacheHit (if useThreadLocal enabled).
  * <p>
