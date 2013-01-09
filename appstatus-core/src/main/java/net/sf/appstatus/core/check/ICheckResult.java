@@ -20,7 +20,7 @@ package net.sf.appstatus.core.check;
  * 
  * @author Nicolas Richeton
  */
-public interface ICheckResult {
+public interface ICheckResult extends Comparable<ICheckResult> {
 
 	int ERROR = -1;
 	int OK = 0;
@@ -28,6 +28,8 @@ public interface ICheckResult {
 	int getCode();
 
 	String getDescription();
+
+	String getGroup();
 
 	String getProbeName();
 

@@ -33,13 +33,13 @@ public abstract class AbstractCheck implements ICheck {
 	 * {@link ICheckResult#setResolutionSteps(String)}.
 	 * 
 	 * @param code
-	 *            {@link AbstractCheck#OK} or
-	 *            {@link AbstractCheck#FATAL}
+	 *            {@link AbstractCheck#OK} or {@link AbstractCheck#FATAL}
 	 * @return ICheckResult object
 	 */
 	protected ICheckResult createResult(int code) {
 		StatusResultImpl result = new StatusResultImpl();
 		result.setProbeName(getName());
+		result.setGroup(getGroup());
 
 		switch (code) {
 		case OK:

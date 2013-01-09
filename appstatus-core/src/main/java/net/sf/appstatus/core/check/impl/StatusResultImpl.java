@@ -17,6 +17,8 @@ package net.sf.appstatus.core.check.impl;
 
 import net.sf.appstatus.core.check.ICheckResult;
 
+import org.apache.commons.lang3.ObjectUtils;
+
 /**
  * Default Status check result.
  * 
@@ -27,8 +29,18 @@ public class StatusResultImpl implements ICheckResult {
 	private int code;
 	private String description;
 	private boolean fatal;
+	private String group;
 	private String probeName;
 	private String resolutionSteps;
+
+	public int compareTo(ICheckResult otherResult) {
+		int groupCompare = ObjectUtils.compare(group, otherResult.getGroup());
+		if (groupCompare != 0) {
+			return groupCompare;
+		}
+
+		return ObjectUtils.compare(probeName, otherResult.getProbeName());
+	}
 
 	public int getCode() {
 		return code;
@@ -36,6 +48,10 @@ public class StatusResultImpl implements ICheckResult {
 
 	public String getDescription() {
 		return description;
+	}
+
+	public String getGroup() {
+		return group;
 	}
 
 	public String getProbeName() {
@@ -62,6 +78,10 @@ public class StatusResultImpl implements ICheckResult {
 		this.fatal = fatal;
 	}
 
+	public void setGroup(String group) {
+		this.group = group;
+	}
+
 	public void setProbeName(String probeName) {
 		this.probeName = probeName;
 	}
@@ -69,5 +89,4 @@ public class StatusResultImpl implements ICheckResult {
 	public void setResolutionSteps(String resolutionSteps) {
 		this.resolutionSteps = resolutionSteps;
 	}
-
 }

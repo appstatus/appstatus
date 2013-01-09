@@ -78,25 +78,19 @@ public class AppStatus {
 			propertyProviders.add(provider);
 			logger.info("Registered property provider " + clazz);
 		} else {
-			logger.error(
-					"cannot instanciate class {}, Please configure \"{}\" file properly",
-					clazz, CONFIG_LOCATION);
+			logger.error("cannot instanciate class {}, Please configure \"{}\" file properly", clazz, CONFIG_LOCATION);
 		}
 	}
 
 	private void addStatusChecker(String clazz) {
 		ICheck check = (ICheck) getClassInstance(clazz);
 		if (check == null) {
-			logger.error(
-					"cannot instanciate class {}, Please configure \"{}\" file properly",
-					clazz, CONFIG_LOCATION);
+			logger.error("cannot instanciate class {}, Please configure \"{}\" file properly", clazz, CONFIG_LOCATION);
 			return;
 		}
 
 		if (check instanceof IServletContextAware) {
-			((IServletContextAware) check)
-					.setServletContext(servletContextProvider
-							.getServletContext());
+			((IServletContextAware) check).setServletContext(servletContextProvider.getServletContext());
 		}
 
 		checkers.add(check);
@@ -126,8 +120,7 @@ public class AppStatus {
 		return batchManager;
 	}
 
-	public IBatchProgressMonitor getBatchProgressMonitor(String name,
-			String group, String uuid) {
+	public IBatchProgressMonitor getBatchProgressMonitor(String name, String group, String uuid) {
 
 		checkInit();
 
@@ -156,15 +149,13 @@ public class AppStatus {
 
 		if (obj == null) {
 			try {
-				obj = Thread.currentThread().getContextClassLoader()
-						.loadClass(className).newInstance();
+				obj = Thread.currentThread().getContextClassLoader().loadClass(className).newInstance();
 			} catch (ClassNotFoundException e) {
 				logger.warn("Class {} not found ", className, e);
 			} catch (InstantiationException e) {
 				logger.warn("Cannot instanciate {} ", className, e);
 			} catch (IllegalAccessException e) {
-				logger.warn("Cannot access class {} for instantiation ",
-						className, e);
+				logger.warn("Cannot access class {} for instantiation ", className, e);
 			}
 		}
 
@@ -179,8 +170,7 @@ public class AppStatus {
 			} catch (InstantiationException e) {
 				logger.warn("Cannot instanciate {} ", className, e);
 			} catch (IllegalAccessException e) {
-				logger.warn("Cannot access class {} for instantiation ",
-						className, e);
+				logger.warn("Cannot access class {} for instantiation ", className, e);
 			}
 		}
 
@@ -201,8 +191,7 @@ public class AppStatus {
 
 			// Init Category
 			if (categories.get(provider.getCategory()) == null) {
-				categories.put(provider.getCategory(),
-						new TreeMap<String, String>());
+				categories.put(provider.getCategory(), new TreeMap<String, String>());
 			}
 
 			// Add all properties
@@ -259,13 +248,10 @@ public class AppStatus {
 			// Load and init all probes
 			Enumeration<URL> configFiles;
 
-			configFiles = Thread.currentThread()
-					.getContextClassLoader().getResources(
-					CONFIG_LOCATION);
+			configFiles = Thread.currentThread().getContextClassLoader().getResources(CONFIG_LOCATION);
 
 			if (configFiles == null) {
-				logger.info("config file {} not found in classpath",
-						CONFIG_LOCATION);
+				logger.info("config file {} not found in classpath", CONFIG_LOCATION);
 				return;
 			}
 
@@ -280,6 +266,8 @@ public class AppStatus {
 						addStatusChecker(clazz);
 					} else if (name.startsWith("property")) {
 						addPropertyProvider(clazz);
+					} else if ("services.log.format".equals(name)) {
+						// Use log message
 					} else {
 						logger.warn("unknown propery  {} : {} ", name, clazz);
 					}
@@ -298,19 +286,15 @@ public class AppStatus {
 
 	private void injectServletContext(Object instance) {
 		// Inject servlet context if possible
-		if (instance instanceof IServletContextAware
-				&& servletContextProvider != null) {
-			((IServletContextAware) instance)
-					.setServletContext(servletContextProvider
-							.getServletContext());
+		if (instance instanceof IServletContextAware && servletContextProvider != null) {
+			((IServletContextAware) instance).setServletContext(servletContextProvider.getServletContext());
 		}
 	}
 
 	private void loadPlugins() {
 		int count = 0;
 		try {
-			Enumeration<URL> plugins = Thread.currentThread()
-					.getContextClassLoader()
+			Enumeration<URL> plugins = Thread.currentThread().getContextClassLoader()
 					.getResources("net/sf/appstatus/plugin.properties");
 
 			while (plugins.hasMoreElements()) {
@@ -359,8 +343,7 @@ public class AppStatus {
 		this.checkers = checkers;
 	}
 
-	public void setObjectInstanciationListener(
-			IObjectInstantiationListener objectInstanciationListener) {
+	public void setObjectInstanciationListener(IObjectInstantiationListener objectInstanciationListener) {
 		this.objectInstanciationListener = objectInstanciationListener;
 	}
 

@@ -42,6 +42,10 @@ public interface IServiceMonitor {
 	 */
 	void cacheHit();
 
+	void context(String name, String value);
+
+	void correlationId(String correlationId);
+
 	/**
 	 * Notify the end of a call to a service.
 	 * 
@@ -69,4 +73,5 @@ public interface IServiceMonitor {
 	 * @param e
 	 */
 	void failure(String reason, Exception e);
+
 }
