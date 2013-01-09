@@ -1,6 +1,5 @@
 package net.sf.appstatus.core.services;
 
-
 import org.apache.commons.collections.ArrayStack;
 
 /**
@@ -20,11 +19,17 @@ public class ServiceMonitorLocator {
 	};
 
 	public static IServiceMonitor getCurrentServiceMonitor() {
-		return (IServiceMonitor) monitorStack.get().peek();
+		ArrayStack stack = monitorStack.get();
+
+		if (!stack.isEmpty()) {
+			return (IServiceMonitor) stack.peek();
+		}
+
+		return null;
 	}
 
 	public static ArrayStack getServiceMonitorStack() {
-		return (ArrayStack) monitorStack.get();
+		return monitorStack.get();
 	}
 
 }
