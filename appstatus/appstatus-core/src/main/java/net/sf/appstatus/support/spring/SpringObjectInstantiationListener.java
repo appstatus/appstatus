@@ -13,7 +13,7 @@
  * limitations under the License. 
  * 
  */
-package net.sf.appstatus.core.spring;
+package net.sf.appstatus.support.spring;
 
 import net.sf.appstatus.core.IObjectInstantiationListener;
 
