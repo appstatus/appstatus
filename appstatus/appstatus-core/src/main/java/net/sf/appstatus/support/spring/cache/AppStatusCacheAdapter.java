@@ -1,4 +1,4 @@
-package net.sf.appstatus.support.cache;
+package net.sf.appstatus.support.spring.cache;
 
 import net.sf.appstatus.core.services.IServiceMonitor;
 import net.sf.appstatus.core.services.ServiceMonitorLocator;

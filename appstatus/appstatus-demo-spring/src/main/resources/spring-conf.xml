@@ -34,7 +34,7 @@
 	</bean>
 
 	<bean id="appstatusInstanciation"
-		class="net.sf.appstatus.core.spring.SpringObjectInstantiationListener"
+		class="net.sf.appstatus.support.spring.SpringObjectInstantiationListener"
 		scope="singleton" />
 
 	<bean id="batch" class="net.sf.appstatus.demo.batch.BatchSample">
@@ -60,7 +60,7 @@
 		scope="singleton" />
 
 
-	<bean id="cacheManager" class="net.sf.appstatus.support.cache.AppStatusCacheManager"
+	<bean id="cacheManager" class="net.sf.appstatus.support.spring.cache.AppStatusCacheManager"
 		p:cache-manager-ref="ehcacheCacheManager" />
 	<bean id="ehcacheCacheManager" class="org.springframework.cache.ehcache.EhCacheCacheManager"
 		p:cache-manager-ref="ehcache" />

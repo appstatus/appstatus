@@ -1,4 +1,4 @@
-package net.sf.appstatus.support.cache;
+package net.sf.appstatus.support.spring.cache;
 
 import java.util.Collection;
 import java.util.concurrent.ConcurrentHashMap;
@@ -23,7 +23,7 @@ import org.springframework.cache.CacheManager;
  * With EhCacheManager :
  * 
  * <pre>
- * &lt;bean id="cacheManager" class="net.sf.appstatus.support.cache.AppStatusCacheManager" p:cache-manager-ref="ehCacheCacheManager"/>
+ * &lt;bean id="cacheManager" class="net.sf.appstatus.support.spring.cache.AppStatusCacheManager" p:cache-manager-ref="ehCacheCacheManager"/>
  * 
  * 
  * &lt;bean id="ehCacheCacheManager" class="org.springframework.cache.ehcache.EhCacheCacheManager" p:cache-manager-ref="ehcache"/>
