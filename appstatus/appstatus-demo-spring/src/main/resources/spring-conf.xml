@@ -5,6 +5,27 @@
 	<bean id="appstatus" class="net.sf.appstatus.core.AppStatus"
 		init-method="init" scope="singleton">
 		<property name="objectInstanciationListener" ref="appstatusInstanciation" />
+		<property name="checkers">
+			<list>
+				<ref bean="dummyCheck" />
+				<ref bean="googleCheck" />
+				<ref bean="googlePingCheck" />
+			</list>
+		</property>
+		<property name="propertyProviders">
+			<list>
+				<ref bean="dummyProperties" />
+				<ref bean="warProperties" />
+			</list>
+		</property>
+
+		<property name="configuration">
+			<props>
+				<prop key="services.log.format">spring:${correlationId}|${group}|${name}|${responseTime}|${cache}|${status}|${statusMessage}</prop>
+			</props>
+		</property>
+
+
 	</bean>
 
 	<bean id="appstatusInstanciation"
@@ -17,6 +38,15 @@
 
 
 	<bean id="dummyCheck" class="net.sf.appstatus.demo.check.DummyStatusChecker"
+		scope="singleton" />
+	<bean id="googleCheck" class="net.sf.appstatus.demo.check.GoogleHttpStatusChecker"
+		scope="singleton" />
+	<bean id="googlePingCheck" class="net.sf.appstatus.demo.check.GooglePingStatusChecker"
+		scope="singleton" />
+	<bean id="dummyProperties" class="net.sf.appstatus.demo.property.DummyPropertyProvider"
+		scope="singleton" />
+	<bean id="warProperties"
+		class="net.sf.appstatus.core.property.impl.WarMavenVersionProvider"
 		scope="singleton" />
 
 
