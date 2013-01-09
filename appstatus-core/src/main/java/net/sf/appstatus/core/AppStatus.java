@@ -57,6 +57,7 @@ public class AppStatus {
 
 	private IBatchManager batchManager = null;
 	protected List<ICheck> checkers;
+	private Properties configuration = null;
 	private boolean initDone = false;
 	private IObjectInstantiationListener objectInstanciationListener = null;
 	private List<IPropertyProvider> propertyProviders;
@@ -67,8 +68,6 @@ public class AppStatus {
 	 * Status Service creator.
 	 */
 	public AppStatus() {
-		checkers = new ArrayList<ICheck>();
-		propertyProviders = new ArrayList<IPropertyProvider>();
 	}
 
 	private void addPropertyProvider(String clazz) {
@@ -241,51 +240,58 @@ public class AppStatus {
 			return;
 		}
 
-		checkers = new ArrayList<ICheck>();
-		propertyProviders = new ArrayList<IPropertyProvider>();
+		// Load plugins
+		loadPlugins();
 
-		try {
-			// Load plugins
-			loadPlugins();
+		// Test some values where injected
+		if (checkers != null || propertyProviders != null || configuration != null) {
+			logger.info("Configuration is injected : skip loading properties from classpath");
+		} else {
 
-			// Load and init all probes
-			Enumeration<URL> configFiles;
+			// Init
+			checkers = new ArrayList<ICheck>();
+			propertyProviders = new ArrayList<IPropertyProvider>();
+			configuration = new Properties();
 
-			configFiles = Thread.currentThread().getContextClassLoader().getResources(CONFIG_LOCATION);
+			try {
 
-			if (configFiles == null) {
-				logger.info("config file {} not found in classpath", CONFIG_LOCATION);
-				return;
-			}
+				// Load and init all probes
+				Enumeration<URL> configFiles;
 
-			Properties allConfig = new Properties();
+				configFiles = Thread.currentThread().getContextClassLoader().getResources(CONFIG_LOCATION);
 
-			while (configFiles.hasMoreElements()) {
-				Properties p = loadProperties(configFiles.nextElement());
+				if (configFiles == null) {
+					logger.info("config file {} not found in classpath", CONFIG_LOCATION);
+					return;
+				}
 
-				allConfig.putAll(p);
+				while (configFiles.hasMoreElements()) {
+					Properties p = loadProperties(configFiles.nextElement());
 
-				Set<Object> keys = p.keySet();
-				for (Object oName : keys) {
-					String name = (String) oName;
-					String clazz = (String) p.get(name);
-					if (name.startsWith("check")) {
-						addStatusChecker(clazz);
-					} else if (name.startsWith("property")) {
-						addPropertyProvider(clazz);
-					} else {
-						logger.warn("unknown propery  {} : {} ", name, clazz);
+					configuration.putAll(p);
+
+					Set<Object> keys = p.keySet();
+					for (Object oName : keys) {
+						String name = (String) oName;
+						String clazz = (String) p.get(name);
+						if (name.startsWith("check")) {
+							addStatusChecker(clazz);
+						} else if (name.startsWith("property")) {
+							addPropertyProvider(clazz);
+						} else {
+							logger.warn("unknown propery  {} : {} ", name, clazz);
+						}
 					}
 				}
+
+			} catch (Exception e) {
+				logger.error("Initialization error", e);
 			}
-
-			// Give all configuration properties to managers.
-			getBatchManager().setConfiguration(allConfig);
-			getServiceManager().setConfiguration(allConfig);
-
-		} catch (Exception e) {
-			logger.error("Initialization error", e);
 		}
+
+		// Give all configuration properties to managers.
+		getBatchManager().setConfiguration(configuration);
+		getServiceManager().setConfiguration(configuration);
 
 		initDone = true;
 
@@ -348,6 +354,10 @@ public class AppStatus {
 
 	public void setCheckers(List<ICheck> checkers) {
 		this.checkers = checkers;
+	}
+
+	public void setConfiguration(Properties configuration) {
+		this.configuration = configuration;
 	}
 
 	public void setObjectInstanciationListener(IObjectInstantiationListener objectInstanciationListener) {
