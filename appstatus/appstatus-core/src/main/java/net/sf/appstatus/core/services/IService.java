@@ -19,7 +19,7 @@ package net.sf.appstatus.core.services;
  * @author Nicolas Richeton
  * 
  */
-public interface IService {
+public interface IService extends Comparable<IService> {
 
 	Double getAvgResponseTime();
 

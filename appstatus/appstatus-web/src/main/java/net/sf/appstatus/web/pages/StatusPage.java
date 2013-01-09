@@ -2,6 +2,7 @@ package net.sf.appstatus.web.pages;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -58,6 +59,7 @@ public class StatusPage extends AbstractPage {
 		begin(webHandler, os);
 
 		List<ICheckResult> results = webHandler.getAppStatus().checkAll();
+		Collections.sort(results);
 		boolean statusOk = true;
 		int statusCode = 200;
 		for (ICheckResult r : results) {
@@ -76,13 +78,13 @@ public class StatusPage extends AbstractPage {
 		os.write("<h2 class=\"status\">Status</h2>".getBytes(ENCODING));
 		if (HtmlUtils.generateBeginTable(os, results.size())) {
 
-			HtmlUtils.generateHeaders(os, "", "Name", "Description", "Code",
-					"Resolution");
+			HtmlUtils.generateHeaders(os, "", "Group", "Name", "Description",
+					"Code", "Resolution");
 
 			for (ICheckResult r : results) {
-				HtmlUtils.generateRow(os, getStatus(r), r.getProbeName(),
-						r.getDescription(), String.valueOf(r.getCode()),
-						r.getResolutionSteps());
+				HtmlUtils.generateRow(os, getStatus(r), r.getGroup(),
+						r.getProbeName(), r.getDescription(),
+						String.valueOf(r.getCode()), r.getResolutionSteps());
 			}
 			HtmlUtils.generateEndTable(os, results.size());
 		}
@@ -92,7 +94,7 @@ public class StatusPage extends AbstractPage {
 				.getProperties();
 		if (HtmlUtils.generateBeginTable(os, properties.size())) {
 
-			HtmlUtils.generateHeaders(os, "", "Category", "Name", "Value");
+			HtmlUtils.generateHeaders(os, "", "Group", "Name", "Value");
 
 			for (Entry<String, Map<String, String>> cat : properties.entrySet()) {
 				String category = cat.getKey();
