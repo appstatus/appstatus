@@ -16,7 +16,7 @@ import net.sf.appstatus.core.services.IServiceMonitor;
  * <p>
  * Data are lost when restarting the application.
  * <p>
- * Reads the following configuration : 
+ * Reads the following configuration :
  * <ul>
  * <li>services.log.format</li>
  * <li>services.log</li>
@@ -30,6 +30,7 @@ public class InProcessServiceManager implements IServiceManager {
 	Properties configuration = null;
 	boolean log = true;
 	String format = null;
+	boolean useThreadLocal = false;
 
 	Hashtable<String, IService> services = new Hashtable<String, IService>();
 
@@ -37,7 +38,7 @@ public class InProcessServiceManager implements IServiceManager {
 	 * {@inheritDoc}
 	 */
 	public IServiceMonitor getMonitor(IService service) {
-		ServiceCall call = new ServiceCall((Service) service, log);
+		ServiceCall call = new ServiceCall((Service) service, log, useThreadLocal);
 
 		if (format != null)
 			call.setMessageFormat(format);
@@ -75,7 +76,8 @@ public class InProcessServiceManager implements IServiceManager {
 	/**
 	 * {@inheritDoc}
 	 * 
-	 * Init using "services.log.format" and "services.log" properties.
+	 * Init using "services.log.format", "services.log",
+	 * "services.useThreadLocal" properties.
 	 * 
 	 */
 	public void setConfiguration(Properties configuration) {
@@ -91,6 +93,8 @@ public class InProcessServiceManager implements IServiceManager {
 			if (logEnabled != null) {
 				log = Boolean.valueOf(logEnabled);
 			}
+
+			useThreadLocal = Boolean.valueOf(configuration.getProperty("services.useThreadLocal"));
 		}
 	}
 

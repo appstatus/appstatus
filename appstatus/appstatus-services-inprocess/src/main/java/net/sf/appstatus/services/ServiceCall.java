@@ -16,8 +16,8 @@ public class ServiceCall extends AbstractLoggingServiceMonitor {
 		super.cacheHit();
 	}
 
-	public ServiceCall(Service service, boolean log) {
-		super(service, log);
+	public ServiceCall(Service service, boolean log, boolean useThreadLocal) {
+		super(service, log, useThreadLocal);
 		this.service = service;
 		startTime = System.currentTimeMillis();
 	}
@@ -36,6 +36,7 @@ public class ServiceCall extends AbstractLoggingServiceMonitor {
 
 		service.hits.incrementAndGet();
 		service.running.incrementAndGet();
+
 	}
 
 	public void endCall() {
@@ -76,13 +77,14 @@ public class ServiceCall extends AbstractLoggingServiceMonitor {
 					/ (service.hits.get() - service.cacheHits.get());
 		}
 
-		if (failure)
+		if (failure) {
 			service.failures.incrementAndGet();
-
-		if (error) {
-
 		}
 
+		if (error) {
+			service.errors.incrementAndGet();
+		}
+		
 	}
 
 }
