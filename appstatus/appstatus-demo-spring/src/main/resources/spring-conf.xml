@@ -15,4 +15,9 @@
 		<property name="appstatus" ref="appstatus" />
 	</bean>
 
+
+	<bean id="dummyCheck" class="net.sf.appstatus.demo.check.DummyStatusChecker"
+		scope="singleton" />
+
+
 </beans>

@@ -2,18 +2,15 @@ package net.sf.appstatus.services;
 
 import java.util.concurrent.atomic.AtomicLong;
 
-import org.apache.commons.lang3.ObjectUtils;
-
-import net.sf.appstatus.core.check.ICheckResult;
 import net.sf.appstatus.core.services.IService;
+
+import org.apache.commons.lang3.ObjectUtils;
 
 public class Service implements IService {
 
 	public long getRunning() {
 		return running.get();
 	}
-
-	
 
 	protected double avgResponseTime = 0;
 	protected double avgResponseTimeWithCache = 0;
@@ -56,11 +53,11 @@ public class Service implements IService {
 	public long getHits() {
 		return hits.get();
 	}
-	
+
 	public long getFailures() {
 		return failures.get();
 	}
-	
+
 	public long getErrors() {
 		return errors.get();
 	}
@@ -86,12 +83,12 @@ public class Service implements IService {
 	}
 
 	public int compareTo(IService otherService) {
-			int groupCompare = ObjectUtils.compare(group, otherService.getGroup());
-			if (groupCompare != 0) {
-				return groupCompare;
-			}
-
-			return ObjectUtils.compare(name, otherService.getName());
+		int groupCompare = ObjectUtils.compare(group, otherService.getGroup());
+		if (groupCompare != 0) {
+			return groupCompare;
 		}
+
+		return ObjectUtils.compare(name, otherService.getName());
+	}
 
 }
