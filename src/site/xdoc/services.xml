@@ -68,6 +68,7 @@ try {
 
 }catch( Exception e) {
 	monitor.failure( "Exception", e );
+	throw e;
 } finally {
 	monitor.endCall();
 }
