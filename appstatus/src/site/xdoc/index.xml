@@ -12,12 +12,16 @@
 
 		<h1>Introduction</h1>
 
-		<p>The goal of this toolkit is to provide a quick way to set up a status page in a Java application</p>
-		
+		<p>The goal of this toolkit is to provide a quick way to set up a
+			status page in a Java application and provides runtime informations
+			(services statistics, configuration values, batch process state)
+			which really helps for both development and production.
+		</p>
+
 		<h2>Quickstart for webapps</h2>
-		
+
 		<p>This project is best used with Maven.</p>
-        <p>Add Maven dependency :</p>
+		<p>Add Maven dependency :</p>
 		<source><![CDATA[
 <repository>
 	<id>appstatus-repository</id>
@@ -30,7 +34,7 @@
 <dependency>
     	<groupId>net.sf.appstatus </groupId>
     	<artifactId>appstatus-web</artifactId>
-    	<version>0.0.6</version>
+    	<version>0.0.9</version>
     	<scope>compile</scope>
 </dependency>]]></source>
 
@@ -45,61 +49,84 @@
         <servlet-name>status</servlet-name>
         <url-pattern>/status</url-pattern>
 </servlet-mapping>]]></source>
-		
-			<p>Create a test for your application (implementing ICheck):</p>
-			
+
+		<p>Create a test for your application (implementing ICheck):</p>
+
 		<source>
-public class GooglePingStatusChecker implements ICheck {
+			public class GooglePingStatusChecker implements ICheck {
 
-	public IStatusResult checkStatus() {
+			public IStatusResult checkStatus() {
 
-		StatusResultImpl result = new StatusResultImpl();
-		result.setProbeName(getName());
+			StatusResultImpl result = new
+			StatusResultImpl();
+			result.setProbeName(getName());
 
-		try {
-			InetAddress address = InetAddress.getByName("www.google.com");
+			try {
+			InetAddress
+			address = InetAddress.getByName("www.google.com");
 
-			if (address.isReachable(2000)) {
-				result.setDescription("Google Access ok");
-				result.setCode(IStatusResult.OK);
+			if
+			(address.isReachable(2000)) {
+			result.setDescription("Google Access
+			ok");
+			result.setCode(IStatusResult.OK);
 			}else {
-				throw new Exception( "Ping timeout (2000ms)");
+			throw new Exception(
+			"Ping timeout (2000ms)");
 			}
 
-		} catch (Exception e) {
+			} catch (Exception e) {
 			result.setCode(IStatusResult.ERROR);
-			result.setDescription("Google ping failed");
+			result.setDescription("Google
+			ping failed");
 			result
-					.setResolutionSteps("Ping failed. This means that ICMP messages are blocked by this host. (This may not be an issue) "
-							+ e.getMessage());
+			.setResolutionSteps("Ping failed. This means that
+			ICMP messages are
+			blocked by this host. (This may not be an issue) "
+			+
+			e.getMessage());
 			result.setFatal(false);
-		}
+			}
 
-		return result;
-	}
+			return result;
+			}
 
-	public String getName() {
-		return "Google Ping check";
-	}
+			public String
+			getName() {
+			return "Google Ping check";
+			}
 
-}
+			}
 		</source>
 
-<p>Register the test in /status-check.properties :</p>
-<source>
-check.google.ping=net.sf.appstatus.dummy.GooglePingStatusChecker
-</source>
+		<p>Register the test in /status-check.properties :</p>
+		<source>
+			check.google.ping=net.sf.appstatus.dummy.GooglePingStatusChecker
+		</source>
 
-<p>Go to http://&lt;server&gt;/&lt;app-context&gt;/status :</p>
+		<p>Go to http://&lt;server&gt;/&lt;app-context&gt;/status :</p>
 
-<img src="images/appstatus-0.0.7-status.png" alt="Status page example" style="border: 1px solid black;"/>
-    <h2>Reporting war details for webapps built with Maven</h2>
-    <p>If you are using Maven to build your webapp, AppStatus provides a property provider which reports artifactId, groupId and version. Just add the following property provider :</p>
-<source>
-property.maven=net.sf.appstatus.core.property.impl.WarMavenVersionProvider
-</source>
-    
-    
+		<img src="images/appstatus-0.0.7-status.png" alt="Status page example"
+			style="border: 1px solid black;" />
+		<h2>Reporting war details for webapps built with Maven</h2>
+		<p>If you are using Maven to build your webapp, AppStatus provides a
+			property provider which reports artifactId, groupId and version. Just
+			add the following property provider :
+		</p>
+		<source>
+			property.maven=net.sf.appstatus.core.property.impl.WarMavenVersionProvider
+		</source>
+
+		<h2>Reporting JVM informations</h2>
+		<source>
+			property.jvm=net.sf.appstatus.core.property.impl.JvmPropertyProvider
+		</source>
+
+		<h2>Reporting Host informations</h2>
+		<p>Both hostname and ip are reported.</p>
+		<source>
+			property.localhost=net.sf.appstatus.core.property.impl.HostPropertyProvider
+		</source>
 	</body>
 </document>
   
