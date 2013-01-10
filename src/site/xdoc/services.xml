@@ -1,63 +1,120 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <document xmlns="http://maven.apache.org/XDOC/2.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:schemaLocation="http://maven.apache.org/XDOC/2.0 http://maven.apache.org/xsd/xdoc-2.0.xsd">
+	xsi:schemaLocation="http://maven.apache.org/XDOC/2.0 http://maven.apache.org/xsd/xdoc-2.0.xsd">
 
-    <properties>
-        <title>Services performance monitoring</title>
-        <author>Nicolas Richeton</author>
-    </properties>
+	<properties>
+		<title>Services performance monitoring</title>
+		<author>Nicolas Richeton</author>
+	</properties>
 
-    <body>
+	<body>
 
-        <h1>Services performance monitoring</h1>
+		<h1>Services performance monitoring</h1>
 
-        <p>App status allows to simply monitor external services performance, including cache efficiency. The overhead
-            of service monitoring should be very low, but don't use this on very simple code (no external calls, single
-            line implementation, ...), where overhead could become significant.</p>
+		<p>App status allows to simply monitor external services performance,
+			including cache efficiency. The overhead
+			of service monitoring should
+			be very low, but don't use this on very
+			simple code (no external
+			calls, single
+			line implementation, ...), where overhead could become
+			significant.
+		</p>
 
 
-        <h2>Add dependency</h2>
-        <p> Service performance monitoring is modular feature of App Status. This allows to implement custom persistence
-            for these data.</p>
+		<h2>Add dependency</h2>
+		<p> Service performance monitoring is modular feature of App Status.
+			This allows to implement custom persistence
+			for these data.
+		</p>
 
-        <p>App Status provides a default implementation, appstatus-services-inprocess, which stores data in the current
-            JVM. This means the overhead is very small but data are not shared between JVMs if your application runs on
-            multiple servers and are lost when the application stops.</p>
-            
-<source><![CDATA[
+		<p>App Status provides a default implementation,
+			appstatus-services-inprocess, which stores data in the current
+			JVM.
+			This means the overhead is very small but data are not shared
+			between
+			JVMs if your application runs on
+			multiple servers and are lost when
+			the application stops.
+		</p>
+
+		<source><![CDATA[
 <dependency>
             <groupId>net.sf.appstatus</groupId>
             <artifactId>appstatus-services-inprocess</artifactId>
-            <version>0.0.7</version>
+            <version>0.0.9</version>
             <scope>compile</scope>
 </dependency>
 ]]></source>
 
-        
-        <h2>Usage</h2>
 
-        <p>Call appstatus before and after calls</p>
-        <source><![CDATA[
+		<h2>Usage</h2>
+
+		<p>Call appstatus before and after calls</p>
+		<source><![CDATA[
 IServiceMonitor monitor = AppStatusStatic.getInstance().getServiceMonitor( name, group) ;
-monitor.beginCall();
+try {
+	monitor.beginCall();
 
-// If cache is used :
-monitor.cacheHit();
+	// If cache is used :
+	monitor.cacheHit();
 
-// else perform some work here
+	// else perform some work here
+	Object result = doWork();
+	
+	// On error
+	if( isError(result) )
+		monitor.error( "returned error");
 
-monitor.endCall();
-
+}catch( Exception e) {
+	monitor.failure( "Exception", e );
+} finally {
+	monitor.endCall();
+}
 ]]></source>
 
-        <h2>Result</h2>
-        <p>AppStatus will now monitor : hits, cache hits, running calls, min/max/avg times with and without cache.</p>
+		<h2>Result</h2>
+		<p>AppStatus will now monitor : hits, cache hits, running calls,
+			min/max/avg times with and without cache, errors and failures.
+		</p>
 
-        <p>Go to http://&lt;server&gt;/&lt;app-context&gt;/status?p=services :</p>
+		<p>Go to http://&lt;server&gt;/&lt;app-context&gt;/status?p=services :
+		</p>
 
-        <img src="images/appstatus-0.0.7-services.png" alt="Services page example" style="border: 1px solid black;" />
+		<img src="images/appstatus-0.0.7-services.png" alt="Services page example"
+			style="border: 1px solid black;" />
 
-    </body>
+		<h2>Other features</h2>
+		<h3>ThreadLocal support</h3>
+		<p>Appstatus can put the service monitor in a thread local to make it
+			available deeper in the code, even if you can't pass it as a
+			parameter. See ServiceMonitorLocator.getCurrentServiceMonitor().
+		</p>
+		<h3>Spring cache support</h3>
+		<p>Appstatus provides a Spring cache (AppStatusCacheManager), which
+			wraps any other cache implementation (ehcache, ConcurrentMap) and
+			automatically call monitor.cacheHit() when the cache returns a value.
+		</p>
+		<h3>Logging</h3>
+		<p>Automatically add service calls logging with custom formating. Can
+			be used for performance/SLA logging. The following values are
+			available:</p>
+		<ul>
+			<li>group</li>
+			<li>name</li>
+			<li>responseTime</li>
+			<li>cache</li>
+			<li>failure</li>
+			<li>failureReason</li>
+			<li>failureException</li>
+			<li>error</li>
+			<li>errorMessage</li>
+			<li>correlationId</li>
+			<li>status : SUCCESS/FAILURE/ERROR</li>
+			<li>statusMessage : failure or error message</li>
+			<li>Any additional context values</li>
+		</ul>
+	</body>
 </document>
   
   
