@@ -1,4 +1,4 @@
-package net.sf.appstatus.support.spring;
+package net.sf.appstatus.support.aop;
 
 import net.sf.appstatus.core.AppStatus;
 import net.sf.appstatus.core.services.IServiceMonitor;
@@ -33,6 +33,8 @@ public class AppStatusServiceInterceptor implements MethodInterceptor {
 
 	private AppStatus appStatus;
 
+	private IPostServiceCallback postServiceCallback;
+
 	public Object invoke(MethodInvocation invocation) throws Throwable {
 		IServiceMonitor m = appStatus.getServiceMonitor(invocation.getMethod().getName(), invocation.getThis()
 				.getClass().getSimpleName());
@@ -40,8 +42,17 @@ public class AppStatusServiceInterceptor implements MethodInterceptor {
 		m.beginCall(invocation.getArguments());
 		try {
 			result = invocation.proceed();
+
+			if (postServiceCallback != null) {
+				postServiceCallback.handleResult(m, invocation);
+			}
+
 		} catch (Exception e) {
-			m.failure(e.getLocalizedMessage(), e);
+			if (postServiceCallback != null) {
+				postServiceCallback.handleException(m, invocation, e);
+			} else {
+				m.failure(e.getLocalizedMessage(), e);
+			}
 			throw e;
 		} finally {
 			m.endCall();
