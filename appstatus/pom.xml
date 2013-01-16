@@ -5,7 +5,7 @@
 	<artifactId>appstatus-parent</artifactId>
 	<packaging>pom</packaging>
 	<name>App Status Toolkit</name>
-	<version>0.1.0-SNAPSHOT</version>
+	<version>0.1.0</version>
 	<inceptionYear>2010</inceptionYear>
 	<mailingLists>
 		<mailingList>
@@ -34,9 +34,9 @@
 		
 	</developers>
 	<scm>
-		<connection>scm:svn:svn+ssh://svn.code.sf.net/p/appstatus/code/trunk/appstatus</connection>
-		<developerConnection>scm:svn:svn+ssh://svn.code.sf.net/p/appstatus/code/trunk/appstatus</developerConnection>
-		<url>http://appstatus.svn.sourceforge.net/viewvc/appstatus/trunk/</url>
+		<connection>scm:svn:svn+ssh://svn.code.sf.net/p/appstatus/code/tags/appstatus-parent-0.1.0</connection>
+		<developerConnection>scm:svn:svn+ssh://svn.code.sf.net/p/appstatus/code/tags/appstatus-parent-0.1.0</developerConnection>
+		<url>http://appstatus.svn.sourceforge.net/viewvc/appstatus/tags/appstatus-parent-0.1.0</url>
 	</scm>
 	<build>
 		<plugins>
