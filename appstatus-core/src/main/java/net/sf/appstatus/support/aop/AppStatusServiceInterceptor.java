@@ -24,9 +24,7 @@ import org.aopalliance.intercept.MethodInvocation;
  * &lt;/bean>
  * 
  *  &lt;aop:config >
- *         &lt;aop:pointcut id="serviceCallPointcut" 
- *             expression="execution(public * your.package.ServiceClient*.*(..))" />
- *         &lt;aop:advisor id="serviceCallAdvisor" advice-ref="appStatusInterceptor" pointcut-ref="serviceCallPointcut" />
+ *         &lt;aop:advisor id="serviceCallAdvisor" advice-ref="appStatusInterceptor" pointcut="execution(public * your.package.ServiceClient*.*(..))" />
  *     &lt;/aop:config>
  * </pre>
  * 
@@ -68,6 +66,12 @@ public class AppStatusServiceInterceptor implements MethodInterceptor {
 		this.appStatus = appStatus;
 	}
 
+	/**
+	 * Adding a callback disables automatic failure management. It's up to the
+	 * callback to set failure flag.
+	 * 
+	 * @param postServiceCallback
+	 */
 	public void setPostServiceCallback(IPostServiceCallback postServiceCallback) {
 		this.postServiceCallback = postServiceCallback;
 	}
