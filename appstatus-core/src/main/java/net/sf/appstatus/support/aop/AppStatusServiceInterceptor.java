@@ -18,7 +18,10 @@ import org.aopalliance.intercept.MethodInvocation;
  * <pre>
  * &lt;bean id="appStatusInterceptor" class="net.sf.appstatus.support.spring.AppStatusServiceInterceptor" scope="singleton">
  *         &lt;property name="appStatus" ref="appStatus" />
- * </bean>
+ *         
+ *         &lt;!-- Optional property for service result analysis -->
+ *         &lt;property name="postServiceCallback" ref="postServiceCallback" />
+ * &lt;/bean>
  * 
  *  &lt;aop:config >
  *         &lt;aop:pointcut id="serviceCallPointcut" 
@@ -63,6 +66,10 @@ public class AppStatusServiceInterceptor implements MethodInterceptor {
 
 	public void setAppStatus(AppStatus appStatus) {
 		this.appStatus = appStatus;
+	}
+
+	public void setPostServiceCallback(IPostServiceCallback postServiceCallback) {
+		this.postServiceCallback = postServiceCallback;
 	}
 
 }
