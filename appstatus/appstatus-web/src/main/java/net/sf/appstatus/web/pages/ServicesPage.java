@@ -17,9 +17,8 @@ public class ServicesPage extends AbstractPage {
 	private static final String ENCODING = "UTF-8";
 
 	@Override
-	public void doGet(StatusWebHandler webHandler, HttpServletRequest req,
-			HttpServletResponse resp) throws UnsupportedEncodingException,
-			IOException {
+	public void doGet(StatusWebHandler webHandler, HttpServletRequest req, HttpServletResponse resp)
+			throws UnsupportedEncodingException, IOException {
 
 		setup(resp, "text/html");
 		ServletOutputStream os = resp.getOutputStream();
@@ -32,33 +31,18 @@ public class ServicesPage extends AbstractPage {
 
 		if (HtmlUtils.generateBeginTable(os, services.size())) {
 
-			HtmlUtils.generateHeaders(os, "", "Group", "Name", "Hits", "Cache",
-					"Running", "min", "max", "avg", "min (cached)",
-					"max (cached)", "avg (cached)", "Errors", "Failures");
+			HtmlUtils.generateHeaders(os, "", "Group", "Name", "Hits", "Cache", "Running", "min", "max", "avg",
+					"min (cached)", "max (cached)", "avg (cached)", "Errors", "Failures");
 
 			for (IService service : services) {
-				HtmlUtils.generateRow(
-						os,
-						Resources.STATUS_JOB,
-						service.getGroup(),
-						service.getName(),
+				HtmlUtils.generateRow(os, Resources.STATUS_JOB, service.getGroup(), service.getName(),
 						service.getHits(),
-						service.getCacheHits()
-								+ getPercent(service.getCacheHits(),
-										service.getHits()),
-						service.getRunning(),
-						service.getMinResponseTime(),
-						service.getMaxResponseTime(),
-						Math.round(service.getAvgResponseTime()),
-						service.getMinResponseTimeWithCache(),
-						service.getMaxResponseTimeWithCache(),
-						Math.round(service.getAvgResponseTimeWithCache()),
-						service.getErrors()
-								+ getPercent(service.getErrors(),
-										service.getHits()),
-						service.getFailures()
-								+ getPercent(service.getFailures(),
-										service.getHits()));
+						service.getCacheHits() + getPercent(service.getCacheHits(), service.getHits()),
+						service.getRunning(), service.getMinResponseTime(), service.getMaxResponseTime(),
+						Math.round(service.getAvgResponseTime()), service.getMinResponseTimeWithCache(),
+						service.getMaxResponseTimeWithCache(), Math.round(service.getAvgResponseTimeWithCache()),
+						service.getErrors() + getPercent(service.getErrors(), service.getHits()), service.getFailures()
+								+ getPercent(service.getFailures(), service.getHits()));
 			}
 
 			HtmlUtils.generateEndTable(os, services.size());
@@ -67,8 +51,7 @@ public class ServicesPage extends AbstractPage {
 	}
 
 	@Override
-	public void doPost(StatusWebHandler webHandler, HttpServletRequest req,
-			HttpServletResponse resp) {
+	public void doPost(StatusWebHandler webHandler, HttpServletRequest req, HttpServletResponse resp) {
 
 	}
 
@@ -90,6 +73,9 @@ public class ServicesPage extends AbstractPage {
 	 * @return
 	 */
 	private String getPercent(long value1, long value2) {
+		if (value2 == 0) {
+			return "(-%)";
+		}
 		return " (" + ((100 * value1) / value2) + "%)";
 	}
 }
