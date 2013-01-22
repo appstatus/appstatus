@@ -76,6 +76,8 @@ public class BatchSample implements Runnable {
 			monitor = appstatus.getServiceMonitor("Refs service", "getRef");
 			monitor.beginCall();
 			service.getRefs();
+			if (i % 10 == 0) {
+				monitor.error("Test erreur reporting");}
 			monitor.endCall();
 		}
 		stepMonitor.done();
@@ -93,8 +95,17 @@ public class BatchSample implements Runnable {
 	private void step2(List<String> items, IBatchProgressMonitor stepMonitor) {
 		stepMonitor.beginTask("step2", "Write the items in the console output.", items.size());
 		for (String item : items) {
-			appstatus.getServiceMonitor("Console Write", "Console");
+IServiceMonitor sm =	appstatus.getServiceMonitor("Console Write", "Console");
 			stepMonitor.message("Writing item : " + item);
+			try {
+				sm.beginCall(null);
+				Thread.sleep(100);
+			} catch (InterruptedException e) {
+				sm.failure("", e);
+				e.printStackTrace();
+			} finally{
+				sm.endCall();
+			}
 			stepMonitor.worked(1);
 		}
 		stepMonitor.done();
