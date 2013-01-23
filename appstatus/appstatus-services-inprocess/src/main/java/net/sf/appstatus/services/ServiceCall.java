@@ -19,16 +19,13 @@ public class ServiceCall extends AbstractLoggingServiceMonitor {
 	public ServiceCall(Service service, boolean log, boolean useThreadLocal) {
 		super(service, log, useThreadLocal);
 		this.service = service;
-		startTime = System.currentTimeMillis();
 	}
 
 	public String getId() {
 		return id;
 	}
 
-	public long getStartTime() {
-		return startTime;
-	}
+	
 
 	public void beginCall(Object... parameters) {
 		// Register parameters
@@ -51,29 +48,28 @@ public class ServiceCall extends AbstractLoggingServiceMonitor {
 		service.running.decrementAndGet();
 
 		// Update statistics
-		long response = endTime - startTime;
 		if (cacheHit) {
-			if (service.maxResponseTimeWithCache == null || service.maxResponseTimeWithCache < response) {
-				service.maxResponseTimeWithCache = response;
+			if (service.maxResponseTimeWithCache == null || service.maxResponseTimeWithCache < executionTime) {
+				service.maxResponseTimeWithCache = executionTime;
 			}
 
-			if (service.minResponseTimeWithCache == null || service.minResponseTimeWithCache > response) {
-				service.minResponseTimeWithCache = response;
+			if (service.minResponseTimeWithCache == null || service.minResponseTimeWithCache > executionTime) {
+				service.minResponseTimeWithCache = executionTime;
 			}
 
-			service.avgResponseTimeWithCache = (service.avgResponseTimeWithCache * (service.cacheHits.get() - 1) + response)
+			service.avgResponseTimeWithCache = (service.avgResponseTimeWithCache * (service.cacheHits.get() - 1) + executionTime)
 					/ service.cacheHits.get();
 		} else {
 
-			if (service.maxResponseTime == null || service.maxResponseTime < response) {
-				service.maxResponseTime = response;
+			if (service.maxResponseTime == null || service.maxResponseTime < executionTime) {
+				service.maxResponseTime = executionTime;
 			}
 
-			if (service.minResponseTime == null || service.minResponseTime > response) {
-				service.minResponseTime = response;
+			if (service.minResponseTime == null || service.minResponseTime > executionTime) {
+				service.minResponseTime = executionTime;
 			}
 
-			service.avgResponseTime = (service.avgResponseTime * (service.hits.get() - service.cacheHits.get() - 1) + response)
+			service.avgResponseTime = (service.avgResponseTime * (service.hits.get() - service.cacheHits.get() - 1) + executionTime)
 					/ (service.hits.get() - service.cacheHits.get());
 		}
 
