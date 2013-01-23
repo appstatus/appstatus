@@ -25,6 +25,7 @@ public abstract class AbstractLoggingServiceMonitor extends AbstractServiceMonit
 	protected Long endTime = null;
 	protected boolean error = false;
 	protected String errorMessage = null;
+	protected Long executionTime = null;
 	protected boolean failure = false;
 	protected Exception failureException = null;
 	protected String failureReason = null;
@@ -38,6 +39,7 @@ public abstract class AbstractLoggingServiceMonitor extends AbstractServiceMonit
 		super(useThreadLocal);
 		this.service = service;
 		this.enableLog = enableLog;
+		startTime = System.currentTimeMillis();
 	}
 
 	@Override
@@ -76,6 +78,10 @@ public abstract class AbstractLoggingServiceMonitor extends AbstractServiceMonit
 
 		endTime = System.currentTimeMillis();
 
+		if (executionTime != null) {
+			executionTime = endTime - startTime;
+		}
+
 		if (enableLog) {
 			Logger log = getLogger();
 			if (log.isInfoEnabled()) {
@@ -88,6 +94,11 @@ public abstract class AbstractLoggingServiceMonitor extends AbstractServiceMonit
 	public void error(String message) {
 		error = true;
 		errorMessage = message;
+	}
+
+	public void executionTime(long timeMillis) {
+		executionTime = timeMillis;
+
 	}
 
 	public void failure(String reason) {
@@ -116,10 +127,9 @@ public abstract class AbstractLoggingServiceMonitor extends AbstractServiceMonit
 	 * @return
 	 */
 	protected String getLogMessage() {
-		long response = endTime - startTime;
 
 		Map<String, String> valuesMap = new HashMap<String, String>();
-		valuesMap.put("responseTime", String.valueOf(response));
+		valuesMap.put("responseTime", String.valueOf(executionTime));
 		valuesMap.put("group", service.getGroup());
 		valuesMap.put("name", service.getName());
 		valuesMap.put("cache", cacheHit ? "HIT" : "MISS");
@@ -155,6 +165,10 @@ public abstract class AbstractLoggingServiceMonitor extends AbstractServiceMonit
 		StrSubstitutor sub = new StrSubstitutor(valuesMap);
 
 		return sub.replace(messageFormat);
+	}
+
+	public long getStartTime() {
+		return startTime;
 	}
 
 	public void setLogger(Logger l) {
