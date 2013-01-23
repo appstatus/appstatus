@@ -31,14 +31,12 @@ import org.slf4j.LoggerFactory;
  * @author Nicolas Richeton (Capgemini)
  * 
  */
-public class WarMavenVersionProvider extends AbstractPropertyProvider implements
-		IServletContextAware {
+public class WarMavenVersionProvider extends AbstractPropertyProvider implements IServletContextAware {
 
 	private static final String ARTIFACT_ID = "artifactId";
 	private static final String CATEGORY = "maven";
 	private static final String GROUP_ID = "groupId";
-	private static Logger logger = LoggerFactory
-			.getLogger(WarMavenVersionProvider.class);
+	private static Logger logger = LoggerFactory.getLogger(WarMavenVersionProvider.class);
 	private static final String NOT_AVAILABLE = "Not available";
 	private static final String VERSION = "version";
 	private ServletContext servletContext = null;
@@ -65,9 +63,8 @@ public class WarMavenVersionProvider extends AbstractPropertyProvider implements
 			try {
 				url = servletContext.getResourceAsStream(servletContext
 						.getResourcePaths(
-								(String) servletContext
-										.getResourcePaths("/META-INF/maven/")
-										.iterator().next()).iterator().next()
+								(String) servletContext.getResourcePaths("/META-INF/maven/").iterator().next())
+						.iterator().next()
 						+ "pom.properties");
 				if (url != null) {
 					pomProperties = new Properties();
@@ -75,9 +72,7 @@ public class WarMavenVersionProvider extends AbstractPropertyProvider implements
 					url.close();
 				}
 			} catch (Exception e) {
-				logger.info(
-						"Error getting maven information from /META-INF/maven/*. Not a maven war.",
-						e);
+				logger.info("Error getting maven information from /META-INF/maven/*. Not a maven war.");
 			}
 			if (pomProperties == null) {
 				prop.put(VERSION, NOT_AVAILABLE);
