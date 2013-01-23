@@ -28,6 +28,7 @@ import net.sf.appstatus.core.AppStatus;
 import net.sf.appstatus.core.AppStatusStatic;
 import net.sf.appstatus.core.IServletContextProvider;
 
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -90,7 +91,8 @@ public class StatusServlet extends HttpServlet {
 
 		statusWeb = new StatusWebHandler();
 		statusWeb.setAppStatus(status);
-		statusWeb.setApplicationName(config.getServletContext().getServletContextName());
+		statusWeb.setApplicationName(StringUtils.defaultString(config.getServletContext().getServletContextName(),
+				"No name"));
 		statusWeb.init();
 	}
 }
