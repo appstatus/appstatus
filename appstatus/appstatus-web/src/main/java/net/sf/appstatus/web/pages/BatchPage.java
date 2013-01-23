@@ -21,111 +21,73 @@ public class BatchPage extends AbstractPage {
 	private static final String ITEM_UUID = "item-uuid";
 
 	@Override
-	public void doGet(StatusWebHandler webHandler, HttpServletRequest req,
-			HttpServletResponse resp) throws UnsupportedEncodingException,
-			IOException {
+	public void doGet(StatusWebHandler webHandler, HttpServletRequest req, HttpServletResponse resp)
+			throws UnsupportedEncodingException, IOException {
 
 		setup(resp, "text/html");
 		ServletOutputStream os = resp.getOutputStream();
 		begin(webHandler, os);
 
-		os.write("<h1>Batchs</h1>".getBytes(ENCODING));
+		os.write("<h2>Batchs</h2>".getBytes(ENCODING));
 		IBatchManager manager = webHandler.getAppStatus().getBatchManager();
 
-		os.write("<h2>Running</h2>".getBytes(ENCODING));
+		os.write("<h3>Running</h3>".getBytes(ENCODING));
 
 		List<IBatch> runningBatches = manager.getRunningBatches();
 
 		if (HtmlUtils.generateBeginTable(os, runningBatches.size())) {
 
-			HtmlUtils.generateHeaders(os, "", "Id", "Group", "Name", "Start",
-					"Progress", "End (est.)", "Status", "Task", "Last Msg",
-					"Items", "Rejected", "Last Update");
+			HtmlUtils.generateHeaders(os, "", "Id", "Group", "Name", "Start", "Progress", "End (est.)", "Status",
+					"Task", "Last Msg", "Items", "Rejected", "Last Update");
 
 			for (IBatch batch : runningBatches) {
-				HtmlUtils.generateRow(os, getIcon(batch),
-						generateId(resp, batch.getUuid()), batch.getGroup(),
-						batch.getName(), batch.getStartDate(),
-						Math.round(batch.getProgressStatus()) + "%",
-						batch.getEndDate(), batch.getStatus(),
-						batch.getCurrentTask(), batch.getLastMessage(),
-						batch.getItemCount(),
-						HtmlUtils.countAndDetail(batch.getRejectedItemsId()),
+				HtmlUtils.generateRow(os, getIcon(batch), generateId(resp, batch.getUuid()), batch.getGroup(),
+						batch.getName(), batch.getStartDate(), Math.round(batch.getProgressStatus()) + "%",
+						batch.getEndDate(), batch.getStatus(), batch.getCurrentTask(), batch.getLastMessage(),
+						batch.getItemCount(), HtmlUtils.countAndDetail(batch.getRejectedItemsId()),
 						batch.getLastUpdate());
 			}
 
 			HtmlUtils.generateEndTable(os, runningBatches.size());
 		}
 
-		os.write("<h2>Finished</h2>".getBytes(ENCODING));
+		os.write("<h3>Finished</h3>".getBytes(ENCODING));
 
 		List<IBatch> finishedBatches = manager.getFinishedBatches();
 
 		if (HtmlUtils.generateBeginTable(os, finishedBatches.size())) {
 
-			HtmlUtils.generateHeaders(os, "", "Id", "Group", "Name", "Start",
-					"Progress", "End", "Status", "Task", "Last Msg", "Items",
-					"Rejected", "Last Update", "");
+			HtmlUtils.generateHeaders(os, "", "Id", "Group", "Name", "Start", "Progress", "End", "Status", "Task",
+					"Last Msg", "Items", "Rejected", "Last Update", "");
 			for (IBatch batch : finishedBatches) {
-				HtmlUtils
-						.generateRow(
-								os,
-								getIcon(batch),
-								generateId(resp, batch.getUuid()),
-								batch.getGroup(),
-								batch.getName(),
-								batch.getStartDate(),
-								Math.round(batch.getProgressStatus()) + "%",
-								batch.getEndDate(),
-								batch.getStatus(),
-								batch.getCurrentTask(),
-								batch.getLastMessage(),
-								batch.getItemCount(),
-								HtmlUtils.countAndDetail(batch
-										.getRejectedItemsId()),
-								batch.getLastUpdate(),
-								"<form action='?p=batch' method='post'><input type='submit' name='"
-										+ CLEAR_ITEM
-										+ "' value='Delete' /><input type=hidden name='"
-										+ ITEM_UUID + "' value='"
-										+ batch.getUuid() + "'/></form>");
+				HtmlUtils.generateRow(os, getIcon(batch), generateId(resp, batch.getUuid()), batch.getGroup(),
+						batch.getName(), batch.getStartDate(), Math.round(batch.getProgressStatus()) + "%",
+						batch.getEndDate(), batch.getStatus(), batch.getCurrentTask(), batch.getLastMessage(),
+						batch.getItemCount(), HtmlUtils.countAndDetail(batch.getRejectedItemsId()),
+						batch.getLastUpdate(), "<form action='?p=batch' method='post'><input type='submit' name='"
+								+ CLEAR_ITEM + "' value='Delete' /><input type=hidden name='" + ITEM_UUID + "' value='"
+								+ batch.getUuid() + "'/></form>");
 			}
 
 			HtmlUtils.generateEndTable(os, finishedBatches.size());
 		}
-		os.write("<h2>With errors</h2>".getBytes(ENCODING));
+		os.write("<h3>With errors</h3>".getBytes(ENCODING));
 
 		List<IBatch> errorBatches = manager.getErrorBatches();
 
 		if (HtmlUtils.generateBeginTable(os, errorBatches.size())) {
 
-			HtmlUtils.generateHeaders(os, "", "Id", "Group", "Name", "Start",
-					"Progress", "End", "Status", "Task", "Last Msg", "Items",
-					"Rejected", "Last Update", "");
+			HtmlUtils.generateHeaders(os, "", "Id", "Group", "Name", "Start", "Progress", "End", "Status", "Task",
+					"Last Msg", "Items", "Rejected", "Last Update", "");
 
 			for (IBatch batch : errorBatches) {
-				HtmlUtils
-						.generateRow(
-								os,
-								getIcon(batch),
-								generateId(resp, batch.getUuid()),
-								batch.getGroup(),
-								batch.getName(),
-								batch.getStartDate(),
-								Math.round(batch.getProgressStatus()) + "%",
-								batch.getEndDate(),
-								batch.getStatus(),
-								batch.getCurrentTask(),
-								batch.getLastMessage(),
-								batch.getItemCount(),
-								HtmlUtils.countAndDetail(batch
-										.getRejectedItemsId()),
-								batch.getLastUpdate(),
-								"<form action='?p=batch' method='post'><input type='submit' name='"
-										+ CLEAR_ITEM
-										+ "' value='Delete' /><input type=hidden name='"
-										+ ITEM_UUID + "' value='"
-										+ batch.getUuid() + "'/></form>");
+				HtmlUtils.generateRow(os, getIcon(batch), generateId(resp, batch.getUuid()), batch.getGroup(),
+						batch.getName(), batch.getStartDate(), Math.round(batch.getProgressStatus()) + "%",
+						batch.getEndDate(), batch.getStatus(), batch.getCurrentTask(), batch.getLastMessage(),
+						batch.getItemCount(), HtmlUtils.countAndDetail(batch.getRejectedItemsId()),
+						batch.getLastUpdate(), "<form action='?p=batch' method='post'><input type='submit' name='"
+								+ CLEAR_ITEM + "' value='Delete' /><input type=hidden name='" + ITEM_UUID + "' value='"
+								+ batch.getUuid() + "'/></form>");
 			}
 			HtmlUtils.generateEndTable(os, errorBatches.size());
 		}
@@ -135,33 +97,25 @@ public class BatchPage extends AbstractPage {
 	}
 
 	@Override
-	public void doPost(StatusWebHandler webHandler, HttpServletRequest req,
-			HttpServletResponse resp) {
+	public void doPost(StatusWebHandler webHandler, HttpServletRequest req, HttpServletResponse resp) {
 		if (req.getParameter(CLEAR_OLD) != null) {
-			webHandler.getAppStatus().getBatchManager()
-					.removeAllBatches(IBatchManager.REMOVE_OLD);
+			webHandler.getAppStatus().getBatchManager().removeAllBatches(IBatchManager.REMOVE_OLD);
 		} else if (req.getParameter(CLEAR_SUCCESS) != null) {
-			webHandler.getAppStatus().getBatchManager()
-					.removeAllBatches(IBatchManager.REMOVE_SUCCESS);
+			webHandler.getAppStatus().getBatchManager().removeAllBatches(IBatchManager.REMOVE_SUCCESS);
 		} else if (req.getParameter(CLEAR_ITEM) != null) {
-			webHandler.getAppStatus().getBatchManager()
-					.removeBatch(req.getParameter(ITEM_UUID));
+			webHandler.getAppStatus().getBatchManager().removeBatch(req.getParameter(ITEM_UUID));
 		}
 
 	}
 
-	private void generateClearActions(HttpServletResponse resp)
-			throws IOException {
+	private void generateClearActions(HttpServletResponse resp) throws IOException {
 		resp.getOutputStream()
-				.write(("<p>Actions :</p><form action='?p=batch' method='post'><input type='submit' name='"
-						+ CLEAR_OLD
-						+ "' value='Delete old (6 months)' /><input type='submit' name='"
-						+ CLEAR_SUCCESS + "' value='Delete Success w/o rejected'/></form>")
+				.write(("<p>Actions :</p><form action='?p=batch' method='post'><input type='submit' name='" + CLEAR_OLD
+						+ "' value='Delete old (6 months)' /><input type='submit' name='" + CLEAR_SUCCESS + "' value='Delete Success w/o rejected'/></form>")
 						.getBytes());
 	}
 
-	private String generateId(HttpServletResponse resp, String id)
-			throws IOException {
+	private String generateId(HttpServletResponse resp, String id) throws IOException {
 
 		if (id == null) {
 			return "";
@@ -170,8 +124,7 @@ public class BatchPage extends AbstractPage {
 		if (id.length() < 15) {
 			return id;
 		} else {
-			return "<span title='" + id + "'>" + id.substring(0, 10)
-					+ "...</span";
+			return "<span title='" + id + "'>" + id.substring(0, 10) + "...</span";
 		}
 
 	}
@@ -182,8 +135,7 @@ public class BatchPage extends AbstractPage {
 			return Resources.STATUS_JOB_ERROR;
 		}
 
-		if (IBatch.STATUS_SUCCESS.equals(b.getStatus())
-				&& b.getRejectedItemsId() != null
+		if (IBatch.STATUS_SUCCESS.equals(b.getStatus()) && b.getRejectedItemsId() != null
 				&& b.getRejectedItemsId().size() > 0) {
 			return Resources.STATUS_JOB_WARNING;
 		}
