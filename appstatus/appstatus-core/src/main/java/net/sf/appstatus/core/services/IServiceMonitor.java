@@ -60,6 +60,12 @@ public interface IServiceMonitor {
 	void error(String message);
 
 	/**
+	 * Manually set the execution time. If this method is not called, execution
+	 * time is computed between beginCall and endCall.
+	 */
+	void executionTime(long timeMillis);
+
+	/**
 	 * Reports a failure : the call has failed completely
 	 * 
 	 * @param reason
