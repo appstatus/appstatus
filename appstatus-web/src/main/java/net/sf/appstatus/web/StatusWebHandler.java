@@ -44,6 +44,7 @@ import org.slf4j.LoggerFactory;
 public class StatusWebHandler {
 	private static Logger logger = LoggerFactory.getLogger(AppStatus.class);
 	private String allowIp = null;
+	private String applicationName;
 	private AppStatus appStatus = null;
 	private String cssLocation = null;
 	private Map<String, AbstractPage> pages = null;
@@ -55,8 +56,7 @@ public class StatusWebHandler {
 	 * @param resp
 	 * @throws IOException
 	 */
-	public void doGet(HttpServletRequest req, HttpServletResponse resp)
-			throws IOException {
+	public void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
 
 		if (allowIp != null) {
 			if (!req.getRemoteAddr().equals(allowIp)) {
@@ -65,14 +65,12 @@ public class StatusWebHandler {
 			}
 		}
 
-		if (req.getParameter("icon") != null
-				|| req.getParameter("resource") != null) {
+		if (req.getParameter("icon") != null || req.getParameter("resource") != null) {
 			Resources.doGet(this, req, resp);
 			return;
 		}
 
-		if (req.getParameter("p") != null
-				&& pages.containsKey(req.getParameter("p"))) {
+		if (req.getParameter("p") != null && pages.containsKey(req.getParameter("p"))) {
 			pages.get(req.getParameter("p")).doGet(this, req, resp);
 
 		} else {
@@ -87,8 +85,7 @@ public class StatusWebHandler {
 	 * @param resp
 	 * @throws IOException
 	 */
-	public void doPost(HttpServletRequest req, HttpServletResponse resp)
-			throws IOException {
+	public void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException {
 		if (allowIp != null) {
 			if (!req.getRemoteAddr().equals(allowIp)) {
 				resp.sendError(401, "IP not authorized");
@@ -96,8 +93,7 @@ public class StatusWebHandler {
 			}
 		}
 
-		if (req.getParameter("p") != null
-				&& pages.containsKey(req.getParameter("p"))) {
+		if (req.getParameter("p") != null && pages.containsKey(req.getParameter("p"))) {
 			pages.get(req.getParameter("p")).doPost(this, req, resp);
 
 		} else {
@@ -105,6 +101,10 @@ public class StatusWebHandler {
 		}
 
 		doGet(req, resp);
+	}
+
+	public String getApplicationName() {
+		return applicationName;
 	}
 
 	public AppStatus getAppStatus() {
@@ -174,9 +174,7 @@ public class StatusWebHandler {
 				}
 			}
 		} catch (Exception e) {
-			logger.error(
-					"Error loading configuration from /status-web-conf.properties.",
-					e);
+			logger.error("Error loading configuration from /status-web-conf.properties.", e);
 		}
 
 		// Init css
@@ -193,6 +191,10 @@ public class StatusWebHandler {
 	 */
 	public void setAllowIp(String allowIp) {
 		this.allowIp = allowIp;
+	}
+
+	public void setApplicationName(String servletContextName) {
+		this.applicationName = servletContextName;
 	}
 
 	/**

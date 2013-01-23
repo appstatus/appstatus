@@ -17,6 +17,7 @@ package net.sf.appstatus.web;
 
 import java.io.IOException;
 
+import javax.servlet.ServletConfig;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -44,8 +45,7 @@ public class StatusServlet extends HttpServlet {
 	 * , javax.servlet.http.HttpServletResponse)
 	 */
 	@Override
-	protected void doGet(HttpServletRequest req, HttpServletResponse resp)
-			throws ServletException, IOException {
+	protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 		statusWeb.doGet(req, resp);
 	}
 
@@ -57,8 +57,7 @@ public class StatusServlet extends HttpServlet {
 	 * , javax.servlet.http.HttpServletResponse)
 	 */
 	@Override
-	protected void doPost(HttpServletRequest req, HttpServletResponse resp)
-			throws ServletException, IOException {
+	protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 		statusWeb.doPost(req, resp);
 	}
 
@@ -69,7 +68,8 @@ public class StatusServlet extends HttpServlet {
 	 * behavior.
 	 */
 	@Override
-	public void init() throws ServletException {
+	public void init(ServletConfig config) throws ServletException {
+		super.init(config);
 
 		super.init();
 
@@ -77,8 +77,7 @@ public class StatusServlet extends HttpServlet {
 
 		AppStatus status;
 		if (beanName != null) {
-			status = (AppStatus) (new SpringObjectInstantiationListener(
-					this.getServletContext()).getInstance(beanName));
+			status = (AppStatus) (new SpringObjectInstantiationListener(this.getServletContext()).getInstance(beanName));
 		} else {
 			status = AppStatusStatic.getInstance();
 		}
@@ -91,6 +90,7 @@ public class StatusServlet extends HttpServlet {
 
 		statusWeb = new StatusWebHandler();
 		statusWeb.setAppStatus(status);
+		statusWeb.setApplicationName(config.getServletContext().getServletContextName());
 		statusWeb.init();
 	}
 }

@@ -27,7 +27,7 @@ public class ServicesPage extends AbstractPage {
 		List<IService> services = webHandler.getAppStatus().getServices();
 		Collections.sort(services);
 
-		os.write("<h1>Services</h1>".getBytes(ENCODING));
+		os.write("<h2>Services</h2>".getBytes(ENCODING));
 
 		if (HtmlUtils.generateBeginTable(os, services.size())) {
 
