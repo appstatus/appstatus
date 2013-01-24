@@ -32,6 +32,7 @@ import net.sf.appstatus.web.pages.Resources;
 import net.sf.appstatus.web.pages.ServicesPage;
 import net.sf.appstatus.web.pages.StatusPage;
 
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -44,7 +45,7 @@ import org.slf4j.LoggerFactory;
 public class StatusWebHandler {
 	private static Logger logger = LoggerFactory.getLogger(AppStatus.class);
 	private String allowIp = null;
-	private String applicationName;
+	private String applicationName = StringUtils.EMPTY;
 	private AppStatus appStatus = null;
 	private String cssLocation = null;
 	private Map<String, AbstractPage> pages = null;
