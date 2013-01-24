@@ -27,6 +27,8 @@ public interface IService extends Comparable<IService> {
 
 	long getCacheHits();
 
+	double getCurrentRate();
+
 	long getErrors();
 
 	long getFailures();
