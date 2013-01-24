@@ -78,7 +78,7 @@ public abstract class AbstractLoggingServiceMonitor extends AbstractServiceMonit
 
 		endTime = System.currentTimeMillis();
 
-		if (executionTime != null) {
+		if (executionTime == null) {
 			executionTime = endTime - startTime;
 		}
 
