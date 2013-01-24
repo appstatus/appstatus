@@ -32,7 +32,7 @@ public class ServicesPage extends AbstractPage {
 		if (HtmlUtils.generateBeginTable(os, services.size())) {
 
 			HtmlUtils.generateHeaders(os, "", "Group", "Name", "Hits", "Cache", "Running", "min", "max", "avg",
-					"min (cached)", "max (cached)", "avg (cached)", "Errors", "Failures");
+					"min (cached)", "max (cached)", "avg (cached)", "Errors", "Failures", "Hit rate");
 
 			for (IService service : services) {
 				HtmlUtils.generateRow(os, Resources.STATUS_JOB, service.getGroup(), service.getName(),
@@ -42,7 +42,8 @@ public class ServicesPage extends AbstractPage {
 						Math.round(service.getAvgResponseTime()), service.getMinResponseTimeWithCache(),
 						service.getMaxResponseTimeWithCache(), Math.round(service.getAvgResponseTimeWithCache()),
 						service.getErrors() + getPercent(service.getErrors(), service.getHits()), service.getFailures()
-								+ getPercent(service.getFailures(), service.getHits()));
+								+ getPercent(service.getFailures(), service.getHits()),
+						getRate(service.getCurrentRate()));
 			}
 
 			HtmlUtils.generateEndTable(os, services.size());
@@ -77,5 +78,11 @@ public class ServicesPage extends AbstractPage {
 			return "(-%)";
 		}
 		return " (" + ((100 * value1) / value2) + "%)";
+	}
+
+	private String getRate(double value1) {
+		double rate = Math.round(value1 * 100) / 100d;
+
+		return rate + " hits/s";
 	}
 }
