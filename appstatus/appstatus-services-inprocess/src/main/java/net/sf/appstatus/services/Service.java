@@ -9,22 +9,66 @@ import org.apache.commons.lang3.ObjectUtils;
 public class Service implements IService {
 
 	public long getRunning() {
-		return running.get();
+		
+		while (true) {
+			long runningCalls = running.get();
+
+			if (runningCalls < 0) {
+				// Try to fix value
+				running.compareAndSet(runningCalls, 0);
+			} else
+				return runningCalls;
+		}
+
 	}
 
-	protected double avgResponseTime = 0;
-	protected double avgResponseTimeWithCache = 0;
 	protected AtomicLong cacheHits = new AtomicLong();
 	protected AtomicLong hits = new AtomicLong();
 	protected AtomicLong running = new AtomicLong();
-	protected AtomicLong failures = new AtomicLong();
-	protected AtomicLong errors = new AtomicLong();
-	protected Long maxResponseTime;
-	protected Long minResponseTimeWithCache;
-	protected Long maxResponseTimeWithCache;
-	protected Long minResponseTime;
 	protected String name;
 	protected String group;
+	private CachedCallStatistics totalStats = new CachedCallStatistics();
+	private CachedCallStatistics windowStats = new CachedCallStatistics();
+	private CachedCallStatistics windowPrevisiousStats = new CachedCallStatistics();
+	private long windowSize = 2000;
+	private long windowStart = 0;
+	
+
+	/**
+	 * This method is synchronized to ensure correct statistics computation
+	 * 
+	 * @param executionTime
+	 * @param cacheHit
+	 * @param failure
+	 * @param error
+	 */
+	public  void addCall(Long executionTime, boolean cacheHit, boolean failure, boolean error) {
+		totalStats.addCall(executionTime, cacheHit, failure, error);
+		
+		updateWindows();
+		windowStats.addCall(executionTime, cacheHit, failure, error);
+	}
+	
+	private void updateWindows(){
+		long currentTime = System.currentTimeMillis();
+		if(currentTime-windowStart > windowSize)
+		{
+			synchronized (this) {
+				if(currentTime-windowStart > windowSize)
+				{
+					
+					if( currentTime-windowStart <= 2*windowSize){
+						windowPrevisiousStats = windowStats;
+					}else {
+						windowPrevisiousStats = new CachedCallStatistics();
+					}
+					windowStats= new CachedCallStatistics();
+					windowStart = currentTime;
+				}
+				
+			}
+		}
+	}
 
 	public String getName() {
 		return name;
@@ -43,7 +87,7 @@ public class Service implements IService {
 	}
 
 	public Double getAvgResponseTime() {
-		return avgResponseTime;
+		return totalStats.getDirectStatistics().getAvgResponseTime();
 	}
 
 	public long getCacheHits() {
@@ -55,32 +99,33 @@ public class Service implements IService {
 	}
 
 	public long getFailures() {
-		return failures.get();
+		return totalStats.getFailures();
 	}
 
 	public long getErrors() {
-		return errors.get();
+		return totalStats.getErrors();
 	}
 
 	public Long getMaxResponseTime() {
-		return maxResponseTime;
+		return totalStats.getDirectStatistics().getMaxResponseTime();
 	}
 
 	public Long getMinResponseTime() {
-		return minResponseTime;
+		return totalStats.getDirectStatistics().getMinResponseTime();
 	}
 
 	public Double getAvgResponseTimeWithCache() {
-		return avgResponseTimeWithCache;
+		return totalStats.getCacheStatistics().getAvgResponseTime();
 	}
 
 	public Long getMaxResponseTimeWithCache() {
-		return maxResponseTimeWithCache;
+		return totalStats.getCacheStatistics().getMaxResponseTime();
 	}
 
 	public Long getMinResponseTimeWithCache() {
-		return minResponseTimeWithCache;
+		return totalStats.getCacheStatistics().getMinResponseTime();
 	}
+	
 
 	public int compareTo(IService otherService) {
 		int groupCompare = ObjectUtils.compare(group, otherService.getGroup());
@@ -89,6 +134,11 @@ public class Service implements IService {
 		}
 
 		return ObjectUtils.compare(name, otherService.getName());
+	}
+
+	public double getCurrentRate() {
+		updateWindows();
+		return (windowPrevisiousStats.getTotalHits()* 1000)/(double)windowSize ;
 	}
 
 }
