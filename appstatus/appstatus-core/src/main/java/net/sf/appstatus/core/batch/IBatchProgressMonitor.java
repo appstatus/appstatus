@@ -172,6 +172,11 @@ public interface IBatchProgressMonitor {
 	 */
 	void setCurrentItem(Object item);
 
+	/**
+	 * Set the logger to use for the current batch.
+	 * 
+	 * @param logger
+	 */
 	void setLogger(Logger logger);
 
 	/**
