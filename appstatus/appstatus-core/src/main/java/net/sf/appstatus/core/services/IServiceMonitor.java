@@ -15,6 +15,8 @@
  */
 package net.sf.appstatus.core.services;
 
+import org.slf4j.Logger;
+
 /**
  * Service monitor
  * 
@@ -79,5 +81,12 @@ public interface IServiceMonitor {
 	 * @param e
 	 */
 	void failure(String reason, Exception e);
+
+	/**
+	 * Set the logger to use for this service call.
+	 * 
+	 * @param logger
+	 */
+	void setLogger(Logger logger);
 
 }
