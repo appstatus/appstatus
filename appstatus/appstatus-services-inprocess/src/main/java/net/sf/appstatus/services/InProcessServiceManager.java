@@ -41,7 +41,7 @@ public class InProcessServiceManager implements IServiceManager {
 		ServiceCall call = new ServiceCall((Service) service, log, useThreadLocal);
 
 		if (format != null){
-			call.setMessageFormat(format);
+			call.setLogFormat(format);
 		}
 		return call;
 	}
