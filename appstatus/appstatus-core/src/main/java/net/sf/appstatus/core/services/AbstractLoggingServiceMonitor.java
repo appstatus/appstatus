@@ -171,6 +171,10 @@ public abstract class AbstractLoggingServiceMonitor extends AbstractServiceMonit
 		return startTime;
 	}
 
+	public void setLogFormat(String messageFormat) {
+		this.messageFormat = messageFormat;
+	}
+
 	public void setLogger(Logger l) {
 		logger = l;
 	}
@@ -179,6 +183,15 @@ public abstract class AbstractLoggingServiceMonitor extends AbstractServiceMonit
 	 * Set the log message format, based on :
 	 * http://commons.apache.org/lang/api-release/org/apache/commons/lang3/text/
 	 * StrSubstitutor.html
+	 * 
+	 * <p>
+	 * Example :
+	 * <code>${correlationId}|${group}|${name}|${responseTime}|${cache}|${status}|${statusMessage}</code>
+	 * </p>
+	 * 
+	 * <p>
+	 * Available variables :
+	 * </p>
 	 * 
 	 * <ul>
 	 * <li>group</li>
@@ -197,8 +210,10 @@ public abstract class AbstractLoggingServiceMonitor extends AbstractServiceMonit
 	 * </ul>
 	 * 
 	 * @param messageFormat
+	 * @deprecated Use {@link #setLogFormat(String)} instead
 	 */
+	@Deprecated
 	public void setMessageFormat(String messageFormat) {
-		this.messageFormat = messageFormat;
+		setLogFormat(messageFormat);
 	}
 }
