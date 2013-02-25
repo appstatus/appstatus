@@ -83,6 +83,39 @@ public interface IServiceMonitor {
 	void failure(String reason, Exception e);
 
 	/**
+	 * Set the log message format for this monitor instance, based on :
+	 * http://commons.apache.org/lang/api-release/org/apache/commons/lang3/text/
+	 * StrSubstitutor.html
+	 * 
+	 * <p>
+	 * Example :
+	 * <code>${correlationId}|${group}|${name}|${responseTime}|${cache}|${status}|${statusMessage}</code>
+	 * </p>
+	 * 
+	 * <p>
+	 * Available variables :
+	 * </p>
+	 * <ul>
+	 * <li>group</li>
+	 * <li>name</li>
+	 * <li>responseTime</li>
+	 * <li>cache</li>
+	 * <li>failure</li>
+	 * <li>failureReason</li>
+	 * <li>failureException</li>
+	 * <li>error</li>
+	 * <li>errorMessage</li>
+	 * <li>correlationId</li>
+	 * <li>status : SUCCESS/FAILURE/ERROR</li>
+	 * <li>statusMessage : failure or error message</li>
+	 * <li>Any additional context values</li>
+	 * </ul>
+	 * 
+	 * @param format
+	 */
+	void setLogFormat(String format);
+
+	/**
 	 * Set the logger to use for this service call.
 	 * 
 	 * @param logger

@@ -9,7 +9,7 @@ import org.apache.commons.lang3.ObjectUtils;
 public class Service implements IService {
 
 	public long getRunning() {
-		
+
 		while (true) {
 			long runningCalls = running.get();
 
@@ -32,7 +32,6 @@ public class Service implements IService {
 	private CachedCallStatistics windowPrevisiousStats = new CachedCallStatistics();
 	private long windowSize = 2000;
 	private long windowStart = 0;
-	
 
 	/**
 	 * This method is synchronized to ensure correct statistics computation
@@ -42,30 +41,32 @@ public class Service implements IService {
 	 * @param failure
 	 * @param error
 	 */
-	public  void addCall(Long executionTime, boolean cacheHit, boolean failure, boolean error) {
+	public void addCall(Long executionTime, boolean cacheHit, boolean failure, boolean error) {
 		totalStats.addCall(executionTime, cacheHit, failure, error);
-		
+
 		updateWindows();
 		windowStats.addCall(executionTime, cacheHit, failure, error);
 	}
-	
-	private void updateWindows(){
+
+	/**
+	 * Archive previous window if expired, and create a new window for next
+	 * results.
+	 */
+	private void updateWindows() {
 		long currentTime = System.currentTimeMillis();
-		if(currentTime-windowStart > windowSize)
-		{
+		if (currentTime - windowStart > windowSize) {
 			synchronized (this) {
-				if(currentTime-windowStart > windowSize)
-				{
-					
-					if( currentTime-windowStart <= 2*windowSize){
+				if (currentTime - windowStart > windowSize) {
+
+					if (currentTime - windowStart <= 2 * windowSize) {
 						windowPrevisiousStats = windowStats;
-					}else {
+					} else {
 						windowPrevisiousStats = new CachedCallStatistics();
 					}
-					windowStats= new CachedCallStatistics();
+					windowStats = new CachedCallStatistics();
 					windowStart = currentTime;
 				}
-				
+
 			}
 		}
 	}
@@ -125,7 +126,6 @@ public class Service implements IService {
 	public Long getMinResponseTimeWithCache() {
 		return totalStats.getCacheStatistics().getMinResponseTime();
 	}
-	
 
 	public int compareTo(IService otherService) {
 		int groupCompare = ObjectUtils.compare(group, otherService.getGroup());
@@ -138,7 +138,7 @@ public class Service implements IService {
 
 	public double getCurrentRate() {
 		updateWindows();
-		return (windowPrevisiousStats.getTotalHits()* 1000)/(double)windowSize ;
+		return (windowPrevisiousStats.getTotalHits() * 1000) / (double) windowSize;
 	}
 
 }
