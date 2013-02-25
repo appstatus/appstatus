@@ -3,7 +3,7 @@
   	<parent>
 		<artifactId>appstatus-parent</artifactId>
 		<groupId>net.sf.appstatus</groupId>
-		<version>0.3.0-SNAPSHOT</version>
+		<version>0.3.0</version>
 	</parent>
   <artifactId>appstatus-web</artifactId>
   <name>Web Endpoint</name>
@@ -11,7 +11,7 @@
     <dependency>
       <groupId>net.sf.appstatus</groupId>
       <artifactId>appstatus-core</artifactId>
-      <version>0.3.0-SNAPSHOT</version>
+      <version>0.3.0</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
