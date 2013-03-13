@@ -26,12 +26,12 @@ public class StatusPage extends AbstractPage {
 	 */
 	private static String getStatus(ICheckResult result) {
 
-		if (result.isFatal()) {
-			return Resources.STATUS_ERROR;
-		}
-
 		if (result.getCode() == ICheckResult.OK) {
 			return Resources.STATUS_OK;
+		}
+
+		if (result.isFatal()) {
+			return Resources.STATUS_ERROR;
 		}
 
 		return Resources.STATUS_WARN;
@@ -61,7 +61,7 @@ public class StatusPage extends AbstractPage {
 		boolean statusOk = true;
 		int statusCode = 200;
 		for (ICheckResult r : results) {
-			if (r.isFatal()) {
+			if (r.getCode() != ICheckResult.OK && r.isFatal()) {
 				resp.setStatus(500);
 				statusCode = 500;
 				statusOk = false;
