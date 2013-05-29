@@ -26,23 +26,20 @@ public abstract class AbstractPage {
 				.getBytes(ENCODING));
 
 		// Add pages quick links
-		os.write("<div class=\"menu\">".getBytes(ENCODING));
-		boolean first = true;
+
+		os.write("<div class='menu'><ul class=\"nav nav-tabs\">".getBytes(ENCODING));
 		for (String pageId : webHandler.getPages().keySet()) {
 			AbstractPage page = webHandler.getPages().get(pageId);
 
-			if (!first) {
-				os.write(" | ".getBytes(ENCODING));
-			}
+			// <li class="active">
+			os.write(("<li class=active><a href=\"?p=" + page.getId() + "\">" + page.getName() + "</a></li>")
+					.getBytes(ENCODING));
 
-			os.write(("<a href=\"?p=" + page.getId() + "\">" + page.getName() + "</a>").getBytes(ENCODING));
-
-			first = false;
 		}
 
-		os.write("</div>".getBytes(ENCODING));
+		os.write("</ul></div>".getBytes(ENCODING));
 
-		os.write("<h1>".getBytes(ENCODING));
+		os.write("<h1 class='brand'>".getBytes(ENCODING));
 
 		os.write(webHandler.getApplicationName().getBytes(ENCODING));
 		os.write("</h1>".getBytes(ENCODING));

@@ -42,7 +42,7 @@ public class BatchPage extends AbstractPage {
 
 			for (IBatch batch : runningBatches) {
 				HtmlUtils.generateRow(os, getIcon(batch), generateId(resp, batch.getUuid()), batch.getGroup(),
-						batch.getName(), batch.getStartDate(), Math.round(batch.getProgressStatus()) + "%",
+						batch.getName(), batch.getStartDate(), getProgressBar(Math.round(batch.getProgressStatus())),
 						batch.getEndDate(), batch.getStatus(), batch.getCurrentTask(), batch.getLastMessage(),
 						batch.getItemCount(), HtmlUtils.countAndDetail(batch.getRejectedItemsId()),
 						batch.getLastUpdate());
@@ -61,7 +61,7 @@ public class BatchPage extends AbstractPage {
 					"Last Msg", "Items", "Rejected", "Last Update", "");
 			for (IBatch batch : finishedBatches) {
 				HtmlUtils.generateRow(os, getIcon(batch), generateId(resp, batch.getUuid()), batch.getGroup(),
-						batch.getName(), batch.getStartDate(), Math.round(batch.getProgressStatus()) + "%",
+						batch.getName(), batch.getStartDate(), getProgressBar(Math.round(batch.getProgressStatus())),
 						batch.getEndDate(), batch.getStatus(), batch.getCurrentTask(), batch.getLastMessage(),
 						batch.getItemCount(), HtmlUtils.countAndDetail(batch.getRejectedItemsId()),
 						batch.getLastUpdate(), "<form action='?p=batch' method='post'><input type='submit' name='"
@@ -82,7 +82,7 @@ public class BatchPage extends AbstractPage {
 
 			for (IBatch batch : errorBatches) {
 				HtmlUtils.generateRow(os, getIcon(batch), generateId(resp, batch.getUuid()), batch.getGroup(),
-						batch.getName(), batch.getStartDate(), Math.round(batch.getProgressStatus()) + "%",
+						batch.getName(), batch.getStartDate(), getProgressBar(Math.round(batch.getProgressStatus())),
 						batch.getEndDate(), batch.getStatus(), batch.getCurrentTask(), batch.getLastMessage(),
 						batch.getItemCount(), HtmlUtils.countAndDetail(batch.getRejectedItemsId()),
 						batch.getLastUpdate(), "<form action='?p=batch' method='post'><input type='submit' name='"
@@ -111,7 +111,7 @@ public class BatchPage extends AbstractPage {
 	private void generateClearActions(HttpServletResponse resp) throws IOException {
 		resp.getOutputStream()
 				.write(("<p>Actions :</p><form action='?p=batch' method='post'><input type='submit' name='" + CLEAR_OLD
-						+ "' value='Delete old (6 months)' /><input type='submit' name='" + CLEAR_SUCCESS + "' value='Delete Success w/o rejected'/></form>")
+						+ "' value='Delete old (6 months)' class='btn'/> <input type='submit' name='" + CLEAR_SUCCESS + "' value='Delete Success w/o rejected' class='btn'/></form>")
 						.getBytes());
 	}
 
@@ -152,5 +152,19 @@ public class BatchPage extends AbstractPage {
 	@Override
 	public String getName() {
 		return "Batch";
+	}
+
+	String getProgressBar(int percent) {
+		String status = "";
+		if (percent < 100) {
+			status = "active";
+		}
+
+		if (percent == 100) {
+			status = "progress-success";
+		}
+
+		return "<div class=\"progress progress-striped " + status + "\">" + "<div class=\"bar\" style=\"width: "
+				+ percent + "%;\"></div>" + "</div>";
 	}
 }
