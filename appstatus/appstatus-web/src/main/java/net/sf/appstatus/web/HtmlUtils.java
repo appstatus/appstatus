@@ -15,104 +15,115 @@ import javax.servlet.ServletOutputStream;
  * 
  */
 public class HtmlUtils {
-    private static final String ENCODING = "UTF-8";
+	private static final String ENCODING = "UTF-8";
 
-    public static String collectionToDelimitedString(Collection coll, String delim, String prefix, String suffix) {
-        if (isEmpty(coll)) {
-            return "";
-        }
-        StringBuilder sb = new StringBuilder();
-        Iterator it = coll.iterator();
-        while (it.hasNext()) {
-            sb.append(prefix).append(it.next()).append(suffix);
-            if (it.hasNext()) {
-                sb.append(delim);
-            }
-        }
-        return sb.toString();
-    }
+	public static String collectionToDelimitedString(Collection coll, String delim, String prefix, String suffix) {
+		if (isEmpty(coll)) {
+			return "";
+		}
+		StringBuilder sb = new StringBuilder();
+		Iterator it = coll.iterator();
+		while (it.hasNext()) {
+			sb.append(prefix).append(it.next()).append(suffix);
+			if (it.hasNext()) {
+				sb.append(delim);
+			}
+		}
+		return sb.toString();
+	}
 
-    public static String countAndDetail(List<String> items) {
+	public static String countAndDetail(List<String> items) {
+		String itemsList = collectionToDelimitedString(items, ", ", "", "");
+		return "<a href='#' title='" + itemsList + "'>" + items.size() + "</a>" + "<span style=\"display:none\" >"
+				+ itemsList + "</span>";
+	}
 
-        String itemsList = collectionToDelimitedString(items, ", ", "", "");
-        return "<a href='#' title='" + itemsList + "'>" + items.size() + "</a>" + "<span style=\"display:none\" >"
-                + itemsList + "</span>";
+	/**
+	 * Prints table start tag, or a message if table is empty.
+	 * 
+	 * @param size
+	 * @return true if we can go on with table generation.
+	 * @throws IOException
+	 * @throws UnsupportedEncodingException
+	 */
+	public static boolean generateBeginTable(ServletOutputStream os, int size) throws UnsupportedEncodingException,
+			IOException {
 
-    }
+		if (size == 0) {
+			os.write("<p>No items</p>".getBytes(ENCODING));
 
-    /**
-     * Prints table start tag, or a message if table is empty.
-     * 
-     * @param size
-     * @return true if we can go on with table generation.
-     * @throws IOException
-     * @throws UnsupportedEncodingException
-     */
-    public static boolean generateBeginTable(ServletOutputStream os, int size) throws UnsupportedEncodingException,
-            IOException {
+			return false;
+		}
 
-        if (size == 0) {
-            os.write("<p>No items</p>".getBytes(ENCODING));
+		os.write("<table class=\"table table-hover table-condensed\">".getBytes(ENCODING));
+		return true;
+	}
 
-            return false;
-        }
+	public static void generateEndTable(ServletOutputStream os, int size) throws UnsupportedEncodingException,
+			IOException {
 
-        os.write("<table>".getBytes(ENCODING));
-        return true;
-    }
+		if (size > 0) {
+			os.write("</tbody></table>".getBytes(ENCODING));
+		}
+	}
 
-    public static void generateEndTable(ServletOutputStream os, int size) throws UnsupportedEncodingException,
-            IOException {
+	/**
+	 * Outputs table headers
+	 * 
+	 * @param os
+	 * @param cols
+	 * @throws IOException
+	 */
+	public static void generateHeaders(ServletOutputStream os, Object... cols) throws IOException {
+		os.write("<thead><tr>".getBytes());
+		for (Object obj : cols) {
+			os.write("<th>".getBytes());
+			if (obj != null) {
 
-        if (size > 0) {
-            os.write("</table>".getBytes(ENCODING));
-        }
-    }
+				if (obj instanceof Long) {
+					Long l = (Long) obj;
 
-    public static void generateHeaders(ServletOutputStream os, Object... cols) throws IOException {
-        os.write("<tr>".getBytes());
-        for (Object obj : cols) {
-            os.write("<th>".getBytes());
-            if (obj != null) {
+				} else {
+					os.write(obj.toString().getBytes(ENCODING));
+				}
+			}
+			os.write("</th>".getBytes());
 
-                if (obj instanceof Long) {
-                    Long l = (Long) obj;
+		}
+		os.write("</tr></thead><tbody>".getBytes());
+	}
 
-                } else {
-                    os.write(obj.toString().getBytes(ENCODING));
-                }
-            }
-            os.write("</th>".getBytes());
+	/**
+	 * Outputs one table row
+	 * 
+	 * @param os
+	 * @param status
+	 * @param cols
+	 * @throws IOException
+	 */
+	public static void generateRow(ServletOutputStream os, String status, Object... cols) throws IOException {
+		os.write("<tr>".getBytes());
 
-        }
-        os.write("</tr>".getBytes());
-    }
+		os.write(("<td><img src='?icon=" + status + "'></td>").getBytes(ENCODING));
 
-    /**
-     * Outputs one table row
-     * 
-     * @param os
-     * @param status
-     * @param cols
-     * @throws IOException
-     */
-    public static void generateRow(ServletOutputStream os, String status, Object... cols) throws IOException {
-        os.write("<tr>".getBytes());
+		for (Object obj : cols) {
+			os.write("<td>".getBytes());
+			if (obj != null) {
+				os.write(obj.toString().getBytes(ENCODING));
+			}
+			os.write("</td>".getBytes());
 
-        os.write(("<td><img src='?icon=" + status + "'></td>").getBytes(ENCODING));
+		}
+		os.write("</tr>".getBytes());
+	}
 
-        for (Object obj : cols) {
-            os.write("<td>".getBytes());
-            if (obj != null) {
-                os.write(obj.toString().getBytes(ENCODING));
-            }
-            os.write("</td>".getBytes());
-
-        }
-        os.write("</tr>".getBytes());
-    }
-
-    public static boolean isEmpty(Collection collection) {
-        return (collection == null || collection.isEmpty());
-    }
+	/**
+	 * Null-safe empty test for Collections.
+	 * 
+	 * @param collection
+	 * @return
+	 */
+	public static boolean isEmpty(Collection<?> collection) {
+		return (collection == null || collection.isEmpty());
+	}
 }
