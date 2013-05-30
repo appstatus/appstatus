@@ -182,6 +182,7 @@ public class StatusWebHandler {
 		if (cssLocation == null) {
 			cssLocation = "?resource=appstatus.css";
 			Resources.addResource("appstatus.css", "/appstatus.css");
+			Resources.addResource("bootstrap.js", "/bootstrap.js");
 		}
 	}
 
