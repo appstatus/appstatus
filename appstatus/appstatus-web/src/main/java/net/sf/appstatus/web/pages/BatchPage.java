@@ -2,7 +2,9 @@ package net.sf.appstatus.web.pages;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
@@ -13,12 +15,15 @@ import net.sf.appstatus.core.batch.IBatchManager;
 import net.sf.appstatus.web.HtmlUtils;
 import net.sf.appstatus.web.StatusWebHandler;
 
+import org.apache.commons.lang3.text.StrBuilder;
+
 public class BatchPage extends AbstractPage {
 	private static final String CLEAR_ITEM = "clear-item";
 	private static final String CLEAR_OLD = "clear-old";
 	private static final String CLEAR_SUCCESS = "clear-success";
 	private static final String ENCODING = "UTF-8";
 	private static final String ITEM_UUID = "item-uuid";
+	private static final String PAGECONTENTLAYOUT = "batchesContentLayout.html";
 
 	@Override
 	public void doGet(StatusWebHandler webHandler, HttpServletRequest req, HttpServletResponse resp)
@@ -26,74 +31,100 @@ public class BatchPage extends AbstractPage {
 
 		setup(resp, "text/html");
 		ServletOutputStream os = resp.getOutputStream();
-		begin(webHandler, os);
+		Map<String, String> valuesMap = new HashMap<String, String>();
+		StrBuilder sbRunningBatchesBatchesTable = new StrBuilder();
+		StrBuilder sbFinishedBatchesBatchesTable = new StrBuilder();
+		StrBuilder sbErrorsBatchesBatchesTable = new StrBuilder();
 
-		os.write("<h2>Batchs</h2>".getBytes(ENCODING));
 		IBatchManager manager = webHandler.getAppStatus().getBatchManager();
-
-		os.write("<h3>Running</h3>".getBytes(ENCODING));
-
 		List<IBatch> runningBatches = manager.getRunningBatches();
+		if (HtmlUtils.generateBeginTable(sbRunningBatchesBatchesTable, runningBatches.size())) {
 
-		if (HtmlUtils.generateBeginTable(os, runningBatches.size())) {
-
-			HtmlUtils.generateHeaders(os, "", "Id", "Group", "Name", "Start", "Progress", "End (est.)", "Status",
-					"Task", "Last Msg", "Items", "Rejected", "Last Update");
+			HtmlUtils.generateHeaders(sbRunningBatchesBatchesTable, "", "Id", "Group", "Name", "Start", "Progress",
+					"End (est.)", "Status", "Task", "Last Msg", "Items", "Rejected", "Last Update");
 
 			for (IBatch batch : runningBatches) {
-				HtmlUtils.generateRow(os, getIcon(batch), generateId(resp, batch.getUuid()), batch.getGroup(),
-						batch.getName(), batch.getStartDate(), getProgressBar(Math.round(batch.getProgressStatus())),
-						batch.getEndDate(), batch.getStatus(), batch.getCurrentTask(), batch.getLastMessage(),
-						batch.getItemCount(), HtmlUtils.countAndDetail(batch.getRejectedItemsId()),
-						batch.getLastUpdate());
+				HtmlUtils.generateRow(sbRunningBatchesBatchesTable, getIcon(batch), generateId(resp, batch.getUuid()),
+						batch.getGroup(), batch.getName(), batch.getStartDate(),
+						getProgressBar(Math.round(batch.getProgressStatus())), batch.getEndDate(), batch.getStatus(),
+						batch.getCurrentTask(), batch.getLastMessage(), batch.getItemCount(),
+						HtmlUtils.countAndDetail(batch.getRejectedItemsId()), batch.getLastUpdate());
 			}
 
-			HtmlUtils.generateEndTable(os, runningBatches.size());
+			HtmlUtils.generateEndTable(sbRunningBatchesBatchesTable, runningBatches.size());
 		}
-
-		os.write("<h3>Finished</h3>".getBytes(ENCODING));
 
 		List<IBatch> finishedBatches = manager.getFinishedBatches();
 
-		if (HtmlUtils.generateBeginTable(os, finishedBatches.size())) {
+		if (HtmlUtils.generateBeginTable(sbFinishedBatchesBatchesTable, finishedBatches.size())) {
 
-			HtmlUtils.generateHeaders(os, "", "Id", "Group", "Name", "Start", "Progress", "End", "Status", "Task",
-					"Last Msg", "Items", "Rejected", "Last Update", "");
+			HtmlUtils.generateHeaders(sbFinishedBatchesBatchesTable, "", "Id", "Group", "Name", "Start", "Progress",
+					"End", "Status", "Task", "Last Msg", "Items", "Rejected", "Last Update", "");
 			for (IBatch batch : finishedBatches) {
-				HtmlUtils.generateRow(os, getIcon(batch), generateId(resp, batch.getUuid()), batch.getGroup(),
-						batch.getName(), batch.getStartDate(), getProgressBar(Math.round(batch.getProgressStatus())),
-						batch.getEndDate(), batch.getStatus(), batch.getCurrentTask(), batch.getLastMessage(),
-						batch.getItemCount(), HtmlUtils.countAndDetail(batch.getRejectedItemsId()),
-						batch.getLastUpdate(), "<form action='?p=batch' method='post'><input type='submit' name='"
-								+ CLEAR_ITEM + "' value='Delete' /><input type=hidden name='" + ITEM_UUID + "' value='"
+				HtmlUtils.generateRow(
+						sbFinishedBatchesBatchesTable,
+						getIcon(batch),
+						generateId(resp, batch.getUuid()),
+						batch.getGroup(),
+						batch.getName(),
+						batch.getStartDate(),
+						getProgressBar(Math.round(batch.getProgressStatus())),
+						batch.getEndDate(),
+						batch.getStatus(),
+						batch.getCurrentTask(),
+						batch.getLastMessage(),
+						batch.getItemCount(),
+						HtmlUtils.countAndDetail(batch.getRejectedItemsId()),
+						batch.getLastUpdate(),
+						"<form action='?p=batch' method='post'><input type='submit' name='" + CLEAR_ITEM
+								+ "' value='Delete' /><input type=hidden name='" + ITEM_UUID + "' value='"
 								+ batch.getUuid() + "'/></form>");
 			}
 
-			HtmlUtils.generateEndTable(os, finishedBatches.size());
+			HtmlUtils.generateEndTable(sbFinishedBatchesBatchesTable, finishedBatches.size());
 		}
-		os.write("<h3>With errors</h3>".getBytes(ENCODING));
 
 		List<IBatch> errorBatches = manager.getErrorBatches();
 
-		if (HtmlUtils.generateBeginTable(os, errorBatches.size())) {
+		if (HtmlUtils.generateBeginTable(sbErrorsBatchesBatchesTable, errorBatches.size())) {
 
-			HtmlUtils.generateHeaders(os, "", "Id", "Group", "Name", "Start", "Progress", "End", "Status", "Task",
-					"Last Msg", "Items", "Rejected", "Last Update", "");
+			HtmlUtils.generateHeaders(sbErrorsBatchesBatchesTable, "", "Id", "Group", "Name", "Start", "Progress",
+					"End", "Status", "Task", "Last Msg", "Items", "Rejected", "Last Update", "");
 
 			for (IBatch batch : errorBatches) {
-				HtmlUtils.generateRow(os, getIcon(batch), generateId(resp, batch.getUuid()), batch.getGroup(),
-						batch.getName(), batch.getStartDate(), getProgressBar(Math.round(batch.getProgressStatus())),
-						batch.getEndDate(), batch.getStatus(), batch.getCurrentTask(), batch.getLastMessage(),
-						batch.getItemCount(), HtmlUtils.countAndDetail(batch.getRejectedItemsId()),
-						batch.getLastUpdate(), "<form action='?p=batch' method='post'><input type='submit' name='"
-								+ CLEAR_ITEM + "' value='Delete' /><input type=hidden name='" + ITEM_UUID + "' value='"
+				HtmlUtils.generateRow(
+						sbErrorsBatchesBatchesTable,
+						getIcon(batch),
+						generateId(resp, batch.getUuid()),
+						batch.getGroup(),
+						batch.getName(),
+						batch.getStartDate(),
+						getProgressBar(Math.round(batch.getProgressStatus())),
+						batch.getEndDate(),
+						batch.getStatus(),
+						batch.getCurrentTask(),
+						batch.getLastMessage(),
+						batch.getItemCount(),
+						HtmlUtils.countAndDetail(batch.getRejectedItemsId()),
+						batch.getLastUpdate(),
+						"<form action='?p=batch' method='post'><input type='submit' name='" + CLEAR_ITEM
+								+ "' value='Delete' /><input type=hidden name='" + ITEM_UUID + "' value='"
 								+ batch.getUuid() + "'/></form>");
 			}
-			HtmlUtils.generateEndTable(os, errorBatches.size());
+			HtmlUtils.generateEndTable(sbErrorsBatchesBatchesTable, errorBatches.size());
 		}
 
-		generateClearActions(resp);
-		end(os);
+		valuesMap.put("runningBatchesBatchesTable", sbRunningBatchesBatchesTable.toString());
+		valuesMap.put("finishedBatchesBatchesTable", sbFinishedBatchesBatchesTable.toString());
+		valuesMap.put("errorsBatchesBatchesTable", sbErrorsBatchesBatchesTable.toString());
+		valuesMap.put("clearActions", generateClearActions());
+
+		String content = HtmlUtils.applyLayout(valuesMap, PAGECONTENTLAYOUT);
+
+		valuesMap.clear();
+		valuesMap.put("content", content);
+
+		os.write(getPage(webHandler, valuesMap).getBytes(ENCODING));
 	}
 
 	@Override
@@ -108,11 +139,12 @@ public class BatchPage extends AbstractPage {
 
 	}
 
-	private void generateClearActions(HttpServletResponse resp) throws IOException {
-		resp.getOutputStream()
-				.write(("<p>Actions :</p><form action='?p=batch' method='post'><input type='submit' name='" + CLEAR_OLD
-						+ "' value='Delete old (6 months)' class='btn'/> <input type='submit' name='" + CLEAR_SUCCESS + "' value='Delete Success w/o rejected' class='btn'/></form>")
-						.getBytes());
+	private String generateClearActions() throws IOException {
+		StrBuilder sb = new StrBuilder();
+		sb.append("<p>Actions :</p><form action='?p=batch' method='post'><input type='submit' name='" + CLEAR_OLD
+				+ "' value='Delete old (6 months)' class='btn'/> <input type='submit' name='" + CLEAR_SUCCESS
+				+ "' value='Delete Success w/o rejected' class='btn'/></form>");
+		return sb.toString();
 	}
 
 	private String generateId(HttpServletResponse resp, String id) throws IOException {
