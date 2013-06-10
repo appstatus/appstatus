@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>App Status</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Le styles -->
+    ${css}
+    <style>
+      body {
+        padding-top: 60px; /* 60px to make the container go all the way to the bottom of the topbar */
+      }
+    </style>
+  </head>
+
+  <body>
+
+    <div class="navbar navbar-inverse navbar-fixed-top">
+    	<div class="navbar-inner">
+    		<div class="container">
+    			<a class="brand" href="${UrlAppStatus}"> &alpha;pp Status</a>
+    				<div class="nav-collapse collapse">
+    					<ul class="nav">
+             				${menu}
+            			</ul>
+            			<ul class="nav pull-right">
+<!--             			 	<li><a href="#" id="btnRefresh"><i class="icon-refresh  icon-white"></i></a></li> -->
+                      		<li class="divider-vertical"></li>
+                      		<li class="brand">${applicationName}</li>
+                    	</ul>
+            		</div>
+            </div>
+       </div>
+    </div>
+
+    <div class="container">
+   <!--  <h1>${applicationName}</h1>-->
+    
+	${content}
+    </div> <!-- /container -->
+
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+     <script src="?resource=jquery.js"></script>
+  </body>
+</html>

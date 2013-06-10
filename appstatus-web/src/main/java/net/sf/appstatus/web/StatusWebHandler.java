@@ -175,14 +175,17 @@ public class StatusWebHandler {
 				}
 			}
 		} catch (Exception e) {
-			logger.error("Error loading configuration from /status-web-conf.properties.", e);
+			logger.error("Error loading configuration from /status-web-conf.properties.",e);
 		}
 
-		// Init css
+		// Init css & js
 		if (cssLocation == null) {
 			cssLocation = "?resource=appstatus.css";
-			Resources.addResource("appstatus.css", "/appstatus.css");
-			Resources.addResource("bootstrap.js", "/bootstrap.js");
+			Resources.addResource("appstatus.css", "/assets/css/appstatus.css");
+			Resources.addResource("bootstrap.js", "/assets/js/bootstrap.js");
+			Resources.addResource("jquery.js", "/assets/js/jquery-2.0.1.min.js");
+			Resources.addResource("glyphicons-halflings.png","/assets/img/glyphicons-halflings.png");
+			Resources.addResource("glyphicons-halflings-white.png","/assets/img/glyphicons-halflings-white.png");
 		}
 	}
 
