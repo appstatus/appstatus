@@ -22,8 +22,8 @@ public class Resources {
 	public static final String STATUS_JOB_WARNING = "job-warning";
 	public static final String STATUS_OK = "ok";
 	public static final String STATUS_PROP = "prop";
-
 	public static final String STATUS_WARN = "warn";
+
 	static {
 		resources.put(STATUS_OK,
 				"/org/freedesktop/tango/22x22/status/weather-clear.png");
@@ -39,7 +39,7 @@ public class Resources {
 				"/org/freedesktop/tango/22x22/status/dialog-error.png");
 		resources.put(STATUS_JOB_WARNING,
 				"/org/freedesktop/tango/22x22/status/dialog-warning.png");
-		resources.put(LOGO, "/appstatus-logo.png");
+		resources.put(LOGO, "/assets/img/appstatus-logo.png");
 	}
 
 	public static void addResource(String id, String location) {

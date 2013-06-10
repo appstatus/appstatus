@@ -1,12 +1,21 @@
 package net.sf.appstatus.web;
 
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
+import java.nio.charset.Charset;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
-import javax.servlet.ServletOutputStream;
+import net.sf.appstatus.web.pages.Resources;
+
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.text.StrBuilder;
+import org.apache.commons.lang3.text.StrSubstitutor;
 
 /**
  * Support class for generating Html tables.
@@ -16,8 +25,33 @@ import javax.servlet.ServletOutputStream;
  */
 public class HtmlUtils {
 	private static final String ENCODING = "UTF-8";
+	private static Map<String, String> templates = new HashMap<String, String>();
 
-	public static String collectionToDelimitedString(Collection coll, String delim, String prefix, String suffix) {
+	public static String applyLayout(Map<String, String> valuesMap,
+			String templateName) throws IOException {
+		String templateString = "";
+
+		if (templates.containsKey(templateName)) {
+			templateString = templates.get(templateName);
+		} else {
+			// get the file
+			InputStream inputStream = Resources.class
+					.getResourceAsStream("/templates/" + templateName);
+
+			// convert to string
+			StringWriter writer = new StringWriter();
+			IOUtils.copy(inputStream, writer, Charset.defaultCharset());
+			templateString = writer.toString();
+			templates.put(templateName, templateString);
+		}
+
+		// substitution & return
+		StrSubstitutor sub = new StrSubstitutor(valuesMap);
+		return sub.replace(templateString);
+	}
+
+	public static String collectionToDelimitedString(Collection coll,
+			String delim, String prefix, String suffix) {
 		if (isEmpty(coll)) {
 			return "";
 		}
@@ -34,8 +68,8 @@ public class HtmlUtils {
 
 	public static String countAndDetail(List<String> items) {
 		String itemsList = collectionToDelimitedString(items, ", ", "", "");
-		return "<a href='#' title='" + itemsList + "'>" + items.size() + "</a>" + "<span style=\"display:none\" >"
-				+ itemsList + "</span>";
+		return "<a href='#' title='" + itemsList + "'>" + items.size() + "</a>"
+				+ "<span style=\"display:none\" >" + itemsList + "</span>";
 	}
 
 	/**
@@ -46,24 +80,22 @@ public class HtmlUtils {
 	 * @throws IOException
 	 * @throws UnsupportedEncodingException
 	 */
-	public static boolean generateBeginTable(ServletOutputStream os, int size) throws UnsupportedEncodingException,
-			IOException {
-
+	public static boolean generateBeginTable(StrBuilder sb, int size)
+			throws UnsupportedEncodingException, IOException {
 		if (size == 0) {
-			os.write("<p>No items</p>".getBytes(ENCODING));
-
+			sb.append("<p>No items</p>");
 			return false;
 		}
 
-		os.write("<table class=\"table table-hover table-condensed\">".getBytes(ENCODING));
+		sb.append("<table class=\"table table-hover table-condensed\">");
 		return true;
 	}
 
-	public static void generateEndTable(ServletOutputStream os, int size) throws UnsupportedEncodingException,
-			IOException {
+	public static void generateEndTable(StrBuilder sb, int size)
+			throws UnsupportedEncodingException, IOException {
 
 		if (size > 0) {
-			os.write("</tbody></table>".getBytes(ENCODING));
+			sb.append("</tbody></table>");
 		}
 	}
 
@@ -74,23 +106,24 @@ public class HtmlUtils {
 	 * @param cols
 	 * @throws IOException
 	 */
-	public static void generateHeaders(ServletOutputStream os, Object... cols) throws IOException {
-		os.write("<thead><tr>".getBytes());
+	public static void generateHeaders(StrBuilder sb, Object... cols)
+			throws IOException {
+		sb.append("<thead><tr>");
 		for (Object obj : cols) {
-			os.write("<th>".getBytes());
+			sb.append("<th>");
 			if (obj != null) {
 
 				if (obj instanceof Long) {
 					Long l = (Long) obj;
 
 				} else {
-					os.write(obj.toString().getBytes(ENCODING));
+					sb.append(obj.toString());
 				}
 			}
-			os.write("</th>".getBytes());
+			sb.append("</th>");
 
 		}
-		os.write("</tr></thead><tbody>".getBytes());
+		sb.append("</tr></thead><tbody>");
 	}
 
 	/**
@@ -101,20 +134,21 @@ public class HtmlUtils {
 	 * @param cols
 	 * @throws IOException
 	 */
-	public static void generateRow(ServletOutputStream os, String status, Object... cols) throws IOException {
-		os.write("<tr>".getBytes());
+	public static void generateRow(StrBuilder sb, String status, Object... cols)
+			throws IOException {
+		sb.append("<tr>");
 
-		os.write(("<td><img src='?icon=" + status + "'></td>").getBytes(ENCODING));
+		sb.append(("<td><img src='?icon=" + status + "'></td>"));
 
 		for (Object obj : cols) {
-			os.write("<td>".getBytes());
+			sb.append("<td>");
 			if (obj != null) {
-				os.write(obj.toString().getBytes(ENCODING));
+				sb.append(obj.toString());
 			}
-			os.write("</td>".getBytes());
+			sb.append("</td>");
 
 		}
-		os.write("</tr>".getBytes());
+		sb.append("</tr>");
 	}
 
 	/**

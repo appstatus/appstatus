@@ -3,6 +3,7 @@ package net.sf.appstatus.web.pages;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -15,8 +16,11 @@ import net.sf.appstatus.core.check.ICheckResult;
 import net.sf.appstatus.web.HtmlUtils;
 import net.sf.appstatus.web.StatusWebHandler;
 
+import org.apache.commons.lang3.text.StrBuilder;
+
 public class StatusPage extends AbstractPage {
 	private static final String ENCODING = "UTF-8";
+	private static final String PAGECONTENTLAYOUT = "statusContentLayout.html";
 
 	/**
 	 * Returns status icon id.
@@ -54,8 +58,8 @@ public class StatusPage extends AbstractPage {
 
 		setup(resp, "text/html");
 		ServletOutputStream os = resp.getOutputStream();
-		begin(webHandler, os);
 
+		Map<String, String> valuesMap = new HashMap<String, String>();
 		List<ICheckResult> results = webHandler.getAppStatus().checkAll();
 		Collections.sort(results);
 		boolean statusOk = true;
@@ -69,40 +73,46 @@ public class StatusPage extends AbstractPage {
 			}
 		}
 
-		os.write("<h2>Status Page</h2>".getBytes(ENCODING));
-		os.write(("<p>Online:" + statusOk + "</p>").getBytes(ENCODING));
-		os.write(("<p>Code:" + statusCode + "</p>").getBytes(ENCODING));
+		valuesMap.put("statusOk", String.valueOf(statusOk));
+		valuesMap.put("statusCode", String.valueOf(statusCode));
 
-		os.write("<h3 class=\"status\">Status</h3>".getBytes(ENCODING));
-		if (HtmlUtils.generateBeginTable(os, results.size())) {
+		// STATUS TABLE
+		StrBuilder sbStatusTable = new StrBuilder();
+		if (HtmlUtils.generateBeginTable(sbStatusTable, results.size())) {
 
-			HtmlUtils.generateHeaders(os, "", "Group", "Name", "Description", "Code", "Resolution");
+			HtmlUtils.generateHeaders(sbStatusTable, "", "Group", "Name", "Description", "Code", "Resolution");
 
 			for (ICheckResult r : results) {
-				HtmlUtils.generateRow(os, getStatus(r), r.getGroup(), r.getProbeName(), r.getDescription(),
+				HtmlUtils.generateRow(sbStatusTable, getStatus(r), r.getGroup(), r.getProbeName(), r.getDescription(),
 						String.valueOf(r.getCode()), r.getResolutionSteps());
 			}
-			HtmlUtils.generateEndTable(os, results.size());
+			HtmlUtils.generateEndTable(sbStatusTable, results.size());
 		}
+		valuesMap.put("statusTable", sbStatusTable.toString());
 
-		os.write("<h3 class=\"properties\">Properties</h3>".getBytes(ENCODING));
+		// PROPERTIES TABLE
+		StrBuilder sbPropertiesTable = new StrBuilder();
 		Map<String, Map<String, String>> properties = webHandler.getAppStatus().getProperties();
-		if (HtmlUtils.generateBeginTable(os, properties.size())) {
+		if (HtmlUtils.generateBeginTable(sbPropertiesTable, properties.size())) {
 
-			HtmlUtils.generateHeaders(os, "", "Group", "Name", "Value");
+			HtmlUtils.generateHeaders(sbPropertiesTable, "", "Group", "Name", "Value");
 
 			for (Entry<String, Map<String, String>> cat : properties.entrySet()) {
 				String category = cat.getKey();
 
 				for (Entry<String, String> r : cat.getValue().entrySet()) {
-					HtmlUtils.generateRow(os, Resources.STATUS_PROP, category, r.getKey(), r.getValue());
+					HtmlUtils.generateRow(sbPropertiesTable, Resources.STATUS_PROP, category, r.getKey(), r.getValue());
 				}
 
 			}
-			HtmlUtils.generateEndTable(os, properties.size());
+			HtmlUtils.generateEndTable(sbPropertiesTable, properties.size());
+			valuesMap.put("propertiesTable", sbPropertiesTable.toString());
 		}
+		String content = HtmlUtils.applyLayout(valuesMap, PAGECONTENTLAYOUT);
 
-		end(os);
+		valuesMap.clear();
+		valuesMap.put("content", content);
+		os.write(getPage(webHandler, valuesMap).getBytes(ENCODING));
 	}
 
 	public void doGetJSON(StatusWebHandler webHandler, HttpServletRequest req, HttpServletResponse resp)
