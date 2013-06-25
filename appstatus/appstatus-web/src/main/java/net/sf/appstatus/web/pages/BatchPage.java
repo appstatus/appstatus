@@ -61,24 +61,14 @@ public class BatchPage extends AbstractPage {
 			HtmlUtils.generateHeaders(sbFinishedBatchesBatchesTable, "", "Id", "Group", "Name", "Start", "Progress",
 					"End", "Status", "Task", "Last Msg", "Items", "Rejected", "Last Update", "");
 			for (IBatch batch : finishedBatches) {
-				HtmlUtils.generateRow(
-						sbFinishedBatchesBatchesTable,
-						getIcon(batch),
-						generateId(resp, batch.getUuid()),
-						batch.getGroup(),
-						batch.getName(),
-						batch.getStartDate(),
-						getProgressBar(Math.round(batch.getProgressStatus())),
-						batch.getEndDate(),
-						batch.getStatus(),
-						batch.getCurrentTask(),
-						batch.getLastMessage(),
-						batch.getItemCount(),
-						HtmlUtils.countAndDetail(batch.getRejectedItemsId()),
-						batch.getLastUpdate(),
+				HtmlUtils.generateRow(sbFinishedBatchesBatchesTable, getIcon(batch), generateId(resp, batch.getUuid()),
+						batch.getGroup(), batch.getName(), batch.getStartDate(),
+						getProgressBar(Math.round(batch.getProgressStatus())), batch.getEndDate(), batch.getStatus(),
+						batch.getCurrentTask(), batch.getLastMessage(), batch.getItemCount(),
+						HtmlUtils.countAndDetail(batch.getRejectedItemsId()), batch.getLastUpdate(),
 						"<form action='?p=batch' method='post'><input type='submit' name='" + CLEAR_ITEM
-								+ "' value='Delete' /><input type=hidden name='" + ITEM_UUID + "' value='"
-								+ batch.getUuid() + "'/></form>");
+								+ "' value='Delete'  class='btn btn-small' /><input type=hidden name='" + ITEM_UUID
+								+ "' value='" + batch.getUuid() + "'/></form>");
 			}
 
 			HtmlUtils.generateEndTable(sbFinishedBatchesBatchesTable, finishedBatches.size());
@@ -92,24 +82,14 @@ public class BatchPage extends AbstractPage {
 					"End", "Status", "Task", "Last Msg", "Items", "Rejected", "Last Update", "");
 
 			for (IBatch batch : errorBatches) {
-				HtmlUtils.generateRow(
-						sbErrorsBatchesBatchesTable,
-						getIcon(batch),
-						generateId(resp, batch.getUuid()),
-						batch.getGroup(),
-						batch.getName(),
-						batch.getStartDate(),
-						getProgressBar(Math.round(batch.getProgressStatus())),
-						batch.getEndDate(),
-						batch.getStatus(),
-						batch.getCurrentTask(),
-						batch.getLastMessage(),
-						batch.getItemCount(),
-						HtmlUtils.countAndDetail(batch.getRejectedItemsId()),
-						batch.getLastUpdate(),
+				HtmlUtils.generateRow(sbErrorsBatchesBatchesTable, getIcon(batch), generateId(resp, batch.getUuid()),
+						batch.getGroup(), batch.getName(), batch.getStartDate(),
+						getProgressBar(Math.round(batch.getProgressStatus())), batch.getEndDate(), batch.getStatus(),
+						batch.getCurrentTask(), batch.getLastMessage(), batch.getItemCount(),
+						HtmlUtils.countAndDetail(batch.getRejectedItemsId()), batch.getLastUpdate(),
 						"<form action='?p=batch' method='post'><input type='submit' name='" + CLEAR_ITEM
-								+ "' value='Delete' /><input type=hidden name='" + ITEM_UUID + "' value='"
-								+ batch.getUuid() + "'/></form>");
+								+ "' value='Delete' class='btn btn-small'/><input type=hidden name='" + ITEM_UUID
+								+ "' value='" + batch.getUuid() + "'/></form>");
 			}
 			HtmlUtils.generateEndTable(sbErrorsBatchesBatchesTable, errorBatches.size());
 		}
