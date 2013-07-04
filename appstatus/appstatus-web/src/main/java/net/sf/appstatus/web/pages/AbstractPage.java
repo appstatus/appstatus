@@ -1,4 +1,16 @@
-package net.sf.appstatus.web.pages;
+/*
+ * Copyright 2010-2013 Capgemini Licensed under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * 
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
+ */package net.sf.appstatus.web.pages;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
@@ -8,12 +20,13 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import net.sf.appstatus.web.HtmlUtils;
+import net.sf.appstatus.web.IPage;
 import net.sf.appstatus.web.StatusWebHandler;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.text.StrBuilder;
 
-public abstract class AbstractPage {
+public abstract class AbstractPage implements IPage {
 	private static final String ENCODING = "UTF-8";
 
 	private static final String PAGELAYOUT = "pageLayout.html";
@@ -25,11 +38,6 @@ public abstract class AbstractPage {
 
 	public abstract void doPost(StatusWebHandler webHandler, HttpServletRequest req, HttpServletResponse resp);
 
-	/**
-	 * Returns page name, used in url to trigger page rendering.
-	 * 
-	 * @return
-	 */
 	public String getId() {
 		return null;
 	}
@@ -47,7 +55,7 @@ public abstract class AbstractPage {
 
 		StrBuilder menu = new StrBuilder();
 		for (String pageId : webHandler.getPages().keySet()) {
-			AbstractPage page = webHandler.getPages().get(pageId);
+			IPage page = webHandler.getPages().get(pageId);
 			if (StringUtils.equals(pageId, getId())) {
 				menu.append("<li class=active>");
 			} else {
