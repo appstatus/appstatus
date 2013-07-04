@@ -26,8 +26,8 @@ import javax.servlet.http.HttpServletResponse;
 
 import net.sf.appstatus.core.AppStatus;
 import net.sf.appstatus.core.AppStatusStatic;
-import net.sf.appstatus.web.pages.AbstractPage;
 import net.sf.appstatus.web.pages.BatchPage;
+import net.sf.appstatus.web.pages.RadiatorPage;
 import net.sf.appstatus.web.pages.Resources;
 import net.sf.appstatus.web.pages.ServicesPage;
 import net.sf.appstatus.web.pages.StatusPage;
@@ -48,7 +48,7 @@ public class StatusWebHandler {
 	private String applicationName = StringUtils.EMPTY;
 	private AppStatus appStatus = null;
 	private String cssLocation = null;
-	private Map<String, AbstractPage> pages = null;
+	private Map<String, IPage> pages = null;
 
 	/**
 	 * Handle a GET request.
@@ -116,7 +116,7 @@ public class StatusWebHandler {
 		return cssLocation;
 	}
 
-	public Map<String, AbstractPage> getPages() {
+	public Map<String, IPage> getPages() {
 		return pages;
 	}
 
@@ -144,7 +144,7 @@ public class StatusWebHandler {
 
 		// Init pages
 		if (pages == null) {
-			pages = new LinkedHashMap<String, AbstractPage>();
+			pages = new LinkedHashMap<String, IPage>();
 
 			pages.put("status", new StatusPage());
 
@@ -155,6 +155,8 @@ public class StatusWebHandler {
 			if (appStatus.getBatchManager() != null) {
 				pages.put("batch", new BatchPage());
 			}
+
+			pages.put("radiator", new RadiatorPage());
 
 		}
 
@@ -175,7 +177,7 @@ public class StatusWebHandler {
 				}
 			}
 		} catch (Exception e) {
-			logger.error("Error loading configuration from /status-web-conf.properties.",e);
+			logger.error("Error loading configuration from /status-web-conf.properties.", e);
 		}
 
 		// Init css & js
@@ -184,8 +186,8 @@ public class StatusWebHandler {
 			Resources.addResource("appstatus.css", "/assets/css/appstatus.css");
 			Resources.addResource("bootstrap.js", "/assets/js/bootstrap.js");
 			Resources.addResource("jquery.js", "/assets/js/jquery-2.0.1.min.js");
-			Resources.addResource("glyphicons-halflings.png","/assets/img/glyphicons-halflings.png");
-			Resources.addResource("glyphicons-halflings-white.png","/assets/img/glyphicons-halflings-white.png");
+			Resources.addResource("glyphicons-halflings.png", "/assets/img/glyphicons-halflings.png");
+			Resources.addResource("glyphicons-halflings-white.png", "/assets/img/glyphicons-halflings-white.png");
 		}
 	}
 
@@ -225,7 +227,7 @@ public class StatusWebHandler {
 	 * 
 	 * @param pages
 	 */
-	public void setPages(Map<String, AbstractPage> pages) {
+	public void setPages(Map<String, IPage> pages) {
 		this.pages = pages;
 	}
 }
