@@ -183,11 +183,12 @@ public class StatusWebHandler {
 		// Init css & js
 		if (cssLocation == null) {
 			cssLocation = "?resource=appstatus.css";
-			Resources.addResource("appstatus.css", "/assets/css/appstatus.css");
-			Resources.addResource("bootstrap.js", "/assets/js/bootstrap.js");
-			Resources.addResource("jquery.js", "/assets/js/jquery-2.0.1.min.js");
-			Resources.addResource("glyphicons-halflings.png", "/assets/img/glyphicons-halflings.png");
-			Resources.addResource("glyphicons-halflings-white.png", "/assets/img/glyphicons-halflings-white.png");
+			Resources.addResource("appstatus.css", "/assets/css/appstatus.css", "text/css");
+			Resources.addResource("bootstrap.js", "/assets/js/bootstrap.js", "application/javascript");
+			Resources.addResource("jquery.js", "/assets/js/jquery-2.0.1.min.js", "application/javascript");
+			Resources.addResource("glyphicons-halflings.png", "/assets/img/glyphicons-halflings.png", "image/png");
+			Resources.addResource("glyphicons-halflings-white.png", "/assets/img/glyphicons-halflings-white.png",
+					"image/png");
 		}
 	}
 

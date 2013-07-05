@@ -27,29 +27,48 @@ import org.apache.commons.io.IOUtils;
 
 public class Resources {
 
+	public static class ResourceDefinition {
+		private final String location;
+		private final String mimeType;
+
+		protected ResourceDefinition(String location, String mimeType) {
+			this.location = location;
+			this.mimeType = mimeType;
+		}
+
+		public String getLocation() {
+			return location;
+		}
+
+		public String getMimeType() {
+			return mimeType;
+		}
+	}
+
 	public static final String LOGO = "logo";
-	private static Map<String, String> resources = new HashMap<String, String>();
+	private static Map<String, ResourceDefinition> resources = new HashMap<String, ResourceDefinition>();
 	public static final String STATUS_ERROR = "error";
 	public static final String STATUS_JOB = "job";
 	public static final String STATUS_JOB_ERROR = "job-error";
 	public static final String STATUS_JOB_WARNING = "job-warning";
 	public static final String STATUS_OK = "ok";
 	public static final String STATUS_PROP = "prop";
+
 	public static final String STATUS_WARN = "warn";
 
 	static {
-		resources.put(STATUS_OK, "/org/freedesktop/tango/22x22/status/weather-clear.png");
-		resources.put(STATUS_WARN, "/org/freedesktop/tango/22x22/status/weather-overcast.png");
-		resources.put(STATUS_ERROR, "/org/freedesktop/tango/22x22/status/weather-severe-alert.png");
-		resources.put(STATUS_PROP, "/org/freedesktop/tango/22x22/actions/format-justify-fill.png");
-		resources.put(STATUS_JOB, "/org/freedesktop/tango/22x22/emblems/emblem-system.png");
-		resources.put(STATUS_JOB_ERROR, "/org/freedesktop/tango/22x22/status/dialog-error.png");
-		resources.put(STATUS_JOB_WARNING, "/org/freedesktop/tango/22x22/status/dialog-warning.png");
-		resources.put(LOGO, "/assets/img/appstatus-logo.png");
+		addResource(STATUS_OK, "/org/freedesktop/tango/22x22/status/weather-clear.png", "image/png");
+		addResource(STATUS_WARN, "/org/freedesktop/tango/22x22/status/weather-overcast.png", "image/png");
+		addResource(STATUS_ERROR, "/org/freedesktop/tango/22x22/status/weather-severe-alert.png", "image/png");
+		addResource(STATUS_PROP, "/org/freedesktop/tango/22x22/actions/format-justify-fill.png", "image/png");
+		addResource(STATUS_JOB, "/org/freedesktop/tango/22x22/emblems/emblem-system.png", "image/png");
+		addResource(STATUS_JOB_ERROR, "/org/freedesktop/tango/22x22/status/dialog-error.png", "image/png");
+		addResource(STATUS_JOB_WARNING, "/org/freedesktop/tango/22x22/status/dialog-warning.png", "image/png");
+		addResource(LOGO, "/assets/img/appstatus-logo.png", "image/png");
 	}
 
-	public static void addResource(String id, String location) {
-		resources.put(id, location);
+	public static void addResource(String id, String location, String mimeType) {
+		resources.put(id, new ResourceDefinition(location, mimeType));
 	}
 
 	public static void doGet(StatusWebHandler webHandler, HttpServletRequest req, HttpServletResponse resp)
@@ -62,7 +81,8 @@ public class Resources {
 		}
 
 		if (resources.containsKey(id)) {
-			location = resources.get(id);
+			resp.setContentType(resources.get(id).getMimeType());
+			location = resources.get(id).getLocation();
 			InputStream is = Resources.class.getResourceAsStream(location);
 			IOUtils.copy(is, resp.getOutputStream());
 		} else {
