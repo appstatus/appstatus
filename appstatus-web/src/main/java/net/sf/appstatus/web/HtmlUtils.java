@@ -5,7 +5,9 @@ import java.io.InputStream;
 import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
 import java.nio.charset.Charset;
+import java.text.DateFormat;
 import java.util.Collection;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -27,16 +29,14 @@ public class HtmlUtils {
 	private static final String ENCODING = "UTF-8";
 	private static Map<String, String> templates = new HashMap<String, String>();
 
-	public static String applyLayout(Map<String, String> valuesMap,
-			String templateName) throws IOException {
+	public static String applyLayout(Map<String, String> valuesMap, String templateName) throws IOException {
 		String templateString = "";
 
 		if (templates.containsKey(templateName)) {
 			templateString = templates.get(templateName);
 		} else {
 			// get the file
-			InputStream inputStream = Resources.class
-					.getResourceAsStream("/templates/" + templateName);
+			InputStream inputStream = Resources.class.getResourceAsStream("/templates/" + templateName);
 
 			// convert to string
 			StringWriter writer = new StringWriter();
@@ -50,8 +50,7 @@ public class HtmlUtils {
 		return sub.replace(templateString);
 	}
 
-	public static String collectionToDelimitedString(Collection coll,
-			String delim, String prefix, String suffix) {
+	public static String collectionToDelimitedString(Collection coll, String delim, String prefix, String suffix) {
 		if (isEmpty(coll)) {
 			return "";
 		}
@@ -68,8 +67,8 @@ public class HtmlUtils {
 
 	public static String countAndDetail(List<String> items) {
 		String itemsList = collectionToDelimitedString(items, ", ", "", "");
-		return "<a href='#' title='" + itemsList + "'>" + items.size() + "</a>"
-				+ "<span style=\"display:none\" >" + itemsList + "</span>";
+		return "<a href='#' title='" + itemsList + "'>" + items.size() + "</a>" + "<span style=\"display:none\" >"
+				+ itemsList + "</span>";
 	}
 
 	/**
@@ -80,8 +79,7 @@ public class HtmlUtils {
 	 * @throws IOException
 	 * @throws UnsupportedEncodingException
 	 */
-	public static boolean generateBeginTable(StrBuilder sb, int size)
-			throws UnsupportedEncodingException, IOException {
+	public static boolean generateBeginTable(StrBuilder sb, int size) throws UnsupportedEncodingException, IOException {
 		if (size == 0) {
 			sb.append("<p>No items</p>");
 			return false;
@@ -91,8 +89,7 @@ public class HtmlUtils {
 		return true;
 	}
 
-	public static void generateEndTable(StrBuilder sb, int size)
-			throws UnsupportedEncodingException, IOException {
+	public static void generateEndTable(StrBuilder sb, int size) throws UnsupportedEncodingException, IOException {
 
 		if (size > 0) {
 			sb.append("</tbody></table>");
@@ -106,8 +103,7 @@ public class HtmlUtils {
 	 * @param cols
 	 * @throws IOException
 	 */
-	public static void generateHeaders(StrBuilder sb, Object... cols)
-			throws IOException {
+	public static void generateHeaders(StrBuilder sb, Object... cols) throws IOException {
 		sb.append("<thead><tr>");
 		for (Object obj : cols) {
 			sb.append("<th>");
@@ -134,8 +130,7 @@ public class HtmlUtils {
 	 * @param cols
 	 * @throws IOException
 	 */
-	public static void generateRow(StrBuilder sb, String status, Object... cols)
-			throws IOException {
+	public static void generateRow(StrBuilder sb, String status, Object... cols) throws IOException {
 		sb.append("<tr>");
 
 		sb.append(("<td><img src='?icon=" + status + "'></td>"));
@@ -143,7 +138,13 @@ public class HtmlUtils {
 		for (Object obj : cols) {
 			sb.append("<td>");
 			if (obj != null) {
-				sb.append(obj.toString());
+
+				if (obj instanceof Date) {
+					DateFormat dateFormat = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.MEDIUM);
+					sb.append(dateFormat.format((Date) obj));
+				} else {
+					sb.append(obj.toString());
+				}
 			}
 			sb.append("</td>");
 
