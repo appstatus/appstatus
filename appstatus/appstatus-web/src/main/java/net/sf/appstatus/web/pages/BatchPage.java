@@ -57,10 +57,10 @@ public class BatchPage extends AbstractPage {
 
 			for (IBatch batch : runningBatches) {
 				HtmlUtils.generateRow(sbRunningBatchesBatchesTable, getIcon(batch), generateId(resp, batch.getUuid()),
-						batch.getGroup(), batch.getName(), batch.getStartDate(),
-						getProgressBar(Math.round(batch.getProgressStatus())), batch.getEndDate(), batch.getStatus(),
-						batch.getCurrentTask(), batch.getLastMessage(), batch.getItemCount(),
-						HtmlUtils.countAndDetail(batch.getRejectedItemsId()), batch.getLastUpdate());
+						batch.getGroup(), batch.getName(), batch.getStartDate(), getProgressBar(batch),
+						batch.getEndDate(), batch.getStatus(), batch.getCurrentTask(), batch.getLastMessage(),
+						batch.getItemCount(), HtmlUtils.countAndDetail(batch.getRejectedItemsId()),
+						batch.getLastUpdate());
 			}
 
 			HtmlUtils.generateEndTable(sbRunningBatchesBatchesTable, runningBatches.size());
@@ -74,13 +74,12 @@ public class BatchPage extends AbstractPage {
 					"End", "Status", "Task", "Last Msg", "Items", "Rejected", "Last Update", "");
 			for (IBatch batch : finishedBatches) {
 				HtmlUtils.generateRow(sbFinishedBatchesBatchesTable, getIcon(batch), generateId(resp, batch.getUuid()),
-						batch.getGroup(), batch.getName(), batch.getStartDate(),
-						getProgressBar(Math.round(batch.getProgressStatus())), batch.getEndDate(), batch.getStatus(),
-						batch.getCurrentTask(), batch.getLastMessage(), batch.getItemCount(),
-						HtmlUtils.countAndDetail(batch.getRejectedItemsId()), batch.getLastUpdate(),
-						"<form action='?p=batch' method='post'><input type='submit' name='" + CLEAR_ITEM
-								+ "' value='Delete'  class='btn btn-small' /><input type=hidden name='" + ITEM_UUID
-								+ "' value='" + batch.getUuid() + "'/></form>");
+						batch.getGroup(), batch.getName(), batch.getStartDate(), getProgressBar(batch),
+						batch.getEndDate(), batch.getStatus(), batch.getCurrentTask(), batch.getLastMessage(),
+						batch.getItemCount(), HtmlUtils.countAndDetail(batch.getRejectedItemsId()),
+						batch.getLastUpdate(), "<form action='?p=batch' method='post'><input type='submit' name='"
+								+ CLEAR_ITEM + "' value='Delete'  class='btn btn-small' /><input type=hidden name='"
+								+ ITEM_UUID + "' value='" + batch.getUuid() + "'/></form>");
 			}
 
 			HtmlUtils.generateEndTable(sbFinishedBatchesBatchesTable, finishedBatches.size());
@@ -95,13 +94,12 @@ public class BatchPage extends AbstractPage {
 
 			for (IBatch batch : errorBatches) {
 				HtmlUtils.generateRow(sbErrorsBatchesBatchesTable, getIcon(batch), generateId(resp, batch.getUuid()),
-						batch.getGroup(), batch.getName(), batch.getStartDate(),
-						getProgressBar(Math.round(batch.getProgressStatus())), batch.getEndDate(), batch.getStatus(),
-						batch.getCurrentTask(), batch.getLastMessage(), batch.getItemCount(),
-						HtmlUtils.countAndDetail(batch.getRejectedItemsId()), batch.getLastUpdate(),
-						"<form action='?p=batch' method='post'><input type='submit' name='" + CLEAR_ITEM
-								+ "' value='Delete' class='btn btn-small'/><input type=hidden name='" + ITEM_UUID
-								+ "' value='" + batch.getUuid() + "'/></form>");
+						batch.getGroup(), batch.getName(), batch.getStartDate(), getProgressBar(batch),
+						batch.getEndDate(), batch.getStatus(), batch.getCurrentTask(), batch.getLastMessage(),
+						batch.getItemCount(), HtmlUtils.countAndDetail(batch.getRejectedItemsId()),
+						batch.getLastUpdate(), "<form action='?p=batch' method='post'><input type='submit' name='"
+								+ CLEAR_ITEM + "' value='Delete' class='btn btn-small'/><input type=hidden name='"
+								+ ITEM_UUID + "' value='" + batch.getUuid() + "'/></form>");
 			}
 			HtmlUtils.generateEndTable(sbErrorsBatchesBatchesTable, errorBatches.size());
 		}
@@ -178,14 +176,25 @@ public class BatchPage extends AbstractPage {
 		return "Batch";
 	}
 
-	String getProgressBar(int percent) {
+	String getProgressBar(IBatch batch) {
+
+		String color = "success";
+		if (batch.getRejectedItemsId() != null && batch.getRejectedItemsId().size() > 0) {
+			color = "warning";
+		}
+		if (IBatch.STATUS_FAILURE.equals(batch.getStatus())) {
+			color = "danger";
+		}
+
+		int percent = Math.round(batch.getProgressStatus());
+
 		String status = "";
 		if (percent < 100) {
-			status = "active";
+			status = "active progress-" + color;
 		}
 
 		if (percent == 100) {
-			status = "progress-success";
+			status = "progress-" + color;
 		}
 
 		return "<div class=\"progress progress-striped " + status + "\">" + "<div class=\"bar\" style=\"width: "
