@@ -3,7 +3,7 @@
   <parent>
     <artifactId>appstatus-parent</artifactId>
     <groupId>net.sf.appstatus</groupId>
-    <version>0.4.2-SNAPSHOT</version>
+    <version>0.4.2</version>
   </parent>
   <artifactId>appstatus-demo-spring</artifactId>
    <packaging>war</packaging>
@@ -25,7 +25,7 @@
     <dependency>
     	<groupId>net.sf.appstatus </groupId>
     	<artifactId>appstatus-web</artifactId>
-    	<version>0.4.2-SNAPSHOT</version>
+    	<version>0.4.2</version>
     	<scope>compile</scope>
     </dependency>
     <dependency>
@@ -45,13 +45,13 @@
     <dependency>
     	<groupId>net.sf.appstatus</groupId>
     	<artifactId>appstatus-batch-inprocess</artifactId>
-    	<version>0.4.2-SNAPSHOT</version>
+    	<version>0.4.2</version>
     	<scope>compile</scope>
     </dependency>
     <dependency>
     	<groupId>net.sf.appstatus</groupId>
     	<artifactId>appstatus-services-inprocess</artifactId>
-    	<version>0.4.2-SNAPSHOT</version>
+    	<version>0.4.2</version>
     	<type>jar</type>
     	<scope>compile</scope>
     </dependency>
