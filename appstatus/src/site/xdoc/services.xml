@@ -82,7 +82,7 @@ try {
 		<p>Go to http://&lt;server&gt;/&lt;app-context&gt;/status?p=services :
 		</p>
 
-		<img src="images/appstatus-0.0.7-services.png" alt="Services page example"
+		<img src="images/appstatus-services.png" alt="Services page example"
 			style="border: 1px solid black;" />
 
 		<h2>Other features</h2>

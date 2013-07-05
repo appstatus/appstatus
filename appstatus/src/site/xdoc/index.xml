@@ -106,7 +106,7 @@
 
 		<p>Go to http://&lt;server&gt;/&lt;app-context&gt;/status :</p>
 
-		<img src="images/appstatus-0.0.7-status.png" alt="Status page example"
+		<img src="images/appstatus-status.png" alt="Status page example"
 			style="border: 1px solid black;" />
 		<h2>Reporting war details for webapps built with Maven</h2>
 		<p>If you are using Maven to build your webapp, AppStatus provides a
