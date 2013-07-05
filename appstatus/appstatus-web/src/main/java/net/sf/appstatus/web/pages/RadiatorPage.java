@@ -44,6 +44,10 @@ public class RadiatorPage implements IPage {
 	public void doGet(StatusWebHandler webHandler, HttpServletRequest req, HttpServletResponse resp)
 			throws UnsupportedEncodingException, IOException {
 
+		// Setup response
+		resp.setContentType("text/html");
+		resp.setCharacterEncoding("UTF-8");
+
 		// Get Health checks
 		List<ICheckResult> results = webHandler.getAppStatus().checkAll();
 		int status = STATUS_OK;
