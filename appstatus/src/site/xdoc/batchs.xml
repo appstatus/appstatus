@@ -74,7 +74,7 @@ monitor.done();
 
         <p>Go to http://&lt;server&gt;/&lt;app-context&gt;/status?p=batch :</p>
 
-        <img src="images/appstatus-0.0.7-batchs.png" alt="Batchs page example" style="border: 1px solid black;" />
+        <img src="images/appstatus-batch.png" alt="Batchs page example" style="border: 1px solid black;" />
     </body>
 </document>
   
