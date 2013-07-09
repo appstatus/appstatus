@@ -26,6 +26,8 @@ import net.sf.appstatus.core.check.ICheckResult;
 import net.sf.appstatus.web.IPage;
 import net.sf.appstatus.web.StatusWebHandler;
 
+import org.apache.commons.lang3.StringUtils;
+
 /**
  * This is an Alpha radiator page. (Alpha version)
  * <p>
@@ -75,9 +77,15 @@ public class RadiatorPage implements IPage {
 		// Get batchs status.
 		IBatchManager manager = webHandler.getAppStatus().getBatchManager();
 
-		String bathStatus = manager.getErrorBatches().size() > 0 ? " progress-danger " : " progress-success ";
-		String active = manager.getRunningBatches().size() > 0 ? " progress-striped active " : "";
-		String width = manager.getRunningBatches().size() + manager.getFinishedBatches().size() > 0 ? "100%" : "0%";
+		String batchStatus = " progress-success ";
+		String active = StringUtils.EMPTY;
+		String width = "0%";
+
+		if (manager != null) {
+			batchStatus = manager.getErrorBatches().size() > 0 ? " progress-danger " : " progress-success ";
+			active = manager.getRunningBatches().size() > 0 ? " progress-striped active " : "";
+			width = manager.getRunningBatches().size() + manager.getFinishedBatches().size() > 0 ? "100%" : "0%";
+		}
 
 		Writer w = resp.getWriter();
 		w.append("<html>");
@@ -90,7 +98,7 @@ public class RadiatorPage implements IPage {
 		w.append("<p style=\" padding-top: 10%;\"><a href=\"#\" class=\"btn btn-large " + btnClass
 				+ "\" >Status</a></p>");
 		w.append("<div class=\"progress "
-				+ bathStatus
+				+ batchStatus
 				+ active
 				+ "\" style=\"margin-top: 5%; width: 90%; margin-left: 5%; margin-right: 5%;\">  <div class=\"bar\" style=\"width: "
 				+ width + "%;\"></div></div>");
