@@ -119,8 +119,8 @@ public class StatusPage extends AbstractPage {
 
 			}
 			HtmlUtils.generateEndTable(sbPropertiesTable, properties.size());
-			valuesMap.put("propertiesTable", sbPropertiesTable.toString());
 		}
+		valuesMap.put("propertiesTable", sbPropertiesTable.toString());
 		String content = HtmlUtils.applyLayout(valuesMap, PAGECONTENTLAYOUT);
 
 		valuesMap.clear();
