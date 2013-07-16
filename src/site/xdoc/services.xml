@@ -115,6 +115,9 @@ try {
 			<li>statusMessage : failure or error message</li>
 			<li>Any additional context values</li>
 		</ul>
+		<p>Default log format is </p>
+		<pre>${correlationId}|${group}|${name}|${responseTime}|${cache}|${status}|${statusMessage}
+		</pre>
 	</body>
 </document>
   
