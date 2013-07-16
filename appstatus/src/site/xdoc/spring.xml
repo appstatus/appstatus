@@ -31,6 +31,12 @@
                 <ref bean="property2" />
             </list>
         </property>
+        <property name="configuration">
+			<props>
+				<prop key="services.useThreadLocal">true</prop>
+				<prop key="services.log">true</prop>
+			</props>
+		</property>
     </bean>
 
     <bean id="appStatusInstanciation"
