@@ -32,11 +32,11 @@
             </list>
         </property>
         <property name="configuration">
-			<props>
-				<prop key="services.useThreadLocal">true</prop>
-				<prop key="services.log">true</prop>
-				<prop key="services.log.format">${correlationId}|${group}|${name}|${responseTime}|${cache}|${status}|${statusMessage}</prop>
-			</props>
+            <props>
+                <prop key="services.useThreadLocal">true</prop>
+                <prop key="services.log">true</prop>
+                <prop key="services.log.format">${correlationId}|${group}|${name}|${responseTime}|${cache}|${status}|${statusMessage}</prop>
+            </props>
 		</property>
     </bean>
 
@@ -64,6 +64,22 @@
         <load-on-startup>1</load-on-startup>
 </servlet>
 ]]></source>
+
+<h2>Wrapping Spring cache</h2>
+<p>AppStatus cache wrapper automatically flag the current service monitor as using cache if there is a cache hit</p>
+
+<source>
+	<!-- Any spring cache : ehcache as example -->
+	<bean id="ehcacheCacheManager" class="org.springframework.cache.ehcache.EhCacheCacheManager"
+		p:cache-manager-ref="ehcache" />
+	<bean id="ehcache"
+		class="org.springframework.cache.ehcache.EhCacheManagerFactoryBean"
+		p:config-location="classpath:/ehcache.xml" />	
+
+	<!-- appstatus cache wrapper -->
+	<bean id="cacheManager" class="net.sf.appstatus.support.spring.cache.AppStatusCacheManager"
+		p:cache-manager-ref="ehcacheCacheManager" />
+</source>
 
         </body>
 </document>
