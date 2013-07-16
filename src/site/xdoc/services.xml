@@ -116,8 +116,8 @@ try {
 			<li>Any additional context values</li>
 		</ul>
 		<p>Default log format is </p>
-		<pre>${correlationId}|${group}|${name}|${responseTime}|${cache}|${status}|${statusMessage}
-		</pre>
+		<source>${correlationId}|${group}|${name}|${responseTime}|${cache}|${status}|${statusMessage}
+		</source>
 	</body>
 </document>
   
