@@ -35,6 +35,7 @@
 			<props>
 				<prop key="services.useThreadLocal">true</prop>
 				<prop key="services.log">true</prop>
+				<prop key="services.log.format">${correlationId}|${group}|${name}|${responseTime}|${cache}|${status}|${statusMessage}</prop>
 			</props>
 		</property>
     </bean>
