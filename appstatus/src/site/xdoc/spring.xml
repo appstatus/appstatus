@@ -68,7 +68,7 @@
 <h2>Wrapping Spring cache</h2>
 <p>AppStatus cache wrapper automatically flag the current service monitor as using cache if there is a cache hit</p>
 
-<source>
+<source><![CDATA[
 	<!-- Any spring cache : ehcache as example -->
 	<bean id="ehcacheCacheManager" class="org.springframework.cache.ehcache.EhCacheCacheManager"
 		p:cache-manager-ref="ehcache" />
@@ -79,7 +79,7 @@
 	<!-- appstatus cache wrapper -->
 	<bean id="cacheManager" class="net.sf.appstatus.support.spring.cache.AppStatusCacheManager"
 		p:cache-manager-ref="ehcacheCacheManager" />
-</source>
+]]></source>
 
         </body>
 </document>
