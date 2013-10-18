@@ -86,6 +86,37 @@ try {
 			style="border: 1px solid black;" />
 
 		<h2>Other features</h2>
+			<h3>Spring-based AOP support</h3>
+			<p>AppStatusServiceInterceptor can provide AppStatus monitoring features
+			 without changing any code. Just define the interceptor bean and target
+			  the methods using a pointcut:
+			</p>
+			<source>
+  &lt;bean id="appStatusInterceptor" 
+  		class="net.sf.appstatus.support.spring.AppStatusServiceInterceptor"
+  		scope="singleton">
+          &lt;property name="appStatus" ref="appStatus" />
+          
+          &lt;!-- Optional property for dynamic activation -->
+          &lt;property name="activationCallback" ref="activationCallback" />
+          
+          &lt;!-- Optional property for logger selection -->
+          &lt;property name="logger" value="&lt;logger-name>" />
+  
+          &lt;!-- Optional property for monitor setup -->
+          &lt;property name="preServiceCallback" ref="preServiceCallback" />
+          
+          &lt;!-- Optional property for service result analysis -->
+          &lt;property name="postServiceCallback" ref="postServiceCallback" />
+          
+  &lt;/bean>
+  
+   &lt;aop:config >
+          &lt;aop:advisor id="serviceCallAdvisor" 
+          		advice-ref="appStatusInterceptor" 
+          		pointcut="execution(public * your.package.ServiceClient*.*(..))" />
+      &lt;/aop:config>			</source>
+			
 		<h3>ThreadLocal support</h3>
 		<p>Appstatus can put the service monitor in a thread local to make it
 			available deeper in the code, even if you can't pass it as a
