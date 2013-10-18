@@ -53,51 +53,42 @@
 		<p>Create a test for your application (implementing ICheck):</p>
 
 		<source>
-			public class GooglePingStatusChecker implements ICheck {
+public class GooglePingStatusChecker extends AbstractCheck {
 
-			public IStatusResult checkStatus() {
+	public ICheckResult checkStatus() {
+		ICheckResult result = null;
 
-			StatusResultImpl result = new
-			StatusResultImpl();
-			result.setProbeName(getName());
+		try {
+			InetAddress address = InetAddress.getByName("www.google.com");
 
-			try {
-			InetAddress
-			address = InetAddress.getByName("www.google.com");
+			if (address.isReachable(2000)) {
+				result = createResult(OK);
+				result.setDescription("Google Access ok");
 
-			if
-			(address.isReachable(2000)) {
-			result.setDescription("Google Access
-			ok");
-			result.setCode(IStatusResult.OK);
-			}else {
-			throw new Exception(
-			"Ping timeout (2000ms)");
+			} else {
+				throw new Exception("Ping timeout (2000ms)");
 			}
 
-			} catch (Exception e) {
-			result.setCode(IStatusResult.ERROR);
-			result.setDescription("Google
-			ping failed");
-			result
-			.setResolutionSteps("Ping failed. This means that
-			ICMP messages are
-			blocked by this host. (This may not be an issue) "
-			+
-			e.getMessage());
-			result.setFatal(false);
-			}
+		} catch (Exception e) {
+			result = createResult(WARN);
+			result.setDescription("Google ping failed");
+			result.setResolutionSteps("Ping failed. This means that ICMP messages are blocked by this host. (This may not be an issue) "
+					+ e.getMessage());
 
-			return result;
-			}
+		}
 
-			public String
-			getName() {
-			return "Google Ping check";
-			}
+		return result;
+	}
 
-			}
-		</source>
+	public String getGroup() {
+		return "google";
+	}
+
+	public String getName() {
+		return "Google Ping check";
+	}
+
+}		</source>
 
 		<p>Register the test in /status-check.properties :</p>
 		<source>
