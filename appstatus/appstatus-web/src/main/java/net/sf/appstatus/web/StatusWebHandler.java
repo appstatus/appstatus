@@ -43,7 +43,7 @@ import org.slf4j.LoggerFactory;
  * @author Nicolas Richeton
  */
 public class StatusWebHandler {
-	private static Logger logger = LoggerFactory.getLogger(AppStatus.class);
+	private static Logger logger = LoggerFactory.getLogger(StatusWebHandler.class);
 	private String allowIp = null;
 	private String applicationName = StringUtils.EMPTY;
 	private AppStatus appStatus = null;
