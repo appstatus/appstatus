@@ -108,6 +108,9 @@
 		<module>appstatus-batch-inprocess</module>
 		<module>appstatus-services-inprocess</module>
 		<module>appstatus-demo-spring</module>
+		<module>appstatus-demo-loggers</module>
+		<module>appstatus-log4j</module>
+		<module>appstatus-logback</module>
 	</modules>
 	<reporting>
 		<plugins>
@@ -182,12 +185,22 @@
 			<dependency>
 				<groupId>org.slf4j</groupId>
 				<artifactId>slf4j-api</artifactId>
-				<version>1.5.10</version>
+				<version>1.7.6</version>
 			</dependency>
 			<dependency>
 				<groupId>org.slf4j</groupId>
 				<artifactId>slf4j-simple</artifactId>
-				<version>1.5.10</version>
+				<version>1.7.6</version>
+			</dependency>
+			<dependency>
+				<groupId>org.slf4j</groupId>
+				<artifactId>slf4j-log4j12</artifactId>
+				<version>1.7.6</version>
+			</dependency>
+			<dependency>
+				<groupId>org.slf4j</groupId>
+				<artifactId>slf4j</artifactId>
+				<version>1.7.6</version>
 			</dependency>
 		</dependencies>
 	</dependencyManagement>
