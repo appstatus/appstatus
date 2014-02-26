@@ -29,6 +29,7 @@ import net.sf.appstatus.core.batch.IBatchManager;
 import net.sf.appstatus.core.batch.IBatchProgressMonitor;
 import net.sf.appstatus.core.check.ICheck;
 import net.sf.appstatus.core.check.ICheckResult;
+import net.sf.appstatus.core.loggers.ILoggersManager;
 import net.sf.appstatus.core.property.IPropertyProvider;
 import net.sf.appstatus.core.services.IService;
 import net.sf.appstatus.core.services.IServiceManager;
@@ -52,13 +53,12 @@ import org.slf4j.LoggerFactory;
  */
 public class AppStatus {
 	private static final String CONFIG_LOCATION = "status-check.properties";
-
 	private static Logger logger = LoggerFactory.getLogger(AppStatus.class);
-
 	private IBatchManager batchManager = null;
 	protected List<ICheck> checkers;
 	private Properties configuration = null;
 	private boolean initDone = false;
+	private ILoggersManager loggersManager = null;
 	private IObjectInstantiationListener objectInstanciationListener = null;
 	private List<IPropertyProvider> propertyProviders;
 	private IServiceManager serviceManager = null;
@@ -111,7 +111,6 @@ public class AppStatus {
 		if (!initDone) {
 			logger.warn("Not initialized. Starting init");
 			init();
-
 		}
 	}
 
@@ -178,6 +177,10 @@ public class AppStatus {
 		}
 
 		return obj;
+	}
+
+	public ILoggersManager getLoggersManager() {
+		return loggersManager;
 	}
 
 	public Map<String, Map<String, String>> getProperties() {
@@ -330,6 +333,13 @@ public class AppStatus {
 				if (serviceManagerClass != null) {
 					serviceManager = (IServiceManager) getClassInstance(serviceManagerClass);
 				}
+
+				// loggersManager
+				String loggersManagerClass = p.getProperty("loggersManager");
+				if (loggersManagerClass != null) {
+					loggersManager = (ILoggersManager) getClassInstance(loggersManagerClass);
+				}
+
 				count++;
 			}
 		} catch (IOException e) {
