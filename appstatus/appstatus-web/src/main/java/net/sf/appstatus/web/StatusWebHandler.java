@@ -27,6 +27,7 @@ import javax.servlet.http.HttpServletResponse;
 import net.sf.appstatus.core.AppStatus;
 import net.sf.appstatus.core.AppStatusStatic;
 import net.sf.appstatus.web.pages.BatchPage;
+import net.sf.appstatus.web.pages.LoggersPage;
 import net.sf.appstatus.web.pages.RadiatorPage;
 import net.sf.appstatus.web.pages.Resources;
 import net.sf.appstatus.web.pages.ServicesPage;
@@ -156,6 +157,9 @@ public class StatusWebHandler {
 				pages.put("batch", new BatchPage());
 			}
 
+			if (appStatus.getLoggersManager() != null) {
+				pages.put("loggers", new LoggersPage());
+			}
 			pages.put("radiator", new RadiatorPage());
 
 		}
