@@ -108,7 +108,7 @@
 		<module>appstatus-batch-inprocess</module>
 		<module>appstatus-services-inprocess</module>
 		<module>appstatus-demo-spring</module>
-		<module>appstatus-demo-loggers</module>
+		
 		<module>appstatus-log4j</module>
 		<module>appstatus-logback</module>
 	</modules>
