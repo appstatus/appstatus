@@ -282,7 +282,7 @@ public class AppStatus {
 						} else if (name.startsWith("property")) {
 							addPropertyProvider(clazz);
 						} else {
-							logger.warn("unknown propery  {} : {} ", name, clazz);
+							logger.debug("Global property  {} : {} ", name, clazz);
 						}
 					}
 				}
