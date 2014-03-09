@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>net.sf.appstatus</groupId>
 	<artifactId>appstatus-parent</artifactId>
@@ -31,7 +32,7 @@
 			<name>Nicolas Richeton</name>
 			<email>nicolas.richetonATcapgemini.com</email>
 		</developer>
-		
+
 	</developers>
 	<scm>
 		<connection>scm:svn:svn+ssh://svn.code.sf.net/p/appstatus/code/trunk/appstatus</connection>
@@ -47,37 +48,38 @@
 			</extension>
 		</extensions>
 		<plugins>
-		<plugin>
+			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-release-plugin</artifactId>
 				<version>2.4.1</version>
-				 <configuration>
+				<configuration>
 					<autoVersionSubmodules>true</autoVersionSubmodules>
 					<preparationGoals>clean install</preparationGoals>
 				</configuration>
-				
-				<!-- These dependencies are required : 
-					release pugin 2.4.1 depends on a previous version of svn plugin which has issues with svn+ssh. scm 1.8.1 is required -->
+
+				<!-- These dependencies are required : release pugin 2.4.1 depends on 
+					a previous version of svn plugin which has issues with svn+ssh. scm 1.8.1 
+					is required -->
 				<dependencies>
-            <dependency>
-              <groupId>org.apache.maven.scm</groupId>
-              <artifactId>maven-scm-provider-svnexe</artifactId>
-              <version>1.8.1</version>
-            </dependency>
-             <dependency>
-              <groupId>org.apache.maven.scm</groupId>
-              <artifactId>maven-scm-api</artifactId>
-              <version>1.8.1</version>
-            </dependency>
-            <dependency>
-              <groupId>org.apache.maven.scm</groupId>
-              <artifactId>maven-scm-providers-standard</artifactId>
-              <type>pom</type>
-              <version>1.8.1</version>
-            </dependency>
-           
-          </dependencies>
-				
+					<dependency>
+						<groupId>org.apache.maven.scm</groupId>
+						<artifactId>maven-scm-provider-svnexe</artifactId>
+						<version>1.8.1</version>
+					</dependency>
+					<dependency>
+						<groupId>org.apache.maven.scm</groupId>
+						<artifactId>maven-scm-api</artifactId>
+						<version>1.8.1</version>
+					</dependency>
+					<dependency>
+						<groupId>org.apache.maven.scm</groupId>
+						<artifactId>maven-scm-providers-standard</artifactId>
+						<type>pom</type>
+						<version>1.8.1</version>
+					</dependency>
+
+				</dependencies>
+
 			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
@@ -89,17 +91,46 @@
 					<encoding>UTF-8</encoding>
 				</configuration>
 			</plugin>
-			
+
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-site-plugin</artifactId>
 				<version>3.3</version>
-			
-      
-      </plugin>
-			
+
+
+			</plugin>
+
 		</plugins>
 	</build>
+	<profiles>
+		<profile>
+			<id>release-sign-artifacts</id>
+			<activation>
+				<property>
+					<name>performRelease</name>
+					<value>true</value>
+				</property>
+			</activation>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-gpg-plugin</artifactId>
+						<version>1.5</version>
+						<executions>
+							<execution>
+								<id>sign-artifacts</id>
+								<phase>verify</phase>
+								<goals>
+									<goal>sign</goal>
+								</goals>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+	</profiles>
 	<modules>
 		<module>appstatus-core</module>
 		<module>appstatus-web</module>
@@ -108,7 +139,7 @@
 		<module>appstatus-batch-inprocess</module>
 		<module>appstatus-services-inprocess</module>
 		<module>appstatus-demo-spring</module>
-		
+
 		<module>appstatus-log4j</module>
 		<module>appstatus-logback</module>
 	</modules>
