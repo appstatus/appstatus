@@ -133,7 +133,7 @@ public class HtmlUtils {
 	public static void generateRow(StrBuilder sb, String status, Object... cols) throws IOException {
 		sb.append("<tr>");
 
-		sb.append(("<td><img src='?icon=" + status + "'></td>"));
+		sb.append(("<td class='icon'><img src='?icon=" + status + "'></td>"));
 
 		for (Object obj : cols) {
 			sb.append("<td>");
