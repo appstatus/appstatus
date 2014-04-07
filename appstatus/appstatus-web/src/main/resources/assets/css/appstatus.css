@@ -15,6 +15,7 @@ table {
 }
 
 
+
 td .progress {
 	margin-bottom: 0;
 }
@@ -28,6 +29,10 @@ td .progress {
 /* th { */
 /* 	background-color: #DDDDDD; */
 /* } */
+
+td.icon {
+	width: 22px;
+}
 
 td form {
 	margin: 0;
