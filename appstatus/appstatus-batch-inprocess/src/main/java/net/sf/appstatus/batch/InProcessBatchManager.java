@@ -59,6 +59,10 @@ public class InProcessBatchManager implements IBatchManager {
 		}
 	}
 
+	public Properties getConfiguration() {
+		return null;
+	}
+
 	public List<IBatch> getErrorBatches() {
 		return errorBatches;
 	}
@@ -150,10 +154,8 @@ public class InProcessBatchManager implements IBatchManager {
 	 * .core.batch.IBatch)
 	 */
 	public void removeBatch(String uuid) {
-
 		Batch b = new Batch(uuid);
 		removeBatch(b);
-
 	}
 
 	public void setConfiguration(Properties configuration) {
@@ -163,5 +165,4 @@ public class InProcessBatchManager implements IBatchManager {
 	public void setMaxSize(long maxSize) {
 		this.maxSize = maxSize;
 	}
-
 }
