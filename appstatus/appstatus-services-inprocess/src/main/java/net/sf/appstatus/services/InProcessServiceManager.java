@@ -98,5 +98,9 @@ public class InProcessServiceManager implements IServiceManager {
 			useThreadLocal = Boolean.valueOf(configuration.getProperty("services.useThreadLocal"));
 		}
 	}
+	
+	public Properties getConfiguration() {
+		return configuration;
+	}
 
 }
