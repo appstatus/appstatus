@@ -1,6 +1,7 @@
 package net.sf.appstatus.support.aop;
 
-import net.sf.appstatus.core.AppStatus;
+import net.sf.appstatus.core.services.IService;
+import net.sf.appstatus.core.services.IServiceManager;
 import net.sf.appstatus.core.services.IServiceMonitor;
 
 import org.aopalliance.intercept.MethodInterceptor;
@@ -18,8 +19,8 @@ import org.slf4j.LoggerFactory;
  * <p>
  * 
  * <pre>
- * &lt;bean id="appStatusInterceptor" class="net.sf.appstatus.support.spring.AppStatusServiceInterceptor" scope="singleton">
- *         &lt;property name="appStatus" ref="appStatus" />
+ * &lt;bean id="appStatusInterceptor" class="net.sf.appstatus.support.aop.AppStatusServiceInterceptor" scope="singleton">
+ *         &lt;property name="serviceManager" ref="serviceManager" />
  *         
  *         &lt;!-- Optional property for dynamic activation -->
  *         &lt;property name="activationCallback" ref="activationCallback" />
@@ -45,11 +46,11 @@ import org.slf4j.LoggerFactory;
 public class AppStatusServiceInterceptor implements MethodInterceptor {
 
 	private IAppStatusActivationCallback activationCallback;
-	private AppStatus appStatus;
-
 	private Logger logger = null;
+
 	private IPostServiceCallback postServiceCallback;
 	private IPreServiceCallback preServiceCallback;
+	private IServiceManager serviceManager;
 
 	public Object invoke(MethodInvocation invocation) throws Throwable {
 
@@ -62,13 +63,14 @@ public class AppStatusServiceInterceptor implements MethodInterceptor {
 
 		// Get custom monitor
 		if (preServiceCallback != null) {
-			m = preServiceCallback.getMonitor(appStatus, invocation);
+			m = preServiceCallback.getMonitor(serviceManager, invocation);
 		}
 
 		// Create default service monitor if necessary.
 		if (m == null) {
-			m = appStatus.getServiceMonitor(invocation.getMethod().getName(), invocation.getThis().getClass()
-					.getSimpleName());
+			IService service = serviceManager.getService(invocation.getMethod().getName(), invocation.getThis()
+					.getClass().getSimpleName());
+			m = serviceManager.getMonitor(service);
 		}
 
 		// Change default logger
@@ -114,15 +116,6 @@ public class AppStatusServiceInterceptor implements MethodInterceptor {
 	}
 
 	/**
-	 * Set the AppStatus instance to use with this interceptor.
-	 * 
-	 * @param appStatus
-	 */
-	public void setAppStatus(AppStatus appStatus) {
-		this.appStatus = appStatus;
-	}
-
-	/**
 	 * Set the logger to use with this interceptor.
 	 * 
 	 * @param name
@@ -147,6 +140,15 @@ public class AppStatusServiceInterceptor implements MethodInterceptor {
 	 */
 	public void setPreServiceCallback(IPreServiceCallback preServiceCallback) {
 		this.preServiceCallback = preServiceCallback;
+	}
+
+	/**
+	 * Set the AppStatus service manager to use for this interceptor.
+	 * 
+	 * @param serviceManager
+	 */
+	public void setServiceManager(IServiceManager serviceManager) {
+		this.serviceManager = serviceManager;
 	}
 
 }
