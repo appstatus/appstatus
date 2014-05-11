@@ -1,11 +1,18 @@
 <beans xmlns="http://www.springframework.org/schema/beans"
 	xmlns:p="http://www.springframework.org/schema/p" xmlns:batch="http://www.springframework.org/schema/batch"
 	xmlns:cache="http://www.springframework.org/schema/cache" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd http://www.springframework.org/schema/batch http://www.springframework.org/schema/batch/spring-batch-2.1.xsd http://www.springframework.org/schema/cache http://www.springframework.org/schema/cache/spring-cache.xsd">
+	xmlns:aop="http://www.springframework.org/schema/aop"
+	xsi:schemaLocation="
+	 http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd 
+	 http://www.springframework.org/schema/batch http://www.springframework.org/schema/batch/spring-batch.xsd 
+	 http://www.springframework.org/schema/cache http://www.springframework.org/schema/cache/spring-cache.xsd 
+	 http://www.springframework.org/schema/aop  http://www.springframework.org/schema/aop/spring-aop.xsd">
 
 	<bean id="appstatus" class="net.sf.appstatus.core.AppStatus"
 		init-method="init" scope="singleton">
 		<property name="objectInstanciationListener" ref="appstatusInstanciation" />
+		<property name="batchManager" ref="batchManager" />
+		<property name="serviceManager" ref="serviceManager" />
 		<!-- Status Checkers -->
 		<property name="checkers">
 			<list>
@@ -23,14 +30,23 @@
 			</list>
 		</property>
 
+
+
+	</bean>
+
+	<bean id="batchManager" class="net.sf.appstatus.batch.InProcessBatchManager"
+		scope="singleton"></bean>
+
+	<bean id="serviceManager" class="net.sf.appstatus.services.InProcessServiceManager"
+		scope="singleton">
 		<!-- Configuration -->
 		<property name="configuration">
 			<props>
-				<prop key="services.log.format">spring:${correlationId}|${group}|${name}|${responseTime}|${cache}|${status}|${statusMessage}</prop>
+				<prop key="services.log.format">spring:${correlationId}|${group}|${name}|${responseTime}|${cache}|${status}|${statusMessage}
+				</prop>
 				<prop key="services.useThreadLocal">true</prop>
 			</props>
 		</property>
-
 	</bean>
 
 	<bean id="appstatusInstanciation"
@@ -39,7 +55,7 @@
 
 	<bean id="batch" class="net.sf.appstatus.demo.batch.BatchSample">
 		<property name="appstatus" ref="appstatus" />
-		<property name="service" ref="service"/>
+		<property name="service" ref="service" />
 	</bean>
 
 	<bean id="service" class="net.sf.appstatus.demo.batch.ServiceSample">
@@ -60,7 +76,8 @@
 		scope="singleton" />
 
 
-	<bean id="cacheManager" class="net.sf.appstatus.support.spring.cache.AppStatusCacheManager"
+	<bean id="cacheManager"
+		class="net.sf.appstatus.support.spring.cache.AppStatusCacheManager"
 		p:cache-manager-ref="ehcacheCacheManager" />
 	<bean id="ehcacheCacheManager" class="org.springframework.cache.ehcache.EhCacheCacheManager"
 		p:cache-manager-ref="ehcache" />
@@ -70,5 +87,19 @@
 		class="org.springframework.cache.ehcache.EhCacheManagerFactoryBean"
 		p:config-location="classpath:/ehcache.xml" />
 
-	<cache:annotation-driven proxy-target-class="true"/>
+	<cache:annotation-driven proxy-target-class="true" />
+
+	<!-- AOP -->
+
+	<bean id="appStatusInterceptor"
+		class="net.sf.appstatus.support.aop.AppStatusServiceInterceptor"
+		scope="singleton">
+		<property name="serviceManager" ref="serviceManager" />
+	</bean>
+
+	<aop:config>
+		<aop:advisor id="serviceCallAdvisor" advice-ref="appStatusInterceptor"
+			pointcut="execution(public * net.sf.appstatus.demo.batch.ServiceSample.getRefsAOP())" />
+	</aop:config>
+
 </beans>

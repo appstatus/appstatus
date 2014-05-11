@@ -79,6 +79,8 @@ public class BatchSample implements Runnable {
 			if (i % 10 == 0) {
 				monitor.error("Test erreur reporting");}
 			monitor.endCall();
+			
+			service.getRefsAOP();
 		}
 		stepMonitor.done();
 		return items;

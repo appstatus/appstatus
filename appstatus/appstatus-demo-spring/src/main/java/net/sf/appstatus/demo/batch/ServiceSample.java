@@ -18,4 +18,9 @@ public class ServiceSample {
 		logger.info("getRefs");
 		return "refList";
 	}
+	
+	public String getRefsAOP() {
+		logger.info("getRefsAOP");
+		return "refList";
+	}
 }
