@@ -12,6 +12,13 @@ import java.util.Properties;
 public interface IServiceManager {
 
 	/**
+	 * Get current configuration.
+	 * 
+	 * @return
+	 */
+	Properties getConfiguration();
+
+	/**
 	 * Returns a monitor for a new service call.
 	 * 
 	 * @param service
@@ -46,4 +53,5 @@ public interface IServiceManager {
 	 * @param configuration
 	 */
 	void setConfiguration(Properties configuration);
+
 }

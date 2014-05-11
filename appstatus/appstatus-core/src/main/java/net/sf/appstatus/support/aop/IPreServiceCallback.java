@@ -1,6 +1,6 @@
 package net.sf.appstatus.support.aop;
 
-import net.sf.appstatus.core.AppStatus;
+import net.sf.appstatus.core.services.IServiceManager;
 import net.sf.appstatus.core.services.IServiceMonitor;
 
 import org.aopalliance.intercept.MethodInvocation;
@@ -13,7 +13,7 @@ public interface IPreServiceCallback {
 	 * @param invocation
 	 * @return The IServiceMonitor to use or null if defaults should be used.
 	 */
-	IServiceMonitor getMonitor(AppStatus appStatus, MethodInvocation invocation);
+	IServiceMonitor getMonitor(IServiceManager serviceManager, MethodInvocation invocation);
 
 	/**
 	 * This method allows to setup the AppStatus monitor according to the

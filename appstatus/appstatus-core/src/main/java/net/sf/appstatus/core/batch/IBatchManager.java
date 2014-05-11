@@ -42,6 +42,13 @@ public interface IBatchManager {
 	IBatch addBatch(String name, String group, String uuid);
 
 	/**
+	 * Get current configuration.
+	 * 
+	 * @return
+	 */
+	Properties getConfiguration();
+
+	/**
 	 * 
 	 * @return
 	 */

@@ -242,7 +242,6 @@ public class AppStatus {
 			logger.warn("Already initialized");
 			return;
 		}
-
 		// Load plugins
 		loadPlugins();
 
@@ -294,10 +293,26 @@ public class AppStatus {
 
 		// Give all configuration properties to managers.
 		if (getBatchManager() != null) {
-			getBatchManager().setConfiguration(configuration);
+			Properties newConfiguration = getBatchManager().getConfiguration();
+
+			if (newConfiguration != null) {
+				newConfiguration.putAll(configuration);
+			} else {
+				newConfiguration = configuration;
+			}
+
+			getBatchManager().setConfiguration(newConfiguration);
 		}
 		if (getServiceManager() != null) {
-			getServiceManager().setConfiguration(configuration);
+			Properties newConfiguration = getBatchManager().getConfiguration();
+
+			if (newConfiguration != null) {
+				newConfiguration.putAll(configuration);
+			} else {
+				newConfiguration = configuration;
+			}
+
+			getServiceManager().setConfiguration(newConfiguration);
 		}
 
 		initDone = true;
@@ -311,6 +326,12 @@ public class AppStatus {
 		}
 	}
 
+	/**
+	 * Load plugins from classpath.
+	 * <p>
+	 * If a manager has already been set with Spring, it is NOT overriden by
+	 * plugins found in classpath.
+	 */
 	private void loadPlugins() {
 		int count = 0;
 		try {
@@ -324,19 +345,19 @@ public class AppStatus {
 
 				// batchManager
 				String batchManagerClass = p.getProperty("batchManager");
-				if (batchManagerClass != null) {
+				if (batchManagerClass != null && batchManager == null) {
 					batchManager = (IBatchManager) getClassInstance(batchManagerClass);
 				}
 
 				// serviceManager
 				String serviceManagerClass = p.getProperty("serviceManager");
-				if (serviceManagerClass != null) {
+				if (serviceManagerClass != null && serviceManager == null) {
 					serviceManager = (IServiceManager) getClassInstance(serviceManagerClass);
 				}
 
 				// loggersManager
 				String loggersManagerClass = p.getProperty("loggersManager");
-				if (loggersManagerClass != null) {
+				if (loggersManagerClass != null && loggersManager == null) {
 					loggersManager = (ILoggersManager) getClassInstance(loggersManagerClass);
 				}
 
@@ -366,6 +387,10 @@ public class AppStatus {
 		return p;
 	}
 
+	public void setBatchManager(IBatchManager batchManager) {
+		this.batchManager = batchManager;
+	}
+
 	public void setCheckers(List<ICheck> checkers) {
 		this.checkers = checkers;
 	}
@@ -380,6 +405,10 @@ public class AppStatus {
 
 	public void setPropertyProviders(List<IPropertyProvider> propertyProviders) {
 		this.propertyProviders = propertyProviders;
+	}
+
+	public void setServiceManager(IServiceManager serviceManager) {
+		this.serviceManager = serviceManager;
 	}
 
 	public void setServletContextProvider(IServletContextProvider servletContext) {
