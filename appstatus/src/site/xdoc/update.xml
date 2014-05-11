@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document xmlns="http://maven.apache.org/XDOC/2.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/XDOC/2.0 http://maven.apache.org/xsd/xdoc-2.0.xsd">
+
+	<properties>
+		<title>Update from older versions</title>
+		<author>Nicolas Richeton</author>
+	</properties>
+
+	<body>
+
+
+		<h1>Update from older versions</h1>
+
+		<h2>0.5.0</h2>
+		<p>Spring initialization : some parts of the bean declaration has
+			changed to prevent cycles in bean initialization:
+		</p>
+		<ul>
+			<li>Managers (service, batch, logger): when using spring, these
+				objects should be injected using Spring, instead of relying on
+				Appstatus classpath scanning. Backward compatibility is
+				maintained.
+			</li>
+			<li>Configuration: should be injected directly in the corresponding
+				manager instead of injecting in the Appstatus object. Backward
+				compatibility is maintained.
+			</li>
+			<li>
+				Appstatus interceptor: the serviceManager should be injected
+				instead
+				of the full Appstatus object.
+				<b>Breaking change</b>
+				.
+			</li>
+		</ul>
+
+	</body>
+</document>
+  
+  

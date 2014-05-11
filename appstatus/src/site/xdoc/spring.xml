@@ -18,32 +18,51 @@
 <source><![CDATA[
    <bean id="appStatus" class="net.sf.appstatus.core.AppStatus"
         init-method="init" scope="singleton">
+        
         <property name="objectInstanciationListener" ref="appStatusInstanciation" />
+        <property name="batchManager" ref="batchManager" />
+		<property name="serviceManager" ref="serviceManager" />
+		
         <property name="checkers">
             <list>
                 <ref bean="statusCheck1" />
                 <ref bean="statusCheck2" />
             </list>
         </property>
+        
         <property name="propertyProviders">
             <list>
                 <ref bean="property1" />
                 <ref bean="property2" />
             </list>
         </property>
+        
         <property name="configuration">
             <props>
-                <prop key="services.useThreadLocal">true</prop>
-                <prop key="services.log">true</prop>
-                <prop key="services.log.format">${correlationId}|${group}|${name}|${responseTime}|${cache}|${status}|${statusMessage}</prop>
+                <prop key="propKey">propValue</prop>
             </props>
 		</property>
     </bean>
 
     <bean id="appStatusInstanciation"
-        class="net.sf.appstatus.core.spring.SpringObjectInstantiationListener"
+        class="net.sf.appstatus.support.spring.SpringObjectInstantiationListener"
         scope="singleton" />
-    
+
+	<bean id="batchManager" class="net.sf.appstatus.batch.InProcessBatchManager"
+		scope="singleton"></bean>
+
+	<bean id="serviceManager" class="net.sf.appstatus.services.InProcessServiceManager"
+		scope="singleton">
+		<!-- Configuration -->
+		<property name="configuration">
+			<props>
+				<prop key="services.log.format">spring:${correlationId}|${group}|${name}|${responseTime}|${cache}|${status}|${statusMessage}
+				</prop>
+				<prop key="services.useThreadLocal">true</prop>
+			</props>
+		</property>
+	</bean>
+	    
     <bean id="statusCheck1" class="your.package.StatusCheck1" scope="prototype"/>
     <bean id="statusCheck2" class="your.package.StatusCheck2" scope="prototype"/>
     
@@ -79,8 +98,25 @@
 	<!-- appstatus cache wrapper -->
 	<bean id="cacheManager" class="net.sf.appstatus.support.spring.cache.AppStatusCacheManager"
 		p:cache-manager-ref="ehcacheCacheManager" />
+
+	<cache:annotation-driven proxy-target-class="true" />
 ]]></source>
 
+
+<h2>AOP</h2>
+<p>Instead of using explicitely service monitors in your code, you can use AOP to automatically perform monitor calls.</p>
+<source><![CDATA[
+	<bean id="appStatusInterceptor"
+		class="net.sf.appstatus.support.aop.AppStatusServiceInterceptor"
+		scope="singleton">
+		<property name="serviceManager" ref="serviceManager" />
+	</bean>
+
+	<aop:config>
+		<aop:advisor id="serviceCallAdvisor" advice-ref="appStatusInterceptor"
+			pointcut="execution(public * net.sf.appstatus.demo.batch.ServiceSample.getRefsAOP(..))" />
+	</aop:config>
+]]></source>
         </body>
 </document>
   
