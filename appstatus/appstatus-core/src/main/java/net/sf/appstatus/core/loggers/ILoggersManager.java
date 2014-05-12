@@ -1,6 +1,7 @@
 package net.sf.appstatus.core.loggers;
 
 import java.util.List;
+import java.util.Properties;
 
 /**
  * 
@@ -10,7 +11,16 @@ import java.util.List;
 public interface ILoggersManager {
 	public static final String LEVEL_DEBUG = "DEBUG";
 
-	void update(LoggerConfig logger2Change);
+	/**
+	 * Get current configuration.
+	 * 
+	 * @return
+	 */
+	Properties getConfiguration();
 
 	List<LoggerConfig> getLoggers();
+
+	void setConfiguration(Properties configuration);
+
+	void update(LoggerConfig logger2Change);
 }

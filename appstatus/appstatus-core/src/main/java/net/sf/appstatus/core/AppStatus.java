@@ -315,6 +315,18 @@ public class AppStatus {
 			getServiceManager().setConfiguration(newConfiguration);
 		}
 
+		if (getLoggersManager() != null) {
+			Properties newConfiguration = getLoggersManager().getConfiguration();
+
+			if (newConfiguration != null) {
+				newConfiguration.putAll(configuration);
+			} else {
+				newConfiguration = configuration;
+			}
+
+			getLoggersManager().setConfiguration(newConfiguration);
+		}
+
 		initDone = true;
 
 	}
