@@ -2,6 +2,7 @@ package net.sf.appstatus.core.loggers.impl;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Properties;
 
 import net.sf.appstatus.core.loggers.ILoggersManager;
 import net.sf.appstatus.core.loggers.LoggerConfig;
@@ -13,6 +14,7 @@ import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.LoggerContext;
 
 /**
+ * A log manager for Logback.
  * 
  * @author Romain Gonord
  * 
@@ -36,5 +38,12 @@ public class LogbackLoggersManager implements ILoggersManager {
 			LoggerContext context = (LoggerContext) loggerFactory;
 			context.getLogger(logger2Change.getName()).setLevel(Level.valueOf(logger2Change.getLevel()));
 		}
+	}
+
+	public Properties getConfiguration() {
+		return null;
+	}
+
+	public void setConfiguration(Properties configuration) {
 	}
 }

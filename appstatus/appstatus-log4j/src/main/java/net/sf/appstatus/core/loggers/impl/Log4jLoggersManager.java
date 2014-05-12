@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.List;
+import java.util.Properties;
 
 import net.sf.appstatus.core.loggers.ILoggersManager;
 import net.sf.appstatus.core.loggers.LoggerConfig;
@@ -13,6 +14,7 @@ import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
 /**
+ * A log manager for log4j.
  * 
  * @author Romain Gonord
  * 
@@ -38,5 +40,13 @@ public class Log4jLoggersManager implements ILoggersManager {
 		} else {
 			LogManager.getLogger(logger2Change.getName()).setLevel(Level.toLevel(logger2Change.getLevel()));
 		}
+	}
+
+	public Properties getConfiguration() {
+		return null;
+	}
+
+	public void setConfiguration(Properties configuration) {
+
 	}
 }
