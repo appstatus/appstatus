@@ -304,7 +304,7 @@ public class AppStatus {
 			getBatchManager().setConfiguration(newConfiguration);
 		}
 		if (getServiceManager() != null) {
-			Properties newConfiguration = getBatchManager().getConfiguration();
+			Properties newConfiguration = getServiceManager().getConfiguration();
 
 			if (newConfiguration != null) {
 				newConfiguration.putAll(configuration);
