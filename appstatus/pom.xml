@@ -5,7 +5,7 @@
 	<artifactId>appstatus-parent</artifactId>
 	<packaging>pom</packaging>
 	<name>App Status Toolkit</name>
-	<version>0.6.0</version>
+	<version>0.6.0-SNAPSHOT</version>
 	<inceptionYear>2010</inceptionYear>
 	<mailingLists>
 		<mailingList>
@@ -141,6 +141,7 @@
 
 		<module>appstatus-log4j</module>
 		<module>appstatus-logback</module>
+<!--		<module>appstatus-batch-hibernate</module> -->
 	</modules>
 	<reporting>
 		<plugins>
