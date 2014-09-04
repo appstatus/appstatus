@@ -6,12 +6,12 @@
            http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.1.xsd">
 
 
-	<bean id="appstatusJdbcBatchManager" class="net.sf.appstatus.batch.JdbcBatchManager"
+	<bean id="appstatusJdbcBatchManager" class="net.sf.appstatus.batch.jdbc.JdbcBatchManager"
 		scope="singleton">
 		<property name="batchDao" ref="appstatusJdbcBatchDao" />
 	</bean>
 
-	<bean id="appstatusJdbcBatchDao" class="net.sf.appstatus.batch.BatchDao"
+	<bean id="appstatusJdbcBatchDao" class="net.sf.appstatus.batch.jdbc.BatchDao"
 		scope="singleton">
 		<property name="jdbcTemplate" ref="appstatusBatchJdbcTemplate" />
 	</bean>

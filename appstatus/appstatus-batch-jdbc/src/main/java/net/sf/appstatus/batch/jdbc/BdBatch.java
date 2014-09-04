@@ -1,4 +1,4 @@
-package net.sf.appstatus.batch;
+package net.sf.appstatus.batch.jdbc;
 
 import java.util.Date;
 
