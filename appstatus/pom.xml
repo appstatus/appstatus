@@ -141,7 +141,7 @@
 
 		<module>appstatus-log4j</module>
 		<module>appstatus-logback</module>
-<!--		<module>appstatus-batch-hibernate</module> -->
+		<module>appstatus-batch-jdbc</module>
 	</modules>
 	<reporting>
 		<plugins>
