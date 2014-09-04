@@ -1,4 +1,4 @@
-package net.sf.appstatus.batch;
+package net.sf.appstatus.batch.jdbc;
 
 /*
  * Copyright 2010 Capgemini
