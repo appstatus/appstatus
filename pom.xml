@@ -37,6 +37,7 @@
 		<connection>scm:git:https://github.com/appstatus/appstatus.git</connection>
 		<developerConnection>scm:git:https://github.com/appstatus/appstatus.git</developerConnection>
 		<url>https://github.com/appstatus/appstatus</url>
+		<tag>HEAD</tag>
 	</scm>
 	<build>
 		<extensions>
