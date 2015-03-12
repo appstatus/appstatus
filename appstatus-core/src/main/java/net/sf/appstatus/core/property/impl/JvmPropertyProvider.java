@@ -24,62 +24,54 @@ import org.apache.commons.lang3.time.DurationFormatUtils;
  * <li>heap memory</li>
  * <li><non heap memory/li>
  * </ul>
- * 
+ *
  * @author Nicolas Richeton
- * 
+ *
  */
 public class JvmPropertyProvider extends AbstractPropertyProvider {
 
-	private static String readableFileSize(long size) {
-		if (size <= 0) {
-			return "0";
-		}
-		final String[] units = new String[] { "B", "KB", "MB", "GB", "TB" };
-		int digitGroups = (int) (Math.log10(size) / Math.log10(1024));
-		return new DecimalFormat("#,##0.#").format(size
-				/ Math.pow(1024, digitGroups))
-				+ " " + units[digitGroups];
-	}
+    private static String readableFileSize(long size) {
+        if (size <= 0) {
+            return "0";
+        }
+        final String[] units = new String[] { "B", "KB", "MB", "GB", "TB" };
+        int digitGroups = (int) (Math.log10(size) / Math.log10(1024));
+        return new DecimalFormat("#,##0.#").format(size / Math.pow(1024, digitGroups)) + " " + units[digitGroups];
+    }
 
-	public String getCategory() {
-		return "JVM";
-	}
+    public String getCategory() {
+        return "JVM";
+    }
 
-	public Map<String, String> getProperties() {
-		Map<String, String> map = new TreeMap<String, String>();
-		RuntimeMXBean RuntimemxBean = ManagementFactory.getRuntimeMXBean();
+    public Map<String, String> getProperties() {
+        Map<String, String> map = new TreeMap<String, String>();
+        RuntimeMXBean runtimeMXBean = ManagementFactory.getRuntimeMXBean();
 
-		List<String> aList = RuntimemxBean.getInputArguments();
-		String parameters = "";
-		for (int i = 0; i < aList.size(); i++) {
-			parameters = parameters + " " + aList.get(i);
-		}
-		map.put("params", parameters);
+        List<String> aList = runtimeMXBean.getInputArguments();
+        String parameters = "";
+        for (int i = 0; i < aList.size(); i++) {
+            parameters = parameters + " " + aList.get(i);
+        }
+        map.put("params", parameters);
 
-		map.put("name", RuntimemxBean.getVmName());
-		map.put("vendor", RuntimemxBean.getVmVendor());
-		map.put("version", RuntimemxBean.getVmVersion());
-		map.put("uptime", DurationFormatUtils.formatDurationHMS(RuntimemxBean
-				.getUptime()));
+        map.put("name", runtimeMXBean.getVmName());
+        map.put("vendor", runtimeMXBean.getVmVendor());
+        map.put("version", runtimeMXBean.getVmVersion());
+        map.put("specification", runtimeMXBean.getSpecVersion());
+        map.put("uptime", DurationFormatUtils.formatDurationHMS(runtimeMXBean.getUptime()));
 
-		Date date = new Date(RuntimemxBean.getStartTime());
-		SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy hh:mm:ss");
-		map.put("start time", sdf.format(date));
+        Date date = new Date(runtimeMXBean.getStartTime());
+        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy hh:mm:ss");
+        map.put("start time", sdf.format(date));
 
-		MemoryMXBean memory = ManagementFactory.getMemoryMXBean();
+        MemoryMXBean memory = ManagementFactory.getMemoryMXBean();
 
-		MemoryUsage heap = memory.getHeapMemoryUsage();
-		map.put("memory. (heap)", readableFileSize(heap.getUsed()) + "/"
-				+ readableFileSize(heap.getCommitted()) + " min:"
-				+ readableFileSize(heap.getInit()) + " max:"
-				+ readableFileSize(heap.getMax()));
-		MemoryUsage nonheap = memory.getNonHeapMemoryUsage();
-		map.put("memory (non heap)", readableFileSize(nonheap.getUsed()) + "/"
-				+ readableFileSize(nonheap.getCommitted()) + " min:"
-				+ readableFileSize(nonheap.getInit()) + " max:"
-				+ readableFileSize(nonheap.getMax()));
+        MemoryUsage heap = memory.getHeapMemoryUsage();
+        map.put("memory. (heap)", readableFileSize(heap.getUsed()) + "/" + readableFileSize(heap.getCommitted()) + " min:" + readableFileSize(heap.getInit()) + " max:" + readableFileSize(heap.getMax()));
+        MemoryUsage nonheap = memory.getNonHeapMemoryUsage();
+        map.put("memory (non heap)", readableFileSize(nonheap.getUsed()) + "/" + readableFileSize(nonheap.getCommitted()) + " min:" + readableFileSize(nonheap.getInit()) + " max:" + readableFileSize(nonheap.getMax()));
 
-		return map;
-	}
+        return map;
+    }
 
 }
