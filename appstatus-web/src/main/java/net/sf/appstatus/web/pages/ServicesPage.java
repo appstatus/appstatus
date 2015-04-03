@@ -51,15 +51,15 @@ public class ServicesPage extends AbstractPage {
 		if (HtmlUtils.generateBeginTable(sbServicesTable, services.size())) {
 
 			HtmlUtils.generateHeaders(sbServicesTable, "", "Group", "Name", "Hits", "Cache", "Running", "min", "max",
-					"avg", "min (cached)", "max (cached)", "avg (cached)", "Errors", "Failures", "Hit rate");
+					"avg", "nested", "min (c)", "max (c)", "avg (c)", "nested (c)", "Errors", "Failures", "Hit rate");
 
 			for (IService service : services) {
 				HtmlUtils.generateRow(sbServicesTable, Resources.STATUS_JOB, service.getGroup(), service.getName(),
 						service.getHits(),
 						service.getCacheHits() + getPercent(service.getCacheHits(), service.getHits()),
-						service.getRunning(), service.getMinResponseTime(), service.getMaxResponseTime(),
-						Math.round(service.getAvgResponseTime()), service.getMinResponseTimeWithCache(),
-						service.getMaxResponseTimeWithCache(), Math.round(service.getAvgResponseTimeWithCache()),
+						service.getRunning(), service.getMinResponseTime(), service.getMaxResponseTime(), 
+						Math.round(service.getAvgResponseTime()), Math.round(service.getAvgNestedCalls()), service.getMinResponseTimeWithCache(),
+						service.getMaxResponseTimeWithCache(), Math.round(service.getAvgResponseTimeWithCache()), Math.round(service.getAvgNestedCallsWithCache()),
 						service.getErrors() + getPercent(service.getErrors(), service.getHits()), service.getFailures()
 								+ getPercent(service.getFailures(), service.getHits()),
 						getRate(service.getCurrentRate()));

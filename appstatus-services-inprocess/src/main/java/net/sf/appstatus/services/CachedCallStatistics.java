@@ -5,13 +5,13 @@ public class CachedCallStatistics {
 	private CallStatistics direct = new CallStatistics();
 	private CallStatistics cache = new CallStatistics();
 
-	public void addCall(Long executionTime, boolean cacheHit, boolean failure, boolean error) {
+	public void addCall(Long executionTime, boolean cacheHit, boolean failure, boolean error, int nestedCalls) {
 
 		// Update statistics
 		if (cacheHit) {
-			cache.addCall(executionTime, failure, error);
+			cache.addCall(executionTime, failure, error, nestedCalls);
 		} else {
-			direct.addCall(executionTime, failure, error);
+			direct.addCall(executionTime, failure, error, nestedCalls);
 		}
 
 	}

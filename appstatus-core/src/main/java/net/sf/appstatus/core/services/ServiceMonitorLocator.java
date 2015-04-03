@@ -5,9 +5,9 @@ import org.apache.commons.collections.ArrayStack;
 /**
  * This locator allows to retrieve the current ServiceMonitor. It uses a
  * ThreadLocal internally to track all running calls.
- * 
+ *
  * @author Nicolas Richeton
- * 
+ *
  */
 public class ServiceMonitorLocator {
 
