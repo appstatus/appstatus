@@ -41,11 +41,11 @@ public class Service implements IService {
 	 * @param failure
 	 * @param error
 	 */
-	public void addCall(Long executionTime, boolean cacheHit, boolean failure, boolean error) {
-		totalStats.addCall(executionTime, cacheHit, failure, error);
+	public void addCall(Long executionTime, boolean cacheHit, boolean failure, boolean error, int nestedCalls) {
+		totalStats.addCall(executionTime, cacheHit, failure, error, nestedCalls);
 
 		updateWindows();
-		windowStats.addCall(executionTime, cacheHit, failure, error);
+		windowStats.addCall(executionTime, cacheHit, failure, error, nestedCalls);
 	}
 
 	/**
@@ -125,6 +125,14 @@ public class Service implements IService {
 
 	public Long getMinResponseTimeWithCache() {
 		return totalStats.getCacheStatistics().getMinResponseTime();
+	}
+
+	public double getAvgNestedCalls() {
+		return totalStats.getDirectStatistics().getAvgNestedCalls();
+	}
+
+	public double getAvgNestedCallsWithCache() {
+		return totalStats.getCacheStatistics().getAvgNestedCalls();
 	}
 
 	public int compareTo(IService otherService) {

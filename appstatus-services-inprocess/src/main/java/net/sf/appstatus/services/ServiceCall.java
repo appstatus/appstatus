@@ -6,6 +6,7 @@ public class ServiceCall extends AbstractLoggingServiceMonitor {
 
 	String id;
 	Service service;
+	int nestedCalls = 0;
 
 	public void cacheHit() {
 		if (!this.cacheHit) {
@@ -44,6 +45,11 @@ public class ServiceCall extends AbstractLoggingServiceMonitor {
 
 		service.running.decrementAndGet();
 
-		service.addCall(executionTime, cacheHit, failure, error);
+		service.addCall(executionTime, cacheHit, failure, error, nestedCalls);
 	}
+
+	public void nestedCall() {
+		nestedCalls ++;
+	}
+
 }
