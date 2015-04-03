@@ -9,6 +9,7 @@ public class CallStatistics {
 	private long errors = 0;
 	private long hits = 0;
 	private Long minResponseTime;
+	private double avgNestedCalls = 0;
 
 
 	public Long getMaxResponseTime() {
@@ -41,7 +42,15 @@ public class CallStatistics {
 	}
 
 
-	public  void addCall(Long executionTime, boolean failure, boolean error) {
+	/**
+	 * @return the avgNestedCalls
+	 */
+	public double getAvgNestedCalls() {
+		return avgNestedCalls;
+	}
+
+
+	public  void addCall(Long executionTime, boolean failure, boolean error, int nestedCalls) {
 		synchronized( this){
 		hits++;
 		if (failure) {
@@ -62,8 +71,9 @@ public class CallStatistics {
 				minResponseTime = executionTime;
 			}
 
-			avgResponseTime = (avgResponseTime * (hits  - 1) + executionTime)
-					/ (hits );
+			avgResponseTime = (avgResponseTime * (hits - 1) + executionTime) / (hits);
+
+			avgNestedCalls = (avgNestedCalls * (hits - 1) + (double) nestedCalls) / hits;
 		}
 		
 	}

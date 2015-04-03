@@ -6,7 +6,7 @@ public abstract class AbstractServiceMonitor implements IServiceMonitor {
 
 	/**
 	 * This class implements Thread local support for ServiceMonitor.
-	 * 
+	 *
 	 * @param useThreadLocal
 	 */
 	public AbstractServiceMonitor(boolean useThreadLocal) {
@@ -15,6 +15,12 @@ public abstract class AbstractServiceMonitor implements IServiceMonitor {
 
 	public void beginCall(Object... parameters) {
 		if (useThreadLocal) {
+			IServiceMonitor current = ServiceMonitorLocator
+					.getCurrentServiceMonitor();
+			if (null != current) {
+				current.nestedCall();
+			}
+
 			ServiceMonitorLocator.getServiceMonitorStack().push(this);
 		}
 	}
