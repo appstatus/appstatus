@@ -30,7 +30,6 @@ public class BatchDao {
 
 	private static final String SQL_DELETE_SUCCESS_BATCH = "delete from BATCH where STATUS != ?";
 
-	
 	/**
 	 * Spring JDBC template
 	 */

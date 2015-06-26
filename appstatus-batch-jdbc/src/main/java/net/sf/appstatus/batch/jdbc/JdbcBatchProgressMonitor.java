@@ -95,7 +95,6 @@ public class JdbcBatchProgressMonitor extends AbstractBatchProgressMonitor
 		return (JdbcBatchProgressMonitor) super.getMainMonitor();
 	}
 
-	
 
 	private boolean isLoggable(long lastWriteTimestamp) {
 		if (System.currentTimeMillis() - lastWriteTimestamp > writingDelay) {

@@ -265,7 +265,6 @@ public class AppStatus {
 			logger.warn("Already initialized");
 			return;
 		}
-
 		executorService = Executors.newCachedThreadPool();
 
 		// Load plugins

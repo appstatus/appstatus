@@ -2,6 +2,7 @@ package net.sf.appstatus.core.batch;
 
 /*
  * Copyright 2010 Capgemini
+ <<<<<<< HEAD
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -14,6 +15,20 @@ package net.sf.appstatus.core.batch;
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
+ =======
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ * 
+ >>>>>>> 08282fb20f2be3845592118435b9ae6f750ba2c4
  */
 
 import java.util.Date;
@@ -61,8 +76,8 @@ public abstract class AbstractBatchProgressMonitor implements IBatchProgressMoni
 	protected AbstractBatchProgressMonitor parent;
 
 	private int parentWork;
-
 	protected final List<String> rejectedItems = new Vector<String>();
+
 	protected long startTime;
 
 	private boolean success;
@@ -83,14 +98,17 @@ public abstract class AbstractBatchProgressMonitor implements IBatchProgressMoni
 	private long writingDelay = 1000;
 
 	/**
-	 * Constructor used for main monitor.
+	 * Constructor used for main monitor. <<<<<<< HEAD
 	 *
+	 * =======
+	 * 
+	 * >>>>>>> 08282fb20f2be3845592118435b9ae6f750ba2c4
+	 * 
 	 * @param executionId
 	 *            job execution id
 	 */
 	public AbstractBatchProgressMonitor(String executionId, IBatch batch) {
 		this.executionId = executionId;
-		this.currentChildren = new Vector<AbstractBatchProgressMonitor>();
 		this.batch = batch;
 		this.batch.setProgressMonitor(this);
 		startTime = System.currentTimeMillis();
@@ -111,7 +129,6 @@ public abstract class AbstractBatchProgressMonitor implements IBatchProgressMoni
 	protected AbstractBatchProgressMonitor(String executionId, IBatchProgressMonitor parent, int parentWork,
 			IBatch batch) {
 		this.executionId = executionId;
-		this.currentChildren = new Vector<AbstractBatchProgressMonitor>();
 		this.parent = (AbstractBatchProgressMonitor) parent;
 		this.parentWork = parentWork;
 		this.batch = batch;
