@@ -33,6 +33,8 @@ import org.springframework.util.StringUtils;
  */
 public class JdbcBatchProgressMonitor extends AbstractBatchProgressMonitor
 		implements IBatchProgressMonitorExt {
+	private JdbcBatchManager manager;
+
 	private static Logger logger = LoggerFactory
 			.getLogger(JdbcBatchProgressMonitor.class);
 	BatchDao batchDao;
@@ -142,6 +144,11 @@ public class JdbcBatchProgressMonitor extends AbstractBatchProgressMonitor
 		updateDb(false);
 	}
 
+	@Override
+	protected void onBatchEnd() {
+		manager.batchEnd(getBatch());
+	}
+	
 	private void updateDb(boolean force) {
 		if (force || isLoggable(lastDbSave)) {
 			lastDbSave = System.currentTimeMillis();
