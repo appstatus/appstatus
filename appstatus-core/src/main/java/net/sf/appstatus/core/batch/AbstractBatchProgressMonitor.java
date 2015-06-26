@@ -62,6 +62,7 @@ public abstract class AbstractBatchProgressMonitor implements IBatchProgressMoni
 
 	private int parentWork;
 	protected final List<String> rejectedItems = new Vector<String>();
+	protected final List<String> successItems = new Vector<String>();
 
 	protected long startTime;
 
@@ -200,9 +201,9 @@ public abstract class AbstractBatchProgressMonitor implements IBatchProgressMoni
 		endBatch(false);
 
 		getLogger()
-		.error("Failed [{}] {}: {}, duration: {}",
-				new Object[] { this.batch.getGroup(), batch.getName(), reason,
-				String.valueOf(endTime - startTime) }, t);
+				.error("Failed [{}] {}: {}, duration: {}",
+						new Object[] { this.batch.getGroup(), batch.getName(), reason,
+								String.valueOf(endTime - startTime) }, t);
 		touch();
 	}
 
