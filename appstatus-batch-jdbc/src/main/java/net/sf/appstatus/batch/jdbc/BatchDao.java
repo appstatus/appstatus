@@ -11,10 +11,89 @@ import org.slf4j.LoggerFactory;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
 
+/**
+ * 
+ * <pre>
+ * &lt;bean id="jdbcTemplate" class="org.springframework.jdbc.core.JdbcTemplate"
+ * scope="singleton">
+ *     &lt;constructor-arg ref="dataSource" /> 
+ * &lt;/bean>
+ * 
+ * &lt;bean id="batchDao" class="net.sf.appstatus.batch.jdbc.BatchDao"
+ * scope="singleton"> &lt;property name="jdbcTemplate" ref="jdbcTemplate" />
+ * &lt;/bean>
+ * 
+ * 
+ * 
+ * &lt;bean id="jdbcBatchManager"
+ * class="net.sf.appstatus.batch.jdbc.JdbcBatchManager" scope="singleton">
+ * 		&lt;property name="batchDao" ref="batchDao" /> 
+ * &lt;/bean>
+ * 
+ * </pre>
+ * 
+ * Create table: BATCH
+ * 
+ * <p>
+ * <table>
+ * <tr>
+ * <td>UUID_BATCH</td>
+ * <td>varchar (256)</td>
+ * </tr>
+ * <tr>
+ * <td>GROUP_BATCH</td>
+ * <td>varchar (256)</td>
+ * </tr>
+ * <tr>
+ * <td>NAME_BATCH</td>
+ * <td>varchar (256)</td>
+ * </tr>
+ * <tr>
+ * <td>START_DATE</td>
+ * <td>DATETIME</td>
+ * </tr>
+ * <tr>
+ * <td>END_DATE</td>
+ * <td>DATETIME</td>
+ * </tr>
+ * <tr>
+ * <td>UPDATED</td>
+ * <td>DATETIME</td>
+ * </tr>
+ * <tr>
+ * <td>STATUS</td>
+ * <td>BOOLEAN</td>
+ * </tr>
+ * <tr>
+ * <td>ITEMCOUNT</td>
+ * <td>LONG</td>
+ * </tr>
+ * <tr>
+ * <td>ITEM</td>
+ * <td>varchar (256)</td>
+ * </tr>
+ * </tr>
+ * <tr>
+ * <td>CURRENT_TASK</td>
+ * <td>varchar (256)</td>
+ * </tr>
+ *  <tr>
+ * <td>PROGRESS</td>
+ * <td>Float</td>
+ * </tr>
+ *  <tr>
+ * <td>REJECT</td>
+ * <td>CLOB</td>
+ * </tr>
+ * <tr>
+ * <td>LAST_MSG</td>
+ * <td>varchar (1024)</td>
+ * </tr>
+ * </table>
+ */
 public class BatchDao {
 
-	private static Logger logger = LoggerFactory
-			.getLogger(JdbcBatchProgressMonitor.class);
+	private static Logger logger = LoggerFactory.getLogger(JdbcBatchProgressMonitor.class);
 
 	private static final String INSERT_SQL = "INSERT into BATCH "
 			+ "(UUID_BATCH,GROUP_BATCH,NAME_BATCH,START_DATE,STATUS,ITEMCOUNT) values (?,?,?,?,?,0)";
@@ -46,9 +125,7 @@ public class BatchDao {
 	}
 
 	public void deleteOldBatches(final int delay) {
-		Object[] parameters = new Object[] {
-				new DateTime().minusMonths(delay).toDate(),
-				IBatch.STATUS_RUNNING };
+		Object[] parameters = new Object[] { new DateTime().minusMonths(delay).toDate(), IBatch.STATUS_RUNNING };
 		this.jdbcTemplate.update(SQL_DELETE_OLD_BATCH, parameters);
 		logger.info("Batchs older than {} months deleted.", delay);
 	}
@@ -68,8 +145,7 @@ public class BatchDao {
 	private List<BdBatch> fetchBdBatch(final int max, String status) {
 		List<BdBatch> results = new ArrayList<BdBatch>();
 		Object[] parameters = new Object[] { status, max };
-		SqlRowSet srs = this.jdbcTemplate.queryForRowSet(SQL_BATCHS_FETCH,
-				parameters);
+		SqlRowSet srs = this.jdbcTemplate.queryForRowSet(SQL_BATCHS_FETCH, parameters);
 
 		while (srs.next()) {
 			BdBatch bdBatch = mappinpBdbatch(srs);
@@ -108,22 +184,19 @@ public class BatchDao {
 	}
 
 	public void update(BdBatch bdBatch) {
-		Object[] parameters = new Object[] { bdBatch.getCurrentItem(),
-				bdBatch.getCurrentTask(), bdBatch.getEndDate(),
-				bdBatch.getGroup(), bdBatch.getItemCount(),
-				bdBatch.getLastMessage(), bdBatch.getLastUpdate(),
-				bdBatch.getName(), bdBatch.getProgress(), bdBatch.getReject(),
-				bdBatch.getStatus(), bdBatch.getSuccess(), bdBatch.getUuid() };
+		Object[] parameters = new Object[] { bdBatch.getCurrentItem(), bdBatch.getCurrentTask(), bdBatch.getEndDate(),
+				bdBatch.getGroup(), bdBatch.getItemCount(), bdBatch.getLastMessage(), bdBatch.getLastUpdate(),
+				bdBatch.getName(), bdBatch.getProgress(), bdBatch.getReject(), bdBatch.getStatus(),
+				bdBatch.getSuccess(), bdBatch.getUuid() };
 		this.jdbcTemplate.update(SQL_UPDATE, parameters);
 		logger.info("Batch {} updated ", bdBatch.getUuid());
 	}
 
 	public BdBatch save(BdBatch bdBatch) {
-		Object[] parameters = new Object[] { bdBatch.getUuid(),
-				bdBatch.getGroup(), bdBatch.getName(), bdBatch.getStartDate(),
-				bdBatch.getStatus() };
-		logger.debug("PARAMETERS UUID BATCH:{} NAME: {} GROUP: {}",
-				bdBatch.getUuid(), bdBatch.getName(), bdBatch.getGroup());
+		Object[] parameters = new Object[] { bdBatch.getUuid(), bdBatch.getGroup(), bdBatch.getName(),
+				bdBatch.getStartDate(), bdBatch.getStatus() };
+		logger.debug("PARAMETERS UUID BATCH:{} NAME: {} GROUP: {}", bdBatch.getUuid(), bdBatch.getName(),
+				bdBatch.getGroup());
 		int result = this.jdbcTemplate.update(INSERT_SQL, parameters);
 		logger.debug("{} lines inserted.", result);
 		return bdBatch;
