@@ -2,9 +2,9 @@
  * Copyright 2010 Capgemini Licensed under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
@@ -23,6 +23,11 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 import java.util.TreeMap;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
 import net.sf.appstatus.core.batch.IBatch;
 import net.sf.appstatus.core.batch.IBatchManager;
@@ -40,16 +45,16 @@ import org.slf4j.LoggerFactory;
 
 /**
  * This is the entry point for every feature of AppStatus.
- * 
+ *
  * <p>
  * Must be initialized once before calling other methods.
  * <p>
  * AppStatus status = new AppStatus(); <br/>
  * status.init();
  * </p>
- * 
+ *
  * @author Nicolas Richeton
- * 
+ *
  */
 public class AppStatus {
 	private static final String CONFIG_LOCATION = "status-check.properties";
@@ -57,6 +62,7 @@ public class AppStatus {
 	private IBatchManager batchManager = null;
 	protected List<ICheck> checkers;
 	private Properties configuration = null;
+	private ExecutorService executorService = null;
 	private boolean initDone = false;
 	private ILoggersManager loggersManager = null;
 	private IObjectInstantiationListener objectInstanciationListener = null;
@@ -99,11 +105,28 @@ public class AppStatus {
 	public List<ICheckResult> checkAll() {
 		checkInit();
 
-		ArrayList<ICheckResult> statusList = new ArrayList<ICheckResult>();
-		for (ICheck check : checkers) {
+		ArrayList<Future<ICheckResult>> statusFutureList = new ArrayList<Future<ICheckResult>>();
+		for (final ICheck check : checkers) {
 			injectServletContext(check);
-			statusList.add(check.checkStatus());
+
+			statusFutureList.add(executorService.submit(new Callable<ICheckResult>() {
+				public ICheckResult call() throws Exception {
+					return check.checkStatus();
+				}
+			}));
 		}
+
+		ArrayList<ICheckResult> statusList = new ArrayList<ICheckResult>();
+		for (Future<ICheckResult> f : statusFutureList) {
+			try {
+				statusList.add(f.get());
+			} catch (InterruptedException e) {
+				logger.error("", e);
+			} catch (ExecutionException e) {
+				logger.error("", e);
+			}
+		}
+
 		return statusList;
 	}
 
@@ -133,7 +156,7 @@ public class AppStatus {
 
 	/**
 	 * Try to instantiate a class.
-	 * 
+	 *
 	 * @param className
 	 * @return an object instance of "className" class or null if instantiation
 	 *         is not possible
@@ -242,6 +265,8 @@ public class AppStatus {
 			logger.warn("Already initialized");
 			return;
 		}
+		executorService = Executors.newCachedThreadPool();
+
 		// Load plugins
 		loadPlugins();
 
@@ -387,7 +412,7 @@ public class AppStatus {
 
 	/**
 	 * Load a properties file from a given URL.
-	 * 
+	 *
 	 * @param url
 	 *            an url
 	 * @return a {@link Properties} object
