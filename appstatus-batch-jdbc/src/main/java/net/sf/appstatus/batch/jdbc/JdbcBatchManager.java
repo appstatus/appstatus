@@ -67,7 +67,9 @@ public class JdbcBatchManager implements IBatchManager {
 	}
 
 	public IBatchProgressMonitor getMonitor(IBatch batch) {
-		return new JdbcBatchProgressMonitor(batch.getUuid(), batch, batchDao);
+		JdbcBatchProgressMonitor monitor = 	new JdbcBatchProgressMonitor(batch.getUuid(), batch, batchDao);
+		monitor.setManager(this);
+		return monitor ;
 	}
 
 	public List<IBatch> getRunningBatches() {
