@@ -62,6 +62,10 @@ import org.springframework.jdbc.support.rowset.SqlRowSet;
  * </tr>
  * <tr>
  * <td>STATUS</td>
+ * <td>varchar (64)</td>
+ * </tr>
+ * <tr>
+ * <td>SUCCESS</td>
  * <td>BOOLEAN</td>
  * </tr>
  * <tr>
@@ -93,7 +97,7 @@ import org.springframework.jdbc.support.rowset.SqlRowSet;
  */
 public class BatchDao {
 
-	private static Logger logger = LoggerFactory.getLogger(JdbcBatchProgressMonitor.class);
+	private static Logger logger = LoggerFactory.getLogger(BatchDao.class);
 
 	private static final String INSERT_SQL = "INSERT into BATCH "
 			+ "(UUID_BATCH,GROUP_BATCH,NAME_BATCH,START_DATE,STATUS,ITEMCOUNT) values (?,?,?,?,?,0)";
@@ -145,7 +149,7 @@ public class BatchDao {
 	private List<BdBatch> fetchBdBatch(final int max, String status) {
 		List<BdBatch> results = new ArrayList<BdBatch>();
 		Object[] parameters = new Object[] { status, max };
-		SqlRowSet srs = this.jdbcTemplate.queryForRowSet(SQL_BATCHS_FETCH, parameters);
+		SqlRowSet srs = this.jdbcTemplate.queryForRowSet(getSqlFetch(), parameters);
 
 		while (srs.next()) {
 			BdBatch bdBatch = mappinpBdbatch(srs);
@@ -155,6 +159,9 @@ public class BatchDao {
 		return results;
 	}
 
+	protected String getSqlFetch() {
+		return SQL_BATCHS_FETCH;
+	}
 	private BdBatch mappinpBdbatch(SqlRowSet srs) {
 		BdBatch bdBatch = new BdBatch();
 		bdBatch.setUuid(srs.getString("UUID_BATCH"));
