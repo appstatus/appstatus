@@ -89,28 +89,13 @@ public class JdbcBatchProgressMonitor extends AbstractBatchProgressMonitor
 		return (Batch) super.getBatch();
 	}
 
-	protected JdbcBatchProgressMonitor getCurrentChild() {
-		return (JdbcBatchProgressMonitor) currentChild;
-	}
 
 	@Override
 	protected JdbcBatchProgressMonitor getMainMonitor() {
 		return (JdbcBatchProgressMonitor) super.getMainMonitor();
 	}
 
-	@Override
-	public float getProgress() {
-		if (currentChild != null && currentChild.getTotalWork() > 0) {
-
-			float childProgress = currentChildWork
-					* getCurrentChild().getProgress()
-					/ currentChild.getTotalWork();
-
-			return worked + childProgress;
-		}
-
-		return worked;
-	}
+	
 
 	private boolean isLoggable(long lastWriteTimestamp) {
 		if (System.currentTimeMillis() - lastWriteTimestamp > writingDelay) {
