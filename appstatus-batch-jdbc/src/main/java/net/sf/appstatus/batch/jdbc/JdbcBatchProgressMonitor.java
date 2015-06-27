@@ -139,7 +139,7 @@ public class JdbcBatchProgressMonitor extends AbstractBatchProgressMonitor imple
 
 	@Override
 	protected void onBatchEnd() {
-		manager.batchEnd(getBatch());
+		getMainMonitor().getManager().batchEnd(getBatch());
 	}
 
 	private void updateDb(boolean force) {
@@ -183,4 +183,7 @@ public class JdbcBatchProgressMonitor extends AbstractBatchProgressMonitor imple
 		this.manager = manager;
 	}
 
+	protected JdbcBatchManager getManager() {
+		return manager;
+	}
 }

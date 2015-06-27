@@ -8,6 +8,7 @@ import net.sf.appstatus.core.batch.IBatch;
 import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
 
@@ -81,11 +82,11 @@ import org.springframework.jdbc.support.rowset.SqlRowSet;
  * <td>CURRENT_TASK</td>
  * <td>varchar (256)</td>
  * </tr>
- *  <tr>
+ * <tr>
  * <td>PROGRESS</td>
  * <td>Float</td>
  * </tr>
- *  <tr>
+ * <tr>
  * <td>REJECT</td>
  * <td>CLOB</td>
  * </tr>
@@ -97,13 +98,15 @@ import org.springframework.jdbc.support.rowset.SqlRowSet;
  */
 public class BatchDao {
 
-	private static Logger logger = LoggerFactory.getLogger(BatchDao.class);
+	public static final int BATCHS_FETCH = 2;
+
+	// Query codes
+	public static final int CREATE_TABLE = 1;
 
 	private static final String INSERT_SQL = "INSERT into BATCH "
 			+ "(UUID_BATCH,GROUP_BATCH,NAME_BATCH,START_DATE,STATUS,ITEMCOUNT) values (?,?,?,?,?,0)";
 
-	private static final String SQL_UPDATE = "UPDATE BATCH "
-			+ "set ITEM = ?, CURRENT_TASK = ?, END_DATE=?, GROUP_BATCH=?,  ITEMCOUNT=?, LAST_MSG = ?, UPDATED=?, NAME_BATCH=?, PROGRESS = ?, REJECT = ?, STATUS=?, SUCCESS=?  WHERE  UUID_BATCH=?";
+	private static Logger logger = LoggerFactory.getLogger(BatchDao.class);
 
 	private static final String SQL_BATCHS_FETCH = "SELECT UUID_BATCH, ITEM, CURRENT_TASK, END_DATE, GROUP_BATCH, ITEMCOUNT, LAST_MSG, UPDATED, NAME_BATCH, PROGRESS, REJECT, START_DATE, STATUS,SUCCESS FROM BATCH WHERE STATUS = ? ORDER BY UPDATED DESC LIMIT ?";
 
@@ -112,14 +115,37 @@ public class BatchDao {
 	private static final String SQL_DELETE_OLD_BATCH = "delete from BATCH where UPDATE =? AND STATUS != ?";
 
 	private static final String SQL_DELETE_SUCCESS_BATCH = "delete from BATCH where STATUS != ?";
+	private static final String SQL_UPDATE = "UPDATE BATCH "
+			+ "set ITEM = ?, CURRENT_TASK = ?, END_DATE=?, GROUP_BATCH=?,  ITEMCOUNT=?, LAST_MSG = ?, UPDATED=?, NAME_BATCH=?, PROGRESS = ?, REJECT = ?, STATUS=?, SUCCESS=?  WHERE  UUID_BATCH=?";
 
 	/**
 	 * Spring JDBC template
 	 */
 	private JdbcTemplate jdbcTemplate;
+	protected String tableName = "BATCH";
 
-	public void setJdbcTemplate(JdbcTemplate jdbcTemplate) {
-		this.jdbcTemplate = jdbcTemplate;
+	public void setTableName(String tableName) {
+		this.tableName = tableName;
+	}
+
+	/**
+	 * Check for storage table and create if necessary.
+	 * 
+	 * @return true if database was created.
+	 */
+	public boolean createDbIfNecessary() {
+		logger.info("Looking for table {}...", tableName);
+
+		try {
+			this.jdbcTemplate.execute("select count(*) from " + tableName);
+			logger.info("Table {} found.", tableName);
+			return false;
+		} catch (DataAccessException e) {
+			logger.warn("Table {} not found. Creating using \"{}\" ...", tableName, getSql(CREATE_TABLE));
+			jdbcTemplate.execute(getSql(CREATE_TABLE));
+			logger.info("Table {} created", tableName);
+			return true;
+		}
 	}
 
 	public void deleteBatch(final String uuidBatch) {
@@ -140,16 +166,10 @@ public class BatchDao {
 		logger.info("Batchs with success status deleted.");
 	}
 
-	public List<BdBatch> fetchError(final int max) {
-
-		List<BdBatch> results = fetchBdBatch(max, IBatch.STATUS_FAILURE);
-		return results;
-	}
-
 	private List<BdBatch> fetchBdBatch(final int max, String status) {
 		List<BdBatch> results = new ArrayList<BdBatch>();
 		Object[] parameters = new Object[] { status, max };
-		SqlRowSet srs = this.jdbcTemplate.queryForRowSet(getSqlFetch(), parameters);
+		SqlRowSet srs = this.jdbcTemplate.queryForRowSet(getSql(BATCHS_FETCH), parameters);
 
 		while (srs.next()) {
 			BdBatch bdBatch = mappinpBdbatch(srs);
@@ -159,9 +179,65 @@ public class BatchDao {
 		return results;
 	}
 
-	protected String getSqlFetch() {
-		return SQL_BATCHS_FETCH;
+	public List<BdBatch> fetchError(final int max) {
+
+		List<BdBatch> results = fetchBdBatch(max, IBatch.STATUS_FAILURE);
+		return results;
 	}
+
+	public List<BdBatch> fetchFinished(final int max) {
+		List<BdBatch> results = fetchBdBatch(max, IBatch.STATUS_SUCCESS);
+		return results;
+	}
+
+	public List<BdBatch> fetchRunning(final int max) {
+		List<BdBatch> results = fetchBdBatch(max, IBatch.STATUS_RUNNING);
+		return results;
+	}
+
+	/**
+	 * Get SQL query for the requested action.
+	 * <p>
+	 * Override this method to adapt to a new SQL Dialect.
+	 * 
+	 * @param query
+	 *            {@link #BATCHS_FETCH} {@link #CREATE_TABLE}
+	 * @return the SQL query
+	 */
+	protected String getSql(int query) {
+
+		switch (query) {
+		case BATCHS_FETCH:
+			return SQL_BATCHS_FETCH;
+		case CREATE_TABLE:
+			return "CREATE TABLE " + tableName + " (" //
+					+ " UUID_BATCH varchar(256) NOT NULL," //
+					+ "GROUP_BATCH varchar(256) NULL," //
+					+ "NAME_BATCH varchar(256) NULL," //
+					+ "START_DATE DATE  NULL," //
+					+ "END_DATE DATE NULL," //
+					+ "UPDATED DATE NULL," //
+					+ "STATUS varchar(64) NULL," //
+					+ "SUCCESS BOOLEAN NULL," //
+					+ "ITEMCOUNT BIGINT NULL," //
+					+ "ITEM varchar(256) NULL," //
+					+ "CURRENT_TASK varchar(256) NULL," //
+					+ "PROGRESS Float NULL," //
+					+ "REJECT CLOB NULL," //
+					+ "LAST_MSG varchar(1024) NULL," //
+					+ "PRIMARY KEY (UUID_BATCH)" + ")  ";
+
+		default:
+			return null;
+		}
+	}
+
+	/**
+	 * Read batch object from result set.
+	 * 
+	 * @param srs
+	 * @return
+	 */
 	private BdBatch mappinpBdbatch(SqlRowSet srs) {
 		BdBatch bdBatch = new BdBatch();
 		bdBatch.setUuid(srs.getString("UUID_BATCH"));
@@ -180,14 +256,18 @@ public class BatchDao {
 		return bdBatch;
 	}
 
-	public List<BdBatch> fetchFinished(final int max) {
-		List<BdBatch> results = fetchBdBatch(max, IBatch.STATUS_SUCCESS);
-		return results;
+	public BdBatch save(BdBatch bdBatch) {
+		Object[] parameters = new Object[] { bdBatch.getUuid(), bdBatch.getGroup(), bdBatch.getName(),
+				bdBatch.getStartDate(), bdBatch.getStatus() };
+		logger.debug("PARAMETERS UUID BATCH:{} NAME: {} GROUP: {}", bdBatch.getUuid(), bdBatch.getName(),
+				bdBatch.getGroup());
+		int result = this.jdbcTemplate.update(INSERT_SQL, parameters);
+		logger.debug("{} lines inserted.", result);
+		return bdBatch;
 	}
 
-	public List<BdBatch> fetchRunning(final int max) {
-		List<BdBatch> results = fetchBdBatch(max, IBatch.STATUS_RUNNING);
-		return results;
+	public void setJdbcTemplate(JdbcTemplate jdbcTemplate) {
+		this.jdbcTemplate = jdbcTemplate;
 	}
 
 	public void update(BdBatch bdBatch) {
@@ -197,15 +277,5 @@ public class BatchDao {
 				bdBatch.getSuccess(), bdBatch.getUuid() };
 		this.jdbcTemplate.update(SQL_UPDATE, parameters);
 		logger.info("Batch {} updated ", bdBatch.getUuid());
-	}
-
-	public BdBatch save(BdBatch bdBatch) {
-		Object[] parameters = new Object[] { bdBatch.getUuid(), bdBatch.getGroup(), bdBatch.getName(),
-				bdBatch.getStartDate(), bdBatch.getStatus() };
-		logger.debug("PARAMETERS UUID BATCH:{} NAME: {} GROUP: {}", bdBatch.getUuid(), bdBatch.getName(),
-				bdBatch.getGroup());
-		int result = this.jdbcTemplate.update(INSERT_SQL, parameters);
-		logger.debug("{} lines inserted.", result);
-		return bdBatch;
 	}
 }
