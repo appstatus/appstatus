@@ -62,11 +62,11 @@ public abstract class AbstractBatchProgressMonitor implements IBatchProgressMoni
 
 	private int parentWork;
 	protected final List<String> rejectedItems = new Vector<String>();
-	protected final List<String> successItems = new Vector<String>();
-
 	protected long startTime;
 
 	private boolean success;
+
+	protected final List<String> successItems = new Vector<String>();
 
 	private String taskDescription;
 
@@ -170,6 +170,7 @@ public abstract class AbstractBatchProgressMonitor implements IBatchProgressMoni
 		getMainMonitor().done = true;
 		getMainMonitor().endTime = System.currentTimeMillis();
 		getMainMonitor().currentItem = null;
+		getMainMonitor().
 
 		onBatchEnd();
 	}
@@ -201,9 +202,9 @@ public abstract class AbstractBatchProgressMonitor implements IBatchProgressMoni
 		endBatch(false);
 
 		getLogger()
-				.error("Failed [{}] {}: {}, duration: {}",
-						new Object[] { this.batch.getGroup(), batch.getName(), reason,
-								String.valueOf(endTime - startTime) }, t);
+		.error("Failed [{}] {}: {}, duration: {}",
+				new Object[] { this.batch.getGroup(), batch.getName(), reason,
+				String.valueOf(endTime - startTime) }, t);
 		touch();
 	}
 
@@ -282,6 +283,11 @@ public abstract class AbstractBatchProgressMonitor implements IBatchProgressMoni
 		return parentWork;
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see net.sf.appstatus.core.batch.IBatchProgressMonitorExt#getProgress()
+	 */
 	public float getProgress() {
 
 		if (totalWork == UNKNOW) {
@@ -299,7 +305,7 @@ public abstract class AbstractBatchProgressMonitor implements IBatchProgressMoni
 
 		}
 
-		return result;
+		return result / totalWork;
 	}
 
 	/**

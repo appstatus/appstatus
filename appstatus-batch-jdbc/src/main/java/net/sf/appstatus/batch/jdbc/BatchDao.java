@@ -276,6 +276,6 @@ public class BatchDao {
 				bdBatch.getName(), bdBatch.getProgress(), bdBatch.getReject(), bdBatch.getStatus(),
 				bdBatch.getSuccess(), bdBatch.getUuid() };
 		this.jdbcTemplate.update(SQL_UPDATE, parameters);
-		logger.info("Batch {} updated ", bdBatch.getUuid());
+		logger.debug("Batch {} updated ", bdBatch.getUuid());
 	}
 }
