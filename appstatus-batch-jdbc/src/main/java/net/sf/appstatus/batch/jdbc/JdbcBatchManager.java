@@ -13,7 +13,7 @@ import net.sf.appstatus.core.batch.IBatchProgressMonitor;
 public class JdbcBatchManager implements IBatchManager {
 
 	private BatchDao batchDao;
-	List<BdBatch> runningBatches = new Vector<BdBatch>();
+	List<IBatch> runningBatches = new Vector<IBatch>();
 
 	public void setBatchDao(BatchDao batchDao) {
 		this.batchDao = batchDao;
@@ -24,13 +24,15 @@ public class JdbcBatchManager implements IBatchManager {
 	}
 
 	public IBatch addBatch(String name, String group, String uuid) {
-		BdBatch b = new BdBatch();
-		b.setName(name);
-		b.setGroup(group);
-		b.setUuid(uuid);
-		b.setStartDate(new Date());
-		b.setStatus(Batch.STATUS_RUNNING);
 
+		BdBatch bdBatch = new BdBatch();
+		bdBatch.setName(name);
+		bdBatch.setGroup(group);
+		bdBatch.setUuid(uuid);
+		bdBatch.setStartDate(new Date());
+		bdBatch.setStatus(Batch.STATUS_RUNNING);
+
+		IBatch b = new Batch(bdBatch);
 		int currentPosition = runningBatches.indexOf(b);
 		if (currentPosition >= 0) {
 			// Reuse existing object (and keep monitor).
@@ -41,10 +43,10 @@ public class JdbcBatchManager implements IBatchManager {
 			// runningBatches is not limited in size.
 			runningBatches.add(b);
 
-			batchDao.save(b);
+			batchDao.save(bdBatch);
 		}
 
-		return new Batch(b);
+		return b;
 	}
 
 	private List<IBatch> convertToIBatch(List<BdBatch> bdBaches) {
@@ -67,9 +69,9 @@ public class JdbcBatchManager implements IBatchManager {
 	}
 
 	public IBatchProgressMonitor getMonitor(IBatch batch) {
-		JdbcBatchProgressMonitor monitor = 	new JdbcBatchProgressMonitor(batch.getUuid(), batch, batchDao);
+		JdbcBatchProgressMonitor monitor = new JdbcBatchProgressMonitor(batch.getUuid(), batch, batchDao);
 		monitor.setManager(this);
-		return monitor ;
+		return monitor;
 	}
 
 	public List<IBatch> getRunningBatches() {
@@ -103,6 +105,11 @@ public class JdbcBatchManager implements IBatchManager {
 
 	public Properties getConfiguration() {
 		return null;
+	}
+
+	public void init() {
+		// Check database for table
+		batchDao.createDbIfNecessary();
 	}
 
 }

@@ -11,6 +11,16 @@ import net.sf.appstatus.core.batch.IBatch;
 import net.sf.appstatus.core.batch.IBatchManager;
 import net.sf.appstatus.core.batch.IBatchProgressMonitor;
 
+/**
+ * This implementation stores batch history and status in memory.
+ * <p>
+ * Can be used when batch is run within the same JVM as the console.
+ * <p>
+ * History is lost on restart.
+ * 
+ * @author Nicolas Richeton
+ *
+ */
 public class InProcessBatchManager implements IBatchManager {
 	List<IBatch> errorBatches = new Vector<IBatch>();
 
@@ -84,6 +94,11 @@ public class InProcessBatchManager implements IBatchManager {
 
 	public List<IBatch> getRunningBatches() {
 		return runningBatches;
+	}
+
+	public void init() {
+		// TODO Auto-generated method stub
+
 	}
 
 	/*

@@ -97,13 +97,24 @@ import org.springframework.jdbc.support.rowset.SqlRowSet;
  */
 public class BatchDaoOracle extends BatchDao {
 
-	private static Logger logger = LoggerFactory.getLogger(JdbcBatchProgressMonitor.class);
+	private static Logger logger = LoggerFactory.getLogger(BatchDaoOracle.class);
 
 	private static final String SQL_BATCHS_FETCH = "SELECT UUID_BATCH, ITEM, CURRENT_TASK, END_DATE, GROUP_BATCH, ITEMCOUNT, LAST_MSG, UPDATED, NAME_BATCH, PROGRESS, REJECT, START_DATE, STATUS,SUCCESS FROM BATCH WHERE STATUS = ? and rownum <= ? ORDER BY UPDATED DESC ";
 
 	@Override
-	protected String getSqlFetch() {
+	protected String getSql(int query) {
 
-		return SQL_BATCHS_FETCH;
+		switch (query) {
+		case BATCHS_FETCH:
+			return SQL_BATCHS_FETCH;
+		case CREATE_TABLE:
+			return "CREATE TABLE " + tableName + " (" + " task_id int(11) NOT NULL AUTO_INCREMENT,"
+					+ "subject varchar(45) DEFAULT NULL," + "start_date DATE DEFAULT NULL,"
+					+ "end_date DATE DEFAULT NULL," + "description varchar(200) DEFAULT NULL,"
+					+ "PRIMARY KEY (task_id)" + ")  ";
+		default:
+			return null;
+		}
+
 	}
 }

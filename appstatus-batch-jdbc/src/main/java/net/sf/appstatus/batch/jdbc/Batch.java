@@ -90,4 +90,35 @@ public class Batch implements IBatch {
 		this.monitor = (JdbcBatchProgressMonitor) monitor;
 	}
 
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((dbBatch == null) ? 0 : dbBatch.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj) {
+			return true;
+		}
+		if (obj == null) {
+			return false;
+		}
+		if (getClass() != obj.getClass()) {
+			return false;
+		}
+		Batch other = (Batch) obj;
+		if (dbBatch == null) {
+			if (other.dbBatch != null) {
+				return false;
+			}
+		} else if (!dbBatch.equals(other.dbBatch)) {
+			return false;
+		}
+		return true;
+	}
+
+	
 }
