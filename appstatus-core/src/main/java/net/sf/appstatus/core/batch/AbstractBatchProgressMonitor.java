@@ -62,11 +62,11 @@ public abstract class AbstractBatchProgressMonitor implements IBatchProgressMoni
 
 	private int parentWork;
 	protected final List<String> rejectedItems = new Vector<String>();
-	protected final List<String> successItems = new Vector<String>();
-
 	protected long startTime;
 
 	private boolean success;
+
+	protected final List<String> successItems = new Vector<String>();
 
 	private String taskDescription;
 
@@ -171,6 +171,11 @@ public abstract class AbstractBatchProgressMonitor implements IBatchProgressMoni
 		getMainMonitor().endTime = System.currentTimeMillis();
 		getMainMonitor().currentItem = null;
 
+		if (getMainMonitor().totalWork != UNKNOW && getMainMonitor().worked < getMainMonitor().totalWork) {
+			getMainMonitor().worked = getMainMonitor().totalWork;
+		}
+		getMainMonitor().currentChildren.clear();
+
 		onBatchEnd();
 	}
 
@@ -201,9 +206,9 @@ public abstract class AbstractBatchProgressMonitor implements IBatchProgressMoni
 		endBatch(false);
 
 		getLogger()
-				.error("Failed [{}] {}: {}, duration: {}",
-						new Object[] { this.batch.getGroup(), batch.getName(), reason,
-								String.valueOf(endTime - startTime) }, t);
+		.error("Failed [{}] {}: {}, duration: {}",
+				new Object[] { this.batch.getGroup(), batch.getName(), reason,
+				String.valueOf(endTime - startTime) }, t);
 		touch();
 	}
 
@@ -282,6 +287,11 @@ public abstract class AbstractBatchProgressMonitor implements IBatchProgressMoni
 		return parentWork;
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see net.sf.appstatus.core.batch.IBatchProgressMonitorExt#getProgress()
+	 */
 	public float getProgress() {
 
 		if (totalWork == UNKNOW) {
@@ -365,7 +375,11 @@ public abstract class AbstractBatchProgressMonitor implements IBatchProgressMoni
 	 * {@inheritDoc}
 	 */
 	public void message(String message) {
-		getLogger().info("{}: {}", name, message);
+		String actionName = name;
+		if (name == null) {
+			actionName = batch.getName();
+		}
+		getLogger().info("{}: {}", actionName, message);
 		lastMessage = message;
 		getMainMonitor().lastMessage = message;
 		touch();
@@ -423,7 +437,11 @@ public abstract class AbstractBatchProgressMonitor implements IBatchProgressMoni
 
 		if (isLoggable(lastWriteTimestamp)) {
 			lastWriteTimestamp = System.currentTimeMillis();
-			getLogger().info("{}: working on {} (#{})", new Object[] { name, item, itemCount });
+			String actionName = name;
+			if (actionName == null) {
+				actionName = batch.getName();
+			}
+			getLogger().info("{}: working on {} (#{})", new Object[] { actionName, item, itemCount });
 		}
 		touch();
 

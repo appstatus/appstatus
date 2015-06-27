@@ -63,4 +63,32 @@ public class NullPointerWhenStepFailedTest {
 
 		assertThat(((AbstractBatchProgressMonitor) jobMonitor).isSuccess(), is(false));
 	}
+
+	@Test
+	public void testBasicScenario() throws Exception {
+		String uuid = UUID.randomUUID().toString();
+		IBatchProgressMonitor m = appStatus.getBatchProgressMonitor("Batch name", "Batch group", uuid);
+
+		m.setLogger(this.logger);
+
+		m.message("Test message");
+		m.setCurrentItem("");
+
+		m.beginTask("Task 1 name", "Task 1 description ", 2);
+		assertThat(((AbstractBatchProgressMonitor) m).getProgress(), is(0f));
+		m.worked(1);
+		assertThat(((AbstractBatchProgressMonitor) m).getProgress(), is(1f));
+
+		m.beginTask("Task 2 name", "Task 2 description ", 4);
+		assertThat(((AbstractBatchProgressMonitor) m).getProgress(), is(1f));
+
+		
+		m.message("Test message");
+
+		m.done();
+
+		assertThat(((AbstractBatchProgressMonitor) m).isSuccess(), is(true));
+		assertThat(((AbstractBatchProgressMonitor) m).getProgress(), is(4f));
+	}
+
 }
