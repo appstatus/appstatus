@@ -77,17 +77,18 @@ public class NullPointerWhenStepFailedTest {
 		m.beginTask("Task 1 name", "Task 1 description ", 2);
 		assertThat(((AbstractBatchProgressMonitor) m).getProgress(), is(0f));
 		m.worked(1);
-		assertThat(((AbstractBatchProgressMonitor) m).getProgress(), is(0.5f));
+		assertThat(((AbstractBatchProgressMonitor) m).getProgress(), is(1f));
 
 		m.beginTask("Task 2 name", "Task 2 description ", 4);
-		assertThat(((AbstractBatchProgressMonitor) m).getProgress(), is(0.25f));
+		assertThat(((AbstractBatchProgressMonitor) m).getProgress(), is(1f));
 
+		
 		m.message("Test message");
 
 		m.done();
 
 		assertThat(((AbstractBatchProgressMonitor) m).isSuccess(), is(true));
-//		assertThat(((AbstractBatchProgressMonitor) m).getProgress(), is(1f));
+		assertThat(((AbstractBatchProgressMonitor) m).getProgress(), is(4f));
 	}
 
 }

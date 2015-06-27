@@ -35,7 +35,8 @@ public interface IBatchProgressMonitorExt extends IBatchProgressMonitor {
 	/**
 	 * Get current progress.
 	 *
-	 * @return a value float between 0f (no progress) and 1f (finished)
+	 * @return can be UNKOWN or a value float between 0 (no progress) and the
+	 *         number of steps of the main monitor (finished)
 	 */
 	float getProgress();
 

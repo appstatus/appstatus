@@ -46,7 +46,7 @@ public class NullPointerWhenStepFailedTest {
 		m.done();
 
 		assertThat(((AbstractBatchProgressMonitor) m).isSuccess(), is(true));
-		assertThat(((AbstractBatchProgressMonitor) m).getProgress(), is(1f));
+		assertThat(((AbstractBatchProgressMonitor) m).getProgress(), is(60f));
 	}
 
 	@Test

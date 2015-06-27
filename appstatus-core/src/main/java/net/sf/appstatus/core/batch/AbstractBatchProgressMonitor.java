@@ -170,7 +170,11 @@ public abstract class AbstractBatchProgressMonitor implements IBatchProgressMoni
 		getMainMonitor().done = true;
 		getMainMonitor().endTime = System.currentTimeMillis();
 		getMainMonitor().currentItem = null;
-		getMainMonitor().
+
+		if (getMainMonitor().totalWork != UNKNOW && getMainMonitor().worked < getMainMonitor().totalWork) {
+			getMainMonitor().worked = getMainMonitor().totalWork;
+		}
+		getMainMonitor().currentChildren.clear();
 
 		onBatchEnd();
 	}
@@ -305,7 +309,7 @@ public abstract class AbstractBatchProgressMonitor implements IBatchProgressMoni
 
 		}
 
-		return result / totalWork;
+		return result;
 	}
 
 	/**
@@ -371,7 +375,11 @@ public abstract class AbstractBatchProgressMonitor implements IBatchProgressMoni
 	 * {@inheritDoc}
 	 */
 	public void message(String message) {
-		getLogger().info("{}: {}", name, message);
+		String actionName = name;
+		if (name == null) {
+			actionName = batch.getName();
+		}
+		getLogger().info("{}: {}", actionName, message);
 		lastMessage = message;
 		getMainMonitor().lastMessage = message;
 		touch();
@@ -429,7 +437,11 @@ public abstract class AbstractBatchProgressMonitor implements IBatchProgressMoni
 
 		if (isLoggable(lastWriteTimestamp)) {
 			lastWriteTimestamp = System.currentTimeMillis();
-			getLogger().info("{}: working on {} (#{})", new Object[] { name, item, itemCount });
+			String actionName = name;
+			if (actionName == null) {
+				actionName = batch.getName();
+			}
+			getLogger().info("{}: working on {} (#{})", new Object[] { actionName, item, itemCount });
 		}
 		touch();
 
