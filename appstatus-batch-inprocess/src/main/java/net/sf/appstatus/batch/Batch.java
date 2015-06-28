@@ -8,8 +8,9 @@ import net.sf.appstatus.core.batch.IBatch;
 import net.sf.appstatus.core.batch.IBatchProgressMonitor;
 
 /**
- * Bean batch implementation, it used a progress monitor to track the batch
- * status informations.
+ * Bean batch implementation,
+ * <p>
+ * It uses a progress monitor to track the batch status informations.
  *
  */
 public class Batch implements IBatch {
@@ -18,6 +19,9 @@ public class Batch implements IBatch {
 	private InProcessBatchProgressMonitor monitor;
 	private final String name;
 
+	/**
+	 * Unique ID for this btach instance.
+	 */
 	private final String uuid;
 
 	/**
@@ -55,7 +59,7 @@ public class Batch implements IBatch {
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see java.lang.Object#equals(java.lang.Object)
 	 */
 	@Override
@@ -164,6 +168,7 @@ public class Batch implements IBatch {
 
 		if (!monitor.isDone()) {
 
+			// If batch was not updated since 1 hour, report as Zombie.
 			if (monitor.getLastUpdate().getTime() - new Date().getTime() > 1000 * 60 * 60) {
 				return STATUS_ZOMBIE;
 			}

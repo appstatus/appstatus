@@ -11,20 +11,27 @@ import net.sf.appstatus.core.batch.IBatch;
 import net.sf.appstatus.core.batch.IBatchManager;
 import net.sf.appstatus.core.batch.IBatchProgressMonitor;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
  * This implementation stores batch history and status in memory.
  * <p>
  * Can be used when batch is run within the same JVM as the console.
  * <p>
  * History is lost on restart.
- * 
+ *
  * @author Nicolas Richeton
  *
  */
 public class InProcessBatchManager implements IBatchManager {
-	List<IBatch> errorBatches = new Vector<IBatch>();
+
+	private static Logger logger = LoggerFactory.getLogger(InProcessBatchManager.class);
+
+	private List<IBatch> errorBatches = new Vector<IBatch>();
 
 	List<IBatch> finishedBatches = new Vector<IBatch>();
+	private int logInterval = 1000;
 	private long maxSize = 25;
 	List<IBatch> runningBatches = new Vector<IBatch>();
 
@@ -60,7 +67,6 @@ public class InProcessBatchManager implements IBatchManager {
 	}
 
 	public void batchEnd(Batch batch) {
-
 		runningBatches.remove(batch);
 		addTo(finishedBatches, batch);
 
@@ -85,6 +91,8 @@ public class InProcessBatchManager implements IBatchManager {
 		Batch b = (Batch) batch;
 		// If batch has no progress monitor, create one.
 		if (b.getProgressMonitor() == null) {
+			// Calling this method automatically call
+			// IBatch#setProgressMonitor()
 			new InProcessBatchProgressMonitor(batch.getUuid(), batch, this);
 		}
 
@@ -97,13 +105,11 @@ public class InProcessBatchManager implements IBatchManager {
 	}
 
 	public void init() {
-		// TODO Auto-generated method stub
-
 	}
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see net.sf.appstatus.core.batch.IBatchManager#removeAllBatches(int)
 	 */
 	public void removeAllBatches(int scope) {
@@ -137,7 +143,7 @@ public class InProcessBatchManager implements IBatchManager {
 			break;
 		}
 
-		// Remove all batches maked for deletion.
+		// Remove all batches marked for deletion.
 		for (IBatch b : toRemove) {
 			removeBatch(b);
 		}
@@ -163,7 +169,7 @@ public class InProcessBatchManager implements IBatchManager {
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see
 	 * net.sf.appstatus.core.batch.IBatchManager#removeBatch(net.sf.appstatus
 	 * .core.batch.IBatch)
@@ -174,10 +180,11 @@ public class InProcessBatchManager implements IBatchManager {
 	}
 
 	public void setConfiguration(Properties configuration) {
-		// Not configurable.
+		logInterval = Integer.getInteger(configuration.getProperty("batch.logInterval"), 1000);
+		logger.info("Batch log interval: {}ms", logInterval);
+
+		maxSize = Integer.getInteger(configuration.getProperty("batch.maxHistory"), 25);
+		logger.info("Batch history size: {}", maxSize);
 	}
 
-	public void setMaxSize(long maxSize) {
-		this.maxSize = maxSize;
-	}
 }

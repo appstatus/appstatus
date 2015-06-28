@@ -98,25 +98,16 @@ import org.springframework.jdbc.support.rowset.SqlRowSet;
  */
 public class BatchDao {
 
-	public static final int BATCHS_FETCH = 2;
-
 	// Query codes
-	public static final int CREATE_TABLE = 1;
-
-	private static final String INSERT_SQL = "INSERT into BATCH "
-			+ "(UUID_BATCH,GROUP_BATCH,NAME_BATCH,START_DATE,STATUS,ITEMCOUNT) values (?,?,?,?,?,0)";
+	public static final int BATCH_FETCH = 2;
+	public static final int BATCH_DELETE = 3;
+	public static final int BATCH_DELETE_OLD = 4;
+	public static final int BATCH_DELETE_SUCCESS = 5;
+	public static final int BATCH_INSERT = 6;
+	public static final int BATCH_UPDATE = 7;
+	public static final int BATCH_CREATE_TABLE = 1;
 
 	private static Logger logger = LoggerFactory.getLogger(BatchDao.class);
-
-	private static final String SQL_BATCHS_FETCH = "SELECT UUID_BATCH, ITEM, CURRENT_TASK, END_DATE, GROUP_BATCH, ITEMCOUNT, LAST_MSG, UPDATED, NAME_BATCH, PROGRESS, REJECT, START_DATE, STATUS,SUCCESS FROM BATCH WHERE STATUS = ? ORDER BY UPDATED DESC LIMIT ?";
-
-	private static final String SQL_DELETE = "delete from BATCH where UUID_BATCH = ?";
-
-	private static final String SQL_DELETE_OLD_BATCH = "delete from BATCH where UPDATE =? AND STATUS != ?";
-
-	private static final String SQL_DELETE_SUCCESS_BATCH = "delete from BATCH where STATUS != ?";
-	private static final String SQL_UPDATE = "UPDATE BATCH "
-			+ "set ITEM = ?, CURRENT_TASK = ?, END_DATE=?, GROUP_BATCH=?,  ITEMCOUNT=?, LAST_MSG = ?, UPDATED=?, NAME_BATCH=?, PROGRESS = ?, REJECT = ?, STATUS=?, SUCCESS=?  WHERE  UUID_BATCH=?";
 
 	/**
 	 * Spring JDBC template
@@ -141,8 +132,8 @@ public class BatchDao {
 			logger.info("Table {} found.", tableName);
 			return false;
 		} catch (DataAccessException e) {
-			logger.warn("Table {} not found. Creating using \"{}\" ...", tableName, getSql(CREATE_TABLE));
-			jdbcTemplate.execute(getSql(CREATE_TABLE));
+			logger.warn("Table {} not found. Creating using \"{}\" ...", tableName, getSql(BATCH_CREATE_TABLE));
+			jdbcTemplate.execute(getSql(BATCH_CREATE_TABLE));
 			logger.info("Table {} created", tableName);
 			return true;
 		}
@@ -150,26 +141,26 @@ public class BatchDao {
 
 	public void deleteBatch(final String uuidBatch) {
 		Object[] parameters = new Object[] { uuidBatch };
-		this.jdbcTemplate.update(SQL_DELETE, parameters);
+		this.jdbcTemplate.update(getSql(BATCH_DELETE), parameters);
 		logger.info("Batch {} deleted.", uuidBatch);
 	}
 
 	public void deleteOldBatches(final int delay) {
 		Object[] parameters = new Object[] { new DateTime().minusMonths(delay).toDate(), IBatch.STATUS_RUNNING };
-		this.jdbcTemplate.update(SQL_DELETE_OLD_BATCH, parameters);
+		this.jdbcTemplate.update(getSql(BATCH_DELETE_OLD), parameters);
 		logger.info("Batchs older than {} months deleted.", delay);
 	}
 
 	public void deleteSuccessBatches() {
 		Object[] parameters = new Object[] { IBatch.STATUS_SUCCESS };
-		this.jdbcTemplate.update(SQL_DELETE_SUCCESS_BATCH, parameters);
+		this.jdbcTemplate.update(getSql(BATCH_DELETE_SUCCESS), parameters);
 		logger.info("Batchs with success status deleted.");
 	}
 
 	private List<BdBatch> fetchBdBatch(final int max, String status) {
 		List<BdBatch> results = new ArrayList<BdBatch>();
 		Object[] parameters = new Object[] { status, max };
-		SqlRowSet srs = this.jdbcTemplate.queryForRowSet(getSql(BATCHS_FETCH), parameters);
+		SqlRowSet srs = this.jdbcTemplate.queryForRowSet(getSql(BATCH_FETCH), parameters);
 
 		while (srs.next()) {
 			BdBatch bdBatch = mappinpBdbatch(srs);
@@ -201,15 +192,33 @@ public class BatchDao {
 	 * Override this method to adapt to a new SQL Dialect.
 	 * 
 	 * @param query
-	 *            {@link #BATCHS_FETCH} {@link #CREATE_TABLE}
+	 *            {@link #BATCH_FETCH} {@link #BATCH_CREATE_TABLE}
 	 * @return the SQL query
 	 */
 	protected String getSql(int query) {
 
 		switch (query) {
-		case BATCHS_FETCH:
-			return SQL_BATCHS_FETCH;
-		case CREATE_TABLE:
+
+		case BATCH_UPDATE:
+			return "UPDATE " + tableName + " set ITEM = ?, CURRENT_TASK = ?, END_DATE=?, GROUP_BATCH=?,  ITEMCOUNT=?, "
+					+ "LAST_MSG = ?, UPDATED=?, NAME_BATCH=?, PROGRESS = ?, REJECT = ?, STATUS=?, "
+					+ "SUCCESS=?  WHERE  UUID_BATCH=?";
+
+		case BATCH_DELETE_SUCCESS:
+			return "delete from " + tableName + " where STATUS != ?";
+		case BATCH_DELETE:
+			return "delete from " + tableName + " where UUID_BATCH = ?";
+		case BATCH_DELETE_OLD:
+			return "delete from " + tableName + " where UPDATE =? AND STATUS != ?";
+		case BATCH_INSERT:
+			return "INSERT into " + tableName
+					+ " (UUID_BATCH,GROUP_BATCH,NAME_BATCH,START_DATE,STATUS,ITEMCOUNT) values (?,?,?,?,?,0)";
+
+		case BATCH_FETCH:
+			return "SELECT UUID_BATCH, ITEM, CURRENT_TASK, END_DATE, GROUP_BATCH, ITEMCOUNT, LAST_MSG, UPDATED,"
+					+ " NAME_BATCH, PROGRESS, REJECT, START_DATE, STATUS,SUCCESS FROM "//
+					+ tableName + " WHERE STATUS = ? ORDER BY UPDATED DESC LIMIT ?";
+		case BATCH_CREATE_TABLE:
 			return "CREATE TABLE " + tableName + " (" //
 					+ " UUID_BATCH varchar(256) NOT NULL," //
 					+ "GROUP_BATCH varchar(256) NULL," //
@@ -261,7 +270,7 @@ public class BatchDao {
 				bdBatch.getStartDate(), bdBatch.getStatus() };
 		logger.debug("PARAMETERS UUID BATCH:{} NAME: {} GROUP: {}", bdBatch.getUuid(), bdBatch.getName(),
 				bdBatch.getGroup());
-		int result = this.jdbcTemplate.update(INSERT_SQL, parameters);
+		int result = this.jdbcTemplate.update(getSql(BATCH_INSERT), parameters);
 		logger.debug("{} lines inserted.", result);
 		return bdBatch;
 	}
@@ -275,7 +284,7 @@ public class BatchDao {
 				bdBatch.getGroup(), bdBatch.getItemCount(), bdBatch.getLastMessage(), bdBatch.getLastUpdate(),
 				bdBatch.getName(), bdBatch.getProgress(), bdBatch.getReject(), bdBatch.getStatus(),
 				bdBatch.getSuccess(), bdBatch.getUuid() };
-		this.jdbcTemplate.update(SQL_UPDATE, parameters);
+		this.jdbcTemplate.update(getSql(BATCH_UPDATE), parameters);
 		logger.debug("Batch {} updated ", bdBatch.getUuid());
 	}
 }

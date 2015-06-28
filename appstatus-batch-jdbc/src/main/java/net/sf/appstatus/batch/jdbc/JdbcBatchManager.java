@@ -10,10 +10,16 @@ import net.sf.appstatus.core.batch.IBatch;
 import net.sf.appstatus.core.batch.IBatchManager;
 import net.sf.appstatus.core.batch.IBatchProgressMonitor;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 public class JdbcBatchManager implements IBatchManager {
+
+	private static Logger logger = LoggerFactory.getLogger(JdbcBatchManager.class);
 
 	private BatchDao batchDao;
 	List<IBatch> runningBatches = new Vector<IBatch>();
+	private int logInterval;
 
 	public void setBatchDao(BatchDao batchDao) {
 		this.batchDao = batchDao;
@@ -101,6 +107,9 @@ public class JdbcBatchManager implements IBatchManager {
 	}
 
 	public void setConfiguration(Properties configuration) {
+		logInterval = Integer.getInteger(configuration.getProperty("batch.logInterval"), 1000);
+		logger.info("Batch log interval: {}ms", logInterval);
+
 	}
 
 	public Properties getConfiguration() {
