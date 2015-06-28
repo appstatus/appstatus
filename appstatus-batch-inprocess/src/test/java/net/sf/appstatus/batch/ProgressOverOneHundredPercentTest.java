@@ -18,7 +18,7 @@ import org.slf4j.Marker;
 
 /**
  * https://sourceforge.net/apps/mantisbt/appstatus/view.php?id=36
- * 
+ *
  * @author Guillaume Mary
  * @author Nicolas Richeton
  */
@@ -31,137 +31,112 @@ public class ProgressOverOneHundredPercentTest {
 	 * <p>
 	 * Set progressCheckedWhenLogged to true, if progress has be found and
 	 * checked at least once.
-	 * 
+	 *
 	 */
 	private final Logger logger = new Logger() {
 
 		public void debug(Marker marker, String msg) {
-			// TODO Auto-generated method stub
 
 		}
 
 		public void debug(Marker marker, String format, Object arg) {
-			// TODO Auto-generated method stub
 
 		}
 
 		public void debug(Marker marker, String format, Object arg1, Object arg2) {
-			// TODO Auto-generated method stub
 
 		}
 
 		public void debug(Marker marker, String format, Object[] argArray) {
-			// TODO Auto-generated method stub
 
 		}
 
 		public void debug(Marker marker, String msg, Throwable t) {
-			// TODO Auto-generated method stub
 
 		}
 
 		public void debug(String msg) {
-			// TODO Auto-generated method stub
 
 		}
 
 		public void debug(String format, Object arg) {
-			// TODO Auto-generated method stub
 
 		}
 
 		public void debug(String format, Object arg1, Object arg2) {
-			// TODO Auto-generated method stub
 
 		}
 
 		public void debug(String format, Object[] argArray) {
-			// TODO Auto-generated method stub
 
 		}
 
 		public void debug(String msg, Throwable t) {
-			// TODO Auto-generated method stub
 
 		}
 
 		public void error(Marker marker, String msg) {
-			// TODO Auto-generated method stub
 
 		}
 
 		public void error(Marker marker, String format, Object arg) {
-			// TODO Auto-generated method stub
 
 		}
 
 		public void error(Marker marker, String format, Object arg1, Object arg2) {
-			// TODO Auto-generated method stub
 
 		}
 
 		public void error(Marker marker, String format, Object[] argArray) {
-			// TODO Auto-generated method stub
 
 		}
 
 		public void error(Marker marker, String msg, Throwable t) {
-			// TODO Auto-generated method stub
 
 		}
 
 		public void error(String msg) {
-			// TODO Auto-generated method stub
 
 		}
 
 		public void error(String format, Object arg) {
-			// TODO Auto-generated method stub
 
 		}
 
 		public void error(String format, Object arg1, Object arg2) {
-			// TODO Auto-generated method stub
 
 		}
 
 		public void error(String format, Object[] argArray) {
-			// TODO Auto-generated method stub
 
 		}
 
 		public void error(String msg, Throwable t) {
-			// TODO Auto-generated method stub
 
 		}
 
 		public String getName() {
-			// TODO Auto-generated method stub
+
 			return null;
 		}
 
 		public void info(Marker marker, String msg) {
-			// TODO Auto-generated method stub
 
 		}
 
 		public void info(Marker marker, String format, Object arg) {
-			// TODO Auto-generated method stub
 
 		}
 
 		public void info(Marker marker, String format, Object arg1, Object arg2) {
-			// TODO Auto-generated method stub
 
 		}
 
 		public void info(Marker marker, String format, Object[] argArray) {
-			// TODO Auto-generated method stub
 
 		}
 
 		public void info(Marker marker, String msg, Throwable t) {
-			// TODO Auto-generated method stub
 
 		}
 
@@ -170,12 +145,10 @@ public class ProgressOverOneHundredPercentTest {
 		}
 
 		public void info(String format, Object arg) {
-			// TODO Auto-generated method stub
 
 		}
 
 		public void info(String format, Object arg1, Object arg2) {
-			// TODO Auto-generated method stub
 
 		}
 
@@ -192,27 +165,26 @@ public class ProgressOverOneHundredPercentTest {
 		}
 
 		public void info(String msg, Throwable t) {
-			// TODO Auto-generated method stub
 
 		}
 
 		public boolean isDebugEnabled() {
-			// TODO Auto-generated method stub
+
 			return false;
 		}
 
 		public boolean isDebugEnabled(Marker marker) {
-			// TODO Auto-generated method stub
+
 			return false;
 		}
 
 		public boolean isErrorEnabled() {
-			// TODO Auto-generated method stub
+
 			return false;
 		}
 
 		public boolean isErrorEnabled(Marker marker) {
-			// TODO Auto-generated method stub
+
 			return false;
 		}
 
@@ -221,127 +193,107 @@ public class ProgressOverOneHundredPercentTest {
 		}
 
 		public boolean isInfoEnabled(Marker marker) {
-			// TODO Auto-generated method stub
+
 			return false;
 		}
 
 		public boolean isTraceEnabled() {
-			// TODO Auto-generated method stub
+
 			return false;
 		}
 
 		public boolean isTraceEnabled(Marker marker) {
-			// TODO Auto-generated method stub
+
 			return false;
 		}
 
 		public boolean isWarnEnabled() {
-			// TODO Auto-generated method stub
+
 			return false;
 		}
 
 		public boolean isWarnEnabled(Marker marker) {
-			// TODO Auto-generated method stub
+
 			return false;
 		}
 
 		public void trace(Marker marker, String msg) {
-			// TODO Auto-generated method stub
 
 		}
 
 		public void trace(Marker marker, String format, Object arg) {
-			// TODO Auto-generated method stub
 
 		}
 
 		public void trace(Marker marker, String format, Object arg1, Object arg2) {
-			// TODO Auto-generated method stub
 
 		}
 
 		public void trace(Marker marker, String format, Object[] argArray) {
-			// TODO Auto-generated method stub
 
 		}
 
 		public void trace(Marker marker, String msg, Throwable t) {
-			// TODO Auto-generated method stub
 
 		}
 
 		public void trace(String msg) {
-			// TODO Auto-generated method stub
 
 		}
 
 		public void trace(String format, Object arg) {
-			// TODO Auto-generated method stub
 
 		}
 
 		public void trace(String format, Object arg1, Object arg2) {
-			// TODO Auto-generated method stub
 
 		}
 
 		public void trace(String format, Object[] argArray) {
-			// TODO Auto-generated method stub
 
 		}
 
 		public void trace(String msg, Throwable t) {
-			// TODO Auto-generated method stub
 
 		}
 
 		public void warn(Marker marker, String msg) {
-			// TODO Auto-generated method stub
 
 		}
 
 		public void warn(Marker marker, String format, Object arg) {
-			// TODO Auto-generated method stub
 
 		}
 
 		public void warn(Marker marker, String format, Object arg1, Object arg2) {
-			// TODO Auto-generated method stub
 
 		}
 
 		public void warn(Marker marker, String format, Object[] argArray) {
-			// TODO Auto-generated method stub
 
 		}
 
 		public void warn(Marker marker, String msg, Throwable t) {
-			// TODO Auto-generated method stub
 
 		}
 
 		public void warn(String msg) {
-			// TODO Auto-generated method stub
 
 		}
 
 		public void warn(String format, Object arg) {
-			// TODO Auto-generated method stub
 
 		}
 
 		public void warn(String format, Object arg1, Object arg2) {
-			// TODO Auto-generated method stub
 
 		}
 
 		public void warn(String format, Object[] argArray) {
-			// TODO Auto-generated method stub
 
 		}
 
 		public void warn(String msg, Throwable t) {
-			// TODO Auto-generated method stub
 
 		}
 
@@ -351,8 +303,7 @@ public class ProgressOverOneHundredPercentTest {
 	private boolean progressCheckedWhenLogged = false;
 
 	private float getProgress() {
-		float progress = this.monitor.getProgress() * 100f
-				/ this.monitor.getTotalWork();
+		float progress = this.monitor.getProgress() * 100f / this.monitor.getTotalWork();
 		return progress;
 	}
 
@@ -400,8 +351,7 @@ public class ProgressOverOneHundredPercentTest {
 
 	@Test
 	public void testProgressStayUnder100Percent() throws Exception {
-		IBatchProgressMonitor jobMonitor = AppStatusStatic.getInstance()
-				.getBatchProgressMonitor("test", "test", "1");
+		IBatchProgressMonitor jobMonitor = AppStatusStatic.getInstance().getBatchProgressMonitor("test", "test", "1");
 
 		this.monitor = (AbstractBatchProgressMonitor) jobMonitor;
 
@@ -415,8 +365,7 @@ public class ProgressOverOneHundredPercentTest {
 		jobMonitor.done();
 
 		// get the batch progress
-		List<IBatch> finishedBatches = AppStatusStatic.getInstance()
-				.getBatchManager().getFinishedBatches();
+		List<IBatch> finishedBatches = AppStatusStatic.getInstance().getBatchManager().getFinishedBatches();
 
 		IBatch myBatch = null;
 		for (IBatch finishedBatch : finishedBatches) {

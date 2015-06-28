@@ -21,8 +21,6 @@ import net.sf.appstatus.core.batch.IBatch;
 import net.sf.appstatus.core.batch.IBatchProgressMonitor;
 import net.sf.appstatus.core.batch.IBatchProgressMonitorExt;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.util.StringUtils;
 
 /**
