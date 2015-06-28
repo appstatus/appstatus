@@ -10,7 +10,7 @@ import net.sf.appstatus.core.batch.IBatchProgressMonitor;
 /**
  * Bean batch implementation, it used a progress monitor to track the batch
  * status informations.
- * 
+ *
  */
 public class Batch implements IBatch {
 
@@ -24,7 +24,7 @@ public class Batch implements IBatch {
 	 * Creates a new Batch.
 	 * <p>
 	 * This method is not intended to be used directly.
-	 * 
+	 *
 	 * @param uuid
 	 *            unique batch identifier
 	 */
@@ -36,7 +36,7 @@ public class Batch implements IBatch {
 	 * Creates a new Batch.
 	 * <p>
 	 * This method is not intended to be used directly.
-	 * 
+	 *
 	 * @param uuid
 	 *            unique batch identifier
 	 * @param name
@@ -163,6 +163,11 @@ public class Batch implements IBatch {
 		}
 
 		if (!monitor.isDone()) {
+
+			if (monitor.getLastUpdate().getTime() - new Date().getTime() > 1000 * 60 * 60) {
+				return STATUS_ZOMBIE;
+			}
+
 			return STATUS_RUNNING;
 		}
 
@@ -186,7 +191,7 @@ public class Batch implements IBatch {
 
 	/**
 	 * @inheritDoc
-	 * 
+	 *
 	 * @see net.sf.appstatus.core.batch.IBatch#setProgressMonitor(net.sf.appstatus.core.batch.IBatchProgressMonitor)
 	 */
 	public void setProgressMonitor(IBatchProgressMonitor monitor) {

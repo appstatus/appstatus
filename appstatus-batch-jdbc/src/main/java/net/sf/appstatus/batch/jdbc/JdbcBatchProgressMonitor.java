@@ -34,7 +34,6 @@ import org.springframework.util.StringUtils;
 public class JdbcBatchProgressMonitor extends AbstractBatchProgressMonitor implements IBatchProgressMonitorExt {
 	private JdbcBatchManager manager;
 
-	private static Logger logger = LoggerFactory.getLogger(JdbcBatchProgressMonitor.class);
 	BatchDao batchDao;
 
 	private long lastDbSave;
