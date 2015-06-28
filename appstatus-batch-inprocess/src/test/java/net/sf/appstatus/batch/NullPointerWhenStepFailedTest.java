@@ -31,22 +31,36 @@ public class NullPointerWhenStepFailedTest {
 	@Test
 	public void testBasicScenario() throws Exception {
 		String uuid = UUID.randomUUID().toString();
-		IBatchProgressMonitor m = AppStatusStatic.getInstance().getBatchProgressMonitor("test", "test", uuid);
-
+		IBatchProgressMonitor m = AppStatusStatic.getInstance().getBatchProgressMonitor("Batch name", "Batch group",
+				uuid);
 		m.setLogger(this.logger);
 
+		// Before first task
 		m.message("Test message");
 		m.setCurrentItem("");
 
-		m.beginTask("test", "taskOne", 60);
-
+		// Task 1
+		m.beginTask("Task 1 name", "Task 1 description ", 4);
+		assertThat(((AbstractBatchProgressMonitor) m).getProgress(), is(0f));
 		m.worked(1);
+		assertThat(((AbstractBatchProgressMonitor) m).getProgress(), is(1f));
+
 		m.message("Test message");
+
+		m.reject("rejected1", "for testing");
+		assertThat(((AbstractBatchProgressMonitor) m).getRejectedItems().size(), is(1));
+
+		IBatchProgressMonitor m1 = m.createSubTask(3);
+
+		m1.beginTask("Sub task 1", "Sub task 1 description", 1);
+		m1.worked(1);
+		m1.done();
+		assertThat(((AbstractBatchProgressMonitor) m).getProgress(), is(4f));
 
 		m.done();
 
 		assertThat(((AbstractBatchProgressMonitor) m).isSuccess(), is(true));
-		assertThat(((AbstractBatchProgressMonitor) m).getProgress(), is(60f));
+		assertThat(((AbstractBatchProgressMonitor) m).getProgress(), is(4f));
 	}
 
 	@Test

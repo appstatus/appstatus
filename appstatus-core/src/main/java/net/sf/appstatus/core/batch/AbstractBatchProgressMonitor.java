@@ -64,6 +64,9 @@ public abstract class AbstractBatchProgressMonitor implements IBatchProgressMoni
 	protected final List<String> rejectedItems = new Vector<String>();
 	protected long startTime;
 
+	/**
+	 * Batch execution status. true if batch terminated normaly.
+	 */
 	private boolean success;
 
 	protected final List<String> successItems = new Vector<String>();
@@ -72,7 +75,7 @@ public abstract class AbstractBatchProgressMonitor implements IBatchProgressMoni
 
 	private String taskGroup;
 
-	protected String taskName;
+	protected String taskName = null;
 
 	protected int totalWork = UNKNOW;
 
@@ -125,7 +128,11 @@ public abstract class AbstractBatchProgressMonitor implements IBatchProgressMoni
 	 * {@inheritDoc}
 	 */
 	public void beginTask(String name, String description, int totalWork) {
-		this.name = name;
+		// This method can only be called one.
+		if (this.taskName != null) {
+			throw new IllegalStateException("beginTask can only be called once (" + name + ", " + description + ", "
+					+ totalWork + ")");
+		}
 		this.totalWork = totalWork;
 		this.taskName = name;
 		this.taskDescription = description;
@@ -160,9 +167,9 @@ public abstract class AbstractBatchProgressMonitor implements IBatchProgressMoni
 		} else {
 			endBatch(true);
 			getLogger()
-					.info("[{}] {}: End batch, {} ms",
-							new Object[] { getBatch().getGroup(), getBatch().getName(),
-									System.currentTimeMillis() - startTime });
+			.info("[{}] {}: End batch, {} ms",
+					new Object[] { getBatch().getGroup(), getBatch().getName(),
+					System.currentTimeMillis() - startTime });
 
 		}
 
@@ -204,16 +211,14 @@ public abstract class AbstractBatchProgressMonitor implements IBatchProgressMoni
 	}
 
 	public void fail(String reason, Throwable t) {
-		message("Failed: " + reason + " " + (t != null ? t.getMessage() : t));
+		message("Failed: " + reason + " " + (t != null ? t.getMessage() : ""));
 
-		// Mark job as finished
+		// Mark job as finished and failure
 		endTask(false);
 		endBatch(false);
 
-		getLogger()
-				.error("Failed [{}] {}: {}, duration: {}",
-						new Object[] { this.batch.getGroup(), batch.getName(), reason,
-								String.valueOf(endTime - startTime) }, t);
+		getLogger().error("[{}] {}: FAILED ({}) , duration: {} ms", this.batch.getGroup(), batch.getName(), reason,
+				String.valueOf(endTime - startTime), t);
 		touch();
 	}
 
@@ -294,7 +299,7 @@ public abstract class AbstractBatchProgressMonitor implements IBatchProgressMoni
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see net.sf.appstatus.core.batch.IBatchProgressMonitorExt#getProgress()
 	 */
 	public float getProgress() {
