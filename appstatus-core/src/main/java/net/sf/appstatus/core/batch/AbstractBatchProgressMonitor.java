@@ -266,7 +266,7 @@ public abstract class AbstractBatchProgressMonitor implements IBatchProgressMoni
 	}
 
 	public Date getLastUpdate() {
-		return new Date(lastUpdate);
+		return new Date(getMainMonitor().lastUpdate);
 	}
 
 	protected Logger getLogger() {
@@ -485,7 +485,7 @@ public abstract class AbstractBatchProgressMonitor implements IBatchProgressMoni
 	 * Updated 'lastUpdate' value.
 	 */
 	protected void touch() {
-		lastUpdate = System.currentTimeMillis();
+		getMainMonitor().lastUpdate = System.currentTimeMillis();
 	}
 
 	/**
