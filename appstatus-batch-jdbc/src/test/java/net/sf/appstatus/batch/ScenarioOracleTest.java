@@ -6,7 +6,6 @@ import static org.junit.Assert.assertThat;
 import java.util.UUID;
 
 import net.sf.appstatus.core.AppStatus;
-import net.sf.appstatus.core.AppStatusStatic;
 import net.sf.appstatus.core.batch.AbstractBatchProgressMonitor;
 import net.sf.appstatus.core.batch.IBatchProgressMonitor;
 
