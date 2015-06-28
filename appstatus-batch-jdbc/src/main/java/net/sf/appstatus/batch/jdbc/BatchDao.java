@@ -205,7 +205,7 @@ public class BatchDao {
 					+ "SUCCESS=?  WHERE  UUID_BATCH=?";
 
 		case BATCH_DELETE_SUCCESS:
-			return "delete from " + tableName + " where STATUS != ?";
+			return "delete from " + tableName + " where STATUS = ? AND REJECT ='' ";
 		case BATCH_DELETE:
 			return "delete from " + tableName + " where UUID_BATCH = ?";
 		case BATCH_DELETE_OLD:
