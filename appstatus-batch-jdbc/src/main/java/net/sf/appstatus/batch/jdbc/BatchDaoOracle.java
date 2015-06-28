@@ -1,9 +1,9 @@
 package net.sf.appstatus.batch.jdbc;
 
-
 /**
  * Oracle-Compatible implementation.
  * <p>
+ * 
  * <pre>
  * &lt;bean id="jdbcTemplate" class="org.springframework.jdbc.core.JdbcTemplate"
  * scope="singleton">
@@ -92,11 +92,27 @@ public class BatchDaoOracle extends BatchDao {
 	protected String getSql(int query) {
 
 		switch (query) {
+
+		case BATCH_FETCH:
+			return "SELECT UUID_BATCH, ITEM, CURRENT_TASK, END_DATE, GROUP_BATCH, ITEMCOUNT, LAST_MSG, UPDATED, NAME_BATCH, PROGRESS, REJECT, START_DATE, STATUS,SUCCESS FROM "
+					+ tableName + " WHERE STATUS = ? and rownum <= ? ORDER BY UPDATED DESC ";
 		case BATCH_CREATE_TABLE:
-			return "CREATE TABLE " + tableName + " (" + " task_id int(11) NOT NULL AUTO_INCREMENT,"
-					+ "subject varchar(45) DEFAULT NULL," + "start_date DATE DEFAULT NULL,"
-					+ "end_date DATE DEFAULT NULL," + "description varchar(200) DEFAULT NULL,"
-					+ "PRIMARY KEY (task_id)" + ")  ";
+			return "CREATE TABLE " + tableName + " (" //
+					+ " UUID_BATCH varchar(256) NOT NULL," //
+					+ "GROUP_BATCH varchar(256) NULL," //
+					+ "NAME_BATCH varchar(256) NULL," //
+					+ "START_DATE DATE  NULL," //
+					+ "END_DATE DATE NULL," //
+					+ "UPDATED DATE NULL," //
+					+ "STATUS varchar(64) NULL," //
+					+ "SUCCESS BOOLEAN NULL," //
+					+ "ITEMCOUNT BIGINT NULL," //
+					+ "ITEM varchar(256) NULL," //
+					+ "CURRENT_TASK varchar(256) NULL," //
+					+ "PROGRESS Float NULL," //
+					+ "REJECT CLOB NULL," //
+					+ "LAST_MSG varchar(1024) NULL," //
+					+ "PRIMARY KEY (UUID_BATCH)" + ")  ";
 		default:
 			return super.getSql(query);
 		}

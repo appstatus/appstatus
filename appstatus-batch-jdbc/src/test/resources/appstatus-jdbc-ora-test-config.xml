@@ -27,6 +27,7 @@
 			</props>
 		</property>
 	</bean>
+<!--  -->
 	<bean id="appStatusInstanciation"
 		class="net.sf.appstatus.support.spring.SpringObjectInstantiationListener"
 		scope="singleton" />
@@ -36,7 +37,7 @@
 		<property name="batchDao" ref="appstatusJdbcBatchDao" />
 	</bean>
 
-	<bean id="appstatusJdbcBatchDao" class="net.sf.appstatus.batch.jdbc.BatchDao"
+	<bean id="appstatusJdbcBatchDao" class="net.sf.appstatus.batch.jdbc.BatchDaoOracle"
 		scope="singleton">
 		<property name="jdbcTemplate" ref="appstatusJdbcTemplate" />
 	</bean>
@@ -54,7 +55,7 @@
 	<bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource"
 		destroy-method="close">
 		<property name="driverClassName" value="org.hsqldb.jdbc.JDBCDriver" />
-		<property name="url" value="jdbc:hsqldb:mem:appstatusdb" />
+		<property name="url" value="jdbc:hsqldb:mem:appstatusoradb;sql.syntax_ora=true" />
 		<property name="username" value="SA" />
 		<property name="password" value="" />
 	</bean>
