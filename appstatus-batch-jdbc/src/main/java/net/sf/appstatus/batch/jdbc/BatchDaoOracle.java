@@ -1,9 +1,9 @@
 package net.sf.appstatus.batch.jdbc;
 
-
 /**
  * Oracle-Compatible implementation.
  * <p>
+ * 
  * <pre>
  * &lt;bean id="jdbcTemplate" class="org.springframework.jdbc.core.JdbcTemplate"
  * scope="singleton">
@@ -92,6 +92,10 @@ public class BatchDaoOracle extends BatchDao {
 	protected String getSql(int query) {
 
 		switch (query) {
+
+		case BATCH_FETCH:
+			return "SELECT UUID_BATCH, ITEM, CURRENT_TASK, END_DATE, GROUP_BATCH, ITEMCOUNT, LAST_MSG, UPDATED, NAME_BATCH, PROGRESS, REJECT, START_DATE, STATUS,SUCCESS FROM "
+					+ tableName + " WHERE STATUS = ? and rownum <= ? ORDER BY UPDATED DESC ";
 		case BATCH_CREATE_TABLE:
 			return "CREATE TABLE " + tableName + " (" //
 					+ " UUID_BATCH varchar(256) NOT NULL," //
