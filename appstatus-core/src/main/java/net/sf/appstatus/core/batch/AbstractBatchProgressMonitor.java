@@ -75,6 +75,12 @@ public abstract class AbstractBatchProgressMonitor implements IBatchProgressMoni
 
 	private String taskGroup;
 
+	/**
+	 * Name of the task, set with beginTask
+	 * <p>
+	 * Init to null : cannot be set multiple times. beginTask will fail if
+	 * taskName is not null.
+	 */
 	protected String taskName = null;
 
 	protected int totalWork = UNKNOW;
@@ -167,9 +173,9 @@ public abstract class AbstractBatchProgressMonitor implements IBatchProgressMoni
 		} else {
 			endBatch(true);
 			getLogger()
-			.info("[{}] {}: End batch, {} ms",
-					new Object[] { getBatch().getGroup(), getBatch().getName(),
-					System.currentTimeMillis() - startTime });
+					.info("[{}] {}: End batch, {} ms",
+							new Object[] { getBatch().getGroup(), getBatch().getName(),
+									System.currentTimeMillis() - startTime });
 
 		}
 
@@ -299,7 +305,7 @@ public abstract class AbstractBatchProgressMonitor implements IBatchProgressMoni
 
 	/*
 	 * (non-Javadoc)
-	 *
+	 * 
 	 * @see net.sf.appstatus.core.batch.IBatchProgressMonitorExt#getProgress()
 	 */
 	public float getProgress() {
