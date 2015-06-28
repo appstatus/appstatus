@@ -54,7 +54,7 @@ public abstract class AbstractBatchProgressMonitor implements IBatchProgressMoni
 	private long lastUpdate = -1;
 	private long lastWriteTimestamp;
 
-	private Logger logger = LoggerFactory.getLogger(AbstractBatchProgressMonitor.class);
+	private Logger logger = LoggerFactory.getLogger("Batch");
 
 	private String name;
 
@@ -95,12 +95,12 @@ public abstract class AbstractBatchProgressMonitor implements IBatchProgressMoni
 		this.currentChildren = new Vector<AbstractBatchProgressMonitor>();
 		this.batch.setProgressMonitor(this);
 		startTime = System.currentTimeMillis();
-		getLogger().info("[{}] {}: Init", new Object[] { this.batch.getGroup(), batch.getName() });
+		getLogger().info("[{}] {}: Init progress monitoring", new Object[] { this.batch.getGroup(), batch.getName() });
 		touch();
 	}
 
 	/**
-	 * Private constructor used to create a sub task.
+	 * Protected constructor used to create a sub task.
 	 *
 	 * @param executionId
 	 *            execution id
@@ -153,14 +153,19 @@ public abstract class AbstractBatchProgressMonitor implements IBatchProgressMoni
 	public void done() {
 		if (parent != null) {
 			endTask(true);
+			getLogger().info(
+					"[{}] {}: End {}, {} ms",
+					new Object[] { getBatch().getGroup(), getBatch().getName(), name,
+							System.currentTimeMillis() - startTime });
 		} else {
 			endBatch(true);
+			getLogger()
+					.info("[{}] {}: End batch, {} ms",
+							new Object[] { getBatch().getGroup(), getBatch().getName(),
+									System.currentTimeMillis() - startTime });
+
 		}
 
-		getLogger().info(
-				"[{}] {}: End {}, {} ms",
-				new Object[] { getBatch().getGroup(), getBatch().getName(), name,
-						System.currentTimeMillis() - startTime });
 		touch();
 
 	}
@@ -206,9 +211,9 @@ public abstract class AbstractBatchProgressMonitor implements IBatchProgressMoni
 		endBatch(false);
 
 		getLogger()
-		.error("Failed [{}] {}: {}, duration: {}",
-				new Object[] { this.batch.getGroup(), batch.getName(), reason,
-				String.valueOf(endTime - startTime) }, t);
+				.error("Failed [{}] {}: {}, duration: {}",
+						new Object[] { this.batch.getGroup(), batch.getName(), reason,
+								String.valueOf(endTime - startTime) }, t);
 		touch();
 	}
 
@@ -265,7 +270,7 @@ public abstract class AbstractBatchProgressMonitor implements IBatchProgressMoni
 	}
 
 	protected Logger getLogger() {
-		return logger;
+		return getMainMonitor().logger;
 	}
 
 	/**
@@ -379,7 +384,8 @@ public abstract class AbstractBatchProgressMonitor implements IBatchProgressMoni
 		if (name == null) {
 			actionName = batch.getName();
 		}
-		getLogger().info("{}: {}", actionName, message);
+
+		getLogger().info("[{}] {}: {} ## {}", getBatch().getGroup(), getBatch().getName(), actionName, message);
 		lastMessage = message;
 		getMainMonitor().lastMessage = message;
 		touch();
@@ -403,7 +409,9 @@ public abstract class AbstractBatchProgressMonitor implements IBatchProgressMoni
 	 */
 	public void reject(String itemId, String reason, Throwable e) {
 		getMainMonitor().rejectedItems.add(itemId);
-		getLogger().warn(name + ": rejected " + itemId + " (" + reason + ")", e);
+		getLogger().warn("[{}] {}: {} rejected {} ({})", getBatch().getGroup(), getBatch().getName(), name, itemId,
+				reason, e);
+
 		touch();
 	}
 
@@ -441,14 +449,15 @@ public abstract class AbstractBatchProgressMonitor implements IBatchProgressMoni
 			if (actionName == null) {
 				actionName = batch.getName();
 			}
-			getLogger().info("{}: working on {} (#{})", new Object[] { actionName, item, itemCount });
+			getLogger().info("[{}] {}: {} working on {} (#{})",
+					new Object[] { getBatch().getGroup(), getBatch().getName(), actionName, item, itemCount });
 		}
 		touch();
 
 	}
 
 	public void setLogger(Logger loggerParam) {
-		this.logger = loggerParam;
+		getMainMonitor().logger = loggerParam;
 	}
 
 	/**

@@ -2,9 +2,9 @@
  * Copyright 2010 Capgemini Licensed under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
@@ -18,14 +18,15 @@ import java.util.List;
 
 /**
  * Job progress agent monitor.
- * 
+ *
  * @author Guillaume Mary
- * 
+ *
  */
 public interface IBatch {
 	String STATUS_FAILURE = "failure";
 	String STATUS_RUNNING = "running";
 	String STATUS_SUCCESS = "success";
+	String STATUS_ZOMBIE = "zombie";
 
 	String getCurrentItem();
 
@@ -33,7 +34,7 @@ public interface IBatch {
 
 	/**
 	 * Retrieve the end date of the job execution.
-	 * 
+	 *
 	 * @param executionId
 	 *            execution's id
 	 * @return end date of the job execution
@@ -46,7 +47,7 @@ public interface IBatch {
 
 	/**
 	 * Retrieve the last messages.
-	 * 
+	 *
 	 * @param executionId
 	 *            execution id
 	 * @param nbMessage
@@ -61,7 +62,7 @@ public interface IBatch {
 
 	/**
 	 * Retrieve the current progress status of the job execution.
-	 * 
+	 *
 	 * @param executionId
 	 *            execution id
 	 * @return progress value
@@ -70,7 +71,7 @@ public interface IBatch {
 
 	/**
 	 * Return all the rejected items.
-	 * 
+	 *
 	 * @param executionId
 	 *            job execution id
 	 * @return all the rejected items
@@ -79,7 +80,7 @@ public interface IBatch {
 
 	/**
 	 * Return the starting date of the job execution.
-	 * 
+	 *
 	 * @param executionId
 	 *            job execution id
 	 * @return start date
@@ -88,7 +89,7 @@ public interface IBatch {
 
 	/**
 	 * Retrieve the status of the batch execution.
-	 * 
+	 *
 	 * @param executionId
 	 *            job execution id.
 	 * @return status
@@ -97,7 +98,7 @@ public interface IBatch {
 
 	/**
 	 * Retrieve all the jobs execution monitored by this agent monitor.
-	 * 
+	 *
 	 * @return list of job execution ids
 	 */
 	String getUuid();
@@ -106,7 +107,7 @@ public interface IBatch {
 
 	/**
 	 * This method is not intended to be used directly.
-	 * 
+	 *
 	 * @param monitor
 	 */
 	void setProgressMonitor(IBatchProgressMonitor monitor);
