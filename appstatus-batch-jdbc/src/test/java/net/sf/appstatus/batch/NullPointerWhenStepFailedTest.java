@@ -9,11 +9,13 @@ import net.sf.appstatus.core.AppStatus;
 import net.sf.appstatus.core.batch.AbstractBatchProgressMonitor;
 import net.sf.appstatus.core.batch.IBatchProgressMonitor;
 
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
@@ -26,9 +28,17 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 public class NullPointerWhenStepFailedTest {
 
 	@Autowired
+	JdbcTemplate jdbcTemplate;
+
+	@Autowired
 	AppStatus appStatus;
 
 	private final Logger logger = LoggerFactory.getLogger(NullPointerWhenStepFailedTest.class);
+
+	@Before
+	public void setup() {
+		jdbcTemplate.execute("TRUNCATE SCHEMA public AND COMMIT");
+	}
 
 	private void step1(IBatchProgressMonitor stepMonitor) throws Exception {
 		stepMonitor.setLogger(this.logger);
