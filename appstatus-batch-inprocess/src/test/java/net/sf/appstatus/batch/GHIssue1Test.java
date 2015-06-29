@@ -3,7 +3,6 @@ package net.sf.appstatus.batch;
 import java.util.UUID;
 
 import net.sf.appstatus.core.AppStatus;
-import net.sf.appstatus.core.AppStatusStatic;
 import net.sf.appstatus.core.batch.IBatchManager;
 import net.sf.appstatus.core.batch.IBatchProgressMonitor;
 
@@ -24,7 +23,7 @@ public class GHIssue1Test {
 	 */
 	@Test
 	public void testIssue1() throws Exception {
-		AppStatus appStatus = AppStatusStatic.getInstance();
+		AppStatus appStatus = new AppStatus();
 
 		// Create two finished job.
 		appStatus.getBatchProgressMonitor("Batch name", "Batch group", UUID.randomUUID().toString()).done();
