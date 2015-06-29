@@ -5,7 +5,7 @@
 	<artifactId>appstatus-parent</artifactId>
 	<packaging>pom</packaging>
 	<name>App Status Toolkit</name>
-	<version>0.6.4</version>
+	<version>0.6.5-SNAPSHOT</version>
 	<inceptionYear>2010</inceptionYear>
 	<mailingLists>
 		<mailingList>
