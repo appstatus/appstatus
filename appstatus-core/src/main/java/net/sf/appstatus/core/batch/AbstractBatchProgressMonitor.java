@@ -104,7 +104,8 @@ public abstract class AbstractBatchProgressMonitor implements IBatchProgressMoni
 		this.currentChildren = new Vector<AbstractBatchProgressMonitor>();
 		this.batch.setProgressMonitor(this);
 		startTime = System.currentTimeMillis();
-		getLogger().info("[{}] {}: Init progress monitoring", new Object[] { this.batch.getGroup(), batch.getName() });
+		getLogger().info("[{}] {}: Init progress monitoring (id: {})",
+				new Object[] { this.batch.getGroup(), batch.getName(), batch.getUuid() });
 		touch();
 	}
 
@@ -173,9 +174,9 @@ public abstract class AbstractBatchProgressMonitor implements IBatchProgressMoni
 		} else {
 			endBatch(true);
 			getLogger()
-					.info("[{}] {}: End batch, {} ms",
-							new Object[] { getBatch().getGroup(), getBatch().getName(),
-									System.currentTimeMillis() - startTime });
+			.info("[{}] {}: End batch, {} ms",
+					new Object[] { getBatch().getGroup(), getBatch().getName(),
+					System.currentTimeMillis() - startTime });
 
 		}
 
@@ -305,7 +306,7 @@ public abstract class AbstractBatchProgressMonitor implements IBatchProgressMoni
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see net.sf.appstatus.core.batch.IBatchProgressMonitorExt#getProgress()
 	 */
 	public float getProgress() {
