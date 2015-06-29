@@ -35,7 +35,7 @@ public class InProcessBatchManager implements IBatchManager {
 	private long maxSize = 25;
 	List<IBatch> runningBatches = new Vector<IBatch>();
 
-	private Integer zombieInterval;
+	private int zombieInterval;
 
 	public IBatch addBatch(String name, String group, String uuid) {
 
@@ -112,7 +112,7 @@ public class InProcessBatchManager implements IBatchManager {
 
 	/*
 	 * (non-Javadoc)
-	 *
+	 * 
 	 * @see net.sf.appstatus.core.batch.IBatchManager#removeAllBatches(int)
 	 */
 	public void removeAllBatches(int scope) {
@@ -172,7 +172,7 @@ public class InProcessBatchManager implements IBatchManager {
 
 	/*
 	 * (non-Javadoc)
-	 *
+	 * 
 	 * @see
 	 * net.sf.appstatus.core.batch.IBatchManager#removeBatch(net.sf.appstatus
 	 * .core.batch.IBatch)
