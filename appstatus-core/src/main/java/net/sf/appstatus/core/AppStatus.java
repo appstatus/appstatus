@@ -318,7 +318,9 @@ public class AppStatus {
 
 		// If configuration is null (Spring with no configuration block), create
 		// empty object
-		configuration = new Properties();
+		if (configuration == null) {
+			configuration = new Properties();
+		}
 
 		// Give all configuration properties to managers.
 		if (getBatchManager() != null) {

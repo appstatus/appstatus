@@ -35,10 +35,13 @@ public class InProcessBatchManager implements IBatchManager {
 	private long maxSize = 25;
 	List<IBatch> runningBatches = new Vector<IBatch>();
 
+	private Integer zombieInterval;
+
 	public IBatch addBatch(String name, String group, String uuid) {
 
 		// Add batch
 		IBatch b = new Batch(uuid, name, group);
+		((Batch) b).setZombieInterval(this.zombieInterval);
 
 		int currentPosition = runningBatches.indexOf(b);
 		if (currentPosition >= 0) {
@@ -180,11 +183,28 @@ public class InProcessBatchManager implements IBatchManager {
 	}
 
 	public void setConfiguration(Properties configuration) {
-		logInterval = Integer.getInteger(configuration.getProperty("batch.logInterval"), 1000);
+		try {
+
+			logInterval = Integer.parseInt(configuration.getProperty("batch.logInterval"));
+		} catch (NumberFormatException e) {
+			logInterval = 1000;
+		}
 		logger.info("Batch log interval: {}ms", logInterval);
 
-		maxSize = Integer.getInteger(configuration.getProperty("batch.maxHistory"), 25);
+		try {
+			maxSize = Integer.parseInt(configuration.getProperty("batch.maxHistory"));
+		} catch (NumberFormatException e) {
+			maxSize = 25;
+		}
 		logger.info("Batch history size: {}", maxSize);
+
+		try {
+			zombieInterval = Integer.parseInt(configuration.getProperty("batch.zombieInterval"));
+		} catch (NumberFormatException e) {
+			zombieInterval = 1000 * 60 * 10;
+		}
+		logger.info("Zombie interval: {}", zombieInterval);
+
 	}
 
 }
