@@ -21,6 +21,8 @@ public class JdbcBatchManager implements IBatchManager {
 	List<IBatch> runningBatches = new Vector<IBatch>();
 	private int logInterval;
 
+	private int zombieInterval;
+
 	public void setBatchDao(BatchDao batchDao) {
 		this.batchDao = batchDao;
 	}
@@ -30,7 +32,6 @@ public class JdbcBatchManager implements IBatchManager {
 	}
 
 	public IBatch addBatch(String name, String group, String uuid) {
-
 		BdBatch bdBatch = new BdBatch();
 		bdBatch.setName(name);
 		bdBatch.setGroup(group);
@@ -39,6 +40,7 @@ public class JdbcBatchManager implements IBatchManager {
 		bdBatch.setStatus(Batch.STATUS_RUNNING);
 
 		IBatch b = new Batch(bdBatch);
+		((Batch) b).setZombieInterval(zombieInterval);
 		int currentPosition = runningBatches.indexOf(b);
 		if (currentPosition >= 0) {
 			// Reuse existing object (and keep monitor).
@@ -59,8 +61,10 @@ public class JdbcBatchManager implements IBatchManager {
 		List<IBatch> result = null;
 		if (bdBaches != null) {
 			result = new ArrayList<IBatch>();
-			for (BdBatch b : bdBaches) {
-				result.add(new Batch(b));
+			for (BdBatch bdb : bdBaches) {
+				Batch b = new Batch(bdb);
+				b.setZombieInterval(zombieInterval);
+				result.add(b);
 			}
 		}
 		return result;
@@ -107,8 +111,19 @@ public class JdbcBatchManager implements IBatchManager {
 	}
 
 	public void setConfiguration(Properties configuration) {
-		logInterval = Integer.getInteger(configuration.getProperty("batch.logInterval"), 1000);
+		try {
+			logInterval = Integer.parseInt(configuration.getProperty("batch.logInterval"));
+		} catch (NumberFormatException e) {
+			logInterval = 1000;
+		}
 		logger.info("Batch log interval: {}ms", logInterval);
+
+		try {
+			zombieInterval = Integer.parseInt(configuration.getProperty("batch.zombieInterval"));
+		} catch (NumberFormatException e) {
+			zombieInterval = 1000 * 60 * 10;
+		}
+		logger.info("Zombie interval: {}", zombieInterval);
 
 	}
 

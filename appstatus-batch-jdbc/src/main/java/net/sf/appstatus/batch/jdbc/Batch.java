@@ -12,6 +12,12 @@ import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
 
 public class Batch implements IBatch {
+	private Integer zombieInterval = 1000 * 60 * 10;
+
+	public void setZombieInterval(int zombieInterval) {
+		this.zombieInterval = zombieInterval;
+	}
+
 	BdBatch dbBatch = null;
 	JdbcBatchProgressMonitor monitor;
 
@@ -75,7 +81,18 @@ public class Batch implements IBatch {
 	}
 
 	public String getStatus() {
-		return dbBatch.getStatus();
+		String status = dbBatch.getStatus();
+
+		if (IBatch.STATUS_RUNNING.equals(status)) {
+			Date lastUpdate = getLastUpdate();
+			if (lastUpdate == null)
+				lastUpdate = getStartDate();
+ 
+			if (new Date().getTime() - lastUpdate.getTime() > zombieInterval) {
+				return STATUS_ZOMBIE;
+			}
+		}
+		return status;
 	}
 
 	public String getUuid() {
@@ -120,5 +137,4 @@ public class Batch implements IBatch {
 		return true;
 	}
 
-	
 }

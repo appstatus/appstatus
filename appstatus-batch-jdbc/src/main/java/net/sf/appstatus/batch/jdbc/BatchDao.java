@@ -223,9 +223,9 @@ public class BatchDao {
 					+ " UUID_BATCH varchar(256) NOT NULL," //
 					+ "GROUP_BATCH varchar(256) NULL," //
 					+ "NAME_BATCH varchar(256) NULL," //
-					+ "START_DATE DATE  NULL," //
-					+ "END_DATE DATE NULL," //
-					+ "UPDATED DATE NULL," //
+					+ "START_DATE DATETIME  NULL," //
+					+ "END_DATE DATETIME NULL," //
+					+ "UPDATED DATETIME NULL," //
 					+ "STATUS varchar(64) NULL," //
 					+ "SUCCESS BOOLEAN NULL," //
 					+ "ITEMCOUNT BIGINT NULL," //
