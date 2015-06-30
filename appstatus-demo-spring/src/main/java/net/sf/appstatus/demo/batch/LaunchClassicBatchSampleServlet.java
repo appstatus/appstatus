@@ -60,6 +60,11 @@ public class LaunchClassicBatchSampleServlet extends HttpServlet {
 				.getRequiredWebApplicationContext(getServletContext()).getBean(
 						"batch");
 		executorService.execute(batch);
+		
+		BatchSample2 batch2 = (BatchSample2) WebApplicationContextUtils
+				.getRequiredWebApplicationContext(getServletContext()).getBean(
+						"batch2");
+		executorService.execute(batch2);
 
 		ServletOutputStream os = resp.getOutputStream();
 

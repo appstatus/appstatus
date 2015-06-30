@@ -57,6 +57,12 @@
 		<property name="appstatus" ref="appstatus" />
 		<property name="service" ref="service" />
 	</bean>
+	
+	
+		<bean id="batch2" class="net.sf.appstatus.demo.batch.BatchSample2">
+		<property name="appstatus" ref="appstatus" />
+		<property name="service" ref="service" />
+	</bean>
 
 	<bean id="service" class="net.sf.appstatus.demo.batch.ServiceSample">
 	</bean>
