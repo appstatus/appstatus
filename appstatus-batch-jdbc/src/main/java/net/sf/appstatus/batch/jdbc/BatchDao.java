@@ -280,11 +280,11 @@ public class BatchDao {
 	}
 
 	public void update(BdBatch bdBatch) {
+		logger.debug("Batch {} update ", bdBatch.getUuid());
 		Object[] parameters = new Object[] { bdBatch.getCurrentItem(), bdBatch.getCurrentTask(), bdBatch.getEndDate(),
 				bdBatch.getGroup(), bdBatch.getItemCount(), bdBatch.getLastMessage(), bdBatch.getLastUpdate(),
 				bdBatch.getName(), bdBatch.getProgress(), bdBatch.getReject(), bdBatch.getStatus(),
 				bdBatch.getSuccess(), bdBatch.getUuid() };
 		this.jdbcTemplate.update(getSql(BATCH_UPDATE), parameters);
-		logger.debug("Batch {} updated ", bdBatch.getUuid());
 	}
 }

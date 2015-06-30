@@ -85,6 +85,12 @@ public class JdbcBatchProgressMonitor extends AbstractBatchProgressMonitor imple
 	}
 
 	@Override
+	public void beginTask(String name, String description, int totalWork) {
+		super.beginTask(name, description, totalWork);
+		updateDb(true);
+	}
+
+	@Override
 	protected JdbcBatchProgressMonitor getMainMonitor() {
 		return (JdbcBatchProgressMonitor) super.getMainMonitor();
 	}
@@ -154,8 +160,9 @@ public class JdbcBatchProgressMonitor extends AbstractBatchProgressMonitor imple
 			getBatch().getBdBatch().setStartDate(getMainMonitor().getStartDate());
 			getBatch().getBdBatch().setEndDate(getMainMonitor().getEndDate());
 			getBatch().getBdBatch().setCurrentTask(taskName);
-			getBatch().getBdBatch()
-					.setProgress(getMainMonitor().getProgress() * 100f / getMainMonitor().getTotalWork());
+			getBatch().getBdBatch().setProgress(
+					getMainMonitor().getProgress() == -1f ? -1 : getMainMonitor().getProgress() * 100f
+							/ getMainMonitor().getTotalWork());
 			getBatch().getBdBatch().setLastUpdate(getMainMonitor().getLastUpdate());
 			getBatch().getBdBatch().setSuccess(getMainMonitor().isSuccess());
 			getBatch().getBdBatch().setReject(

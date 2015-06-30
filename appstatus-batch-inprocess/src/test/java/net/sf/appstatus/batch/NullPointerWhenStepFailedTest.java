@@ -39,16 +39,26 @@ public class NullPointerWhenStepFailedTest {
 		m.message("Test message");
 		m.setCurrentItem("");
 
+		assertThat(((AbstractBatchProgressMonitor) m).getProgress(), is(-1f));
+		assertThat(AppStatusStatic.getInstance().getBatchManager().getRunningBatches().get(0).getProgressStatus(),
+				is(-1f));
+
 		// Task 1
 		m.beginTask("Task 1 name", "Task 1 description ", 4);
 		assertThat(((AbstractBatchProgressMonitor) m).getProgress(), is(0f));
+		assertThat(AppStatusStatic.getInstance().getBatchManager().getRunningBatches().get(0).getProgressStatus(),
+				is(0f));
 		m.worked(1);
 		assertThat(((AbstractBatchProgressMonitor) m).getProgress(), is(1f));
+		assertThat(AppStatusStatic.getInstance().getBatchManager().getRunningBatches().get(0).getProgressStatus(),
+				is(25f));
 
 		m.message("Test message");
 
 		m.reject("rejected1", "for testing");
 		assertThat(((AbstractBatchProgressMonitor) m).getRejectedItems().size(), is(1));
+		assertThat(AppStatusStatic.getInstance().getBatchManager().getRunningBatches().get(0).getProgressStatus(),
+				is(25f));
 
 		IBatchProgressMonitor m1 = m.createSubTask(3);
 
@@ -56,6 +66,8 @@ public class NullPointerWhenStepFailedTest {
 		m1.worked(1);
 		m1.done();
 		assertThat(((AbstractBatchProgressMonitor) m).getProgress(), is(4f));
+		assertThat(AppStatusStatic.getInstance().getBatchManager().getRunningBatches().get(0).getProgressStatus(),
+				is(100f));
 
 		m.done();
 
