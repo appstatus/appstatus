@@ -10,6 +10,7 @@ import net.sf.appstatus.core.batch.IBatchProgressMonitor;
 
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.builder.ToStringBuilder;
 
 public class Batch implements IBatch {
 	private Integer zombieInterval = 1000 * 60 * 10;
@@ -87,7 +88,7 @@ public class Batch implements IBatch {
 			Date lastUpdate = getLastUpdate();
 			if (lastUpdate == null)
 				lastUpdate = getStartDate();
- 
+
 			if (new Date().getTime() - lastUpdate.getTime() > zombieInterval) {
 				return STATUS_ZOMBIE;
 			}

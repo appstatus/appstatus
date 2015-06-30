@@ -21,6 +21,7 @@ import net.sf.appstatus.core.batch.IBatch;
 import net.sf.appstatus.core.batch.IBatchProgressMonitor;
 import net.sf.appstatus.core.batch.IBatchProgressMonitorExt;
 
+import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.springframework.util.StringUtils;
 
 /**
@@ -76,24 +77,25 @@ public class JdbcBatchProgressMonitor extends AbstractBatchProgressMonitor imple
 		super.fail(reason);
 		updateDb(true);
 	}
-	
+
 	@Override
 	public void fail(String reason, Throwable t) {
 		super.fail(reason, t);
 		updateDb(true);
 	}
+
 	@Override
 	public void reject(String itemId, String reason) {
 		super.reject(itemId, reason);
 		updateDb(true);
 	}
-	
+
 	@Override
 	public void reject(String[] itemIds, String reason) {
 		super.reject(itemIds, reason);
 		updateDb(true);
 	}
-	
+
 	@Override
 	public void reject(String[] itemIds, String reason, Throwable e) {
 		super.reject(itemIds, reason, e);
@@ -167,29 +169,35 @@ public class JdbcBatchProgressMonitor extends AbstractBatchProgressMonitor imple
 	}
 
 	private void updateDb(boolean force) {
-		if (force || isLoggable(lastDbSave)) {
-			lastDbSave = System.currentTimeMillis();
-			getBatch().getBdBatch().setStatus(readableStatus());
-			getBatch().getBdBatch().setCurrentItem((String) currentItem);
 
-			if (!org.apache.commons.lang3.StringUtils.isEmpty(getMainMonitor().getLastMessage())
-					&& getMainMonitor().getLastMessage().length() > 1024) {
-				getBatch().getBdBatch().setLastMessage(getMainMonitor().getLastMessage().substring(0, 1023));
-			} else {
-				getBatch().getBdBatch().setLastMessage(getMainMonitor().getLastMessage());
+		if (force || isLoggable(lastDbSave)) {
+			try {
+				lastDbSave = System.currentTimeMillis();
+				getBatch().getBdBatch().setStatus(readableStatus());
+				getBatch().getBdBatch().setCurrentItem((String) currentItem);
+
+				if (!org.apache.commons.lang3.StringUtils.isEmpty(getMainMonitor().getLastMessage())
+						&& getMainMonitor().getLastMessage().length() > 1024) {
+					getBatch().getBdBatch().setLastMessage(getMainMonitor().getLastMessage().substring(0, 1023));
+				} else {
+					getBatch().getBdBatch().setLastMessage(getMainMonitor().getLastMessage());
+				}
+				getBatch().getBdBatch().setStartDate(getMainMonitor().getStartDate());
+				getBatch().getBdBatch().setEndDate(getMainMonitor().getEndDate());
+				getBatch().getBdBatch().setCurrentTask(taskName);
+				getBatch().getBdBatch().setProgress(
+						getMainMonitor().getProgress() == -1f ? -1 : getMainMonitor().getProgress() * 100f
+								/ getMainMonitor().getTotalWork());
+				getBatch().getBdBatch().setLastUpdate(getMainMonitor().getLastUpdate());
+				getBatch().getBdBatch().setSuccess(getMainMonitor().isSuccess());
+				getBatch().getBdBatch().setReject(
+						StringUtils.collectionToDelimitedString(getMainMonitor().getRejectedItems(), "|"));
+				getBatch().getBdBatch().setItemCount(getMainMonitor().getItemCount());
+				batchDao.update(getBatch().getBdBatch());
+			} catch (Exception e) {
+				getLogger().error("Error when updating batch table {}",
+						ToStringBuilder.reflectionToString(getBatch().getBdBatch()), e);
 			}
-			getBatch().getBdBatch().setStartDate(getMainMonitor().getStartDate());
-			getBatch().getBdBatch().setEndDate(getMainMonitor().getEndDate());
-			getBatch().getBdBatch().setCurrentTask(taskName);
-			getBatch().getBdBatch().setProgress(
-					getMainMonitor().getProgress() == -1f ? -1 : getMainMonitor().getProgress() * 100f
-							/ getMainMonitor().getTotalWork());
-			getBatch().getBdBatch().setLastUpdate(getMainMonitor().getLastUpdate());
-			getBatch().getBdBatch().setSuccess(getMainMonitor().isSuccess());
-			getBatch().getBdBatch().setReject(
-					StringUtils.collectionToDelimitedString(getMainMonitor().getRejectedItems(), "|"));
-			getBatch().getBdBatch().setItemCount(getMainMonitor().getItemCount());
-			batchDao.update(getBatch().getBdBatch());
 		}
 	}
 
