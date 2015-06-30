@@ -34,7 +34,7 @@ public class ZombieTest {
 		Assert.assertThat(appStatus.getBatchManager().getRunningBatches().get(0).getStatus(),
 				Matchers.is(IBatch.STATUS_RUNNING));
 
-		Thread.sleep(1000);
+		Thread.sleep(1001);
 		Assert.assertThat(appStatus.getBatchManager().getRunningBatches().get(0).getStatus(),
 				Matchers.is(IBatch.STATUS_ZOMBIE));
 
