@@ -196,24 +196,25 @@
 
 		 int percent = Math.round(batch.getProgressStatus());
 
-		 String status = "";
+		 String status = "progress-" + color;
+		 String active = "active";
+		 String striped = "progress-striped";
 		 // progress is animated if job is running (not complete and still
 		 // updated)
-		 if (percent < 100 && !IBatch.STATUS_ZOMBIE.equals(batch.getStatus())) {
-			 status = "active progress-" + color;
+		 if (IBatch.STATUS_ZOMBIE.equals(batch.getStatus()) || IBatch.STATUS_FAILURE.equals(batch.getStatus())
+				 || IBatch.STATUS_SUCCESS.equals(batch.getStatus())) {
+			 active = "";
 		 }
 
-		 if (percent == 100 || IBatch.STATUS_ZOMBIE.equals(batch.getStatus())
-				 || IBatch.STATUS_FAILURE.equals(batch.getStatus())) {
-			 status = "progress-" + color;
+		 if (IBatch.STATUS_FAILURE.equals(batch.getStatus()) || IBatch.STATUS_SUCCESS.equals(batch.getStatus())) {
+			 striped = "";
 		 }
 
-		 if (percent == -1 && !IBatch.STATUS_ZOMBIE.equals(batch.getStatus())) {
-			 status = "active progress-" + color;
+		 if (percent == -1) {
 			 percent = 100;
 		 }
 
-		 return "<div class=\"progress progress-striped " + status + "\">" + "<div class=\"bar\" style=\"width: "
-		 + percent + "%;\"></div>" + "</div>";
+		 return "<div class=\"progress " + striped + " " + active + " " + status + "\">"
+		 + "<div class=\"bar\" style=\"width: " + percent + "%;\"></div>" + "</div>";
 	 }
  }
