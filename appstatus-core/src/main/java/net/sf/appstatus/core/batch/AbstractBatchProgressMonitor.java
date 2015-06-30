@@ -54,7 +54,7 @@ public abstract class AbstractBatchProgressMonitor implements IBatchProgressMoni
 	private long lastUpdate = -1;
 	private long lastWriteTimestamp;
 
-	private Logger logger = LoggerFactory.getLogger("Batch");
+	private Logger logger = LoggerFactory.getLogger("batch");
 
 	private String name;
 
@@ -156,6 +156,7 @@ public abstract class AbstractBatchProgressMonitor implements IBatchProgressMoni
 	 */
 	public IBatchProgressMonitor createSubTask(int work) {
 		AbstractBatchProgressMonitor newSubTask = (AbstractBatchProgressMonitor) newInstance(work);
+		newSubTask.setLogger(logger);
 		currentChildren.add(newSubTask);
 		touch();
 		return newSubTask;
