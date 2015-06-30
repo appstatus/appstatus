@@ -73,9 +73,30 @@ public class JdbcBatchProgressMonitor extends AbstractBatchProgressMonitor imple
 
 	@Override
 	public void fail(String reason) {
-
 		super.fail(reason);
-
+		updateDb(true);
+	}
+	
+	@Override
+	public void fail(String reason, Throwable t) {
+		super.fail(reason, t);
+		updateDb(true);
+	}
+	@Override
+	public void reject(String itemId, String reason) {
+		super.reject(itemId, reason);
+		updateDb(true);
+	}
+	
+	@Override
+	public void reject(String[] itemIds, String reason) {
+		super.reject(itemIds, reason);
+		updateDb(true);
+	}
+	
+	@Override
+	public void reject(String[] itemIds, String reason, Throwable e) {
+		super.reject(itemIds, reason, e);
 		updateDb(true);
 	}
 

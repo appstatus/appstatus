@@ -40,9 +40,14 @@ public class ScenarioOracleTest {
 		m.message("Test message");
 		m.setCurrentItem("");
 
+		
+		assertThat(((AbstractBatchProgressMonitor) m).getProgress(), is(-1f));
+		assertThat(appStatus.getBatchManager().getRunningBatches().get(0).getProgressStatus(), is( -1f));
+
 		// Task 1
 		m.beginTask("Task 1 name", "Task 1 description ", 4);
 		assertThat(((AbstractBatchProgressMonitor) m).getProgress(), is(0f));
+		assertThat(appStatus.getBatchManager().getRunningBatches().get(0).getProgressStatus(), is( 0f));
 		m.worked(1);
 		assertThat(((AbstractBatchProgressMonitor) m).getProgress(), is(1f));
 
@@ -50,18 +55,23 @@ public class ScenarioOracleTest {
 
 		m.reject("rejected1", "for testing");
 		assertThat(((AbstractBatchProgressMonitor) m).getRejectedItems().size(), is(1));
+		assertThat(appStatus.getBatchManager().getRunningBatches().get(0).getProgressStatus(), is( 25f));
 
 		IBatchProgressMonitor m1 = m.createSubTask(3);
 
 		m1.beginTask("Sub task 1", "Sub task 1 description", 1);
 		m1.worked(1);
+
 		m1.done();
 		assertThat(((AbstractBatchProgressMonitor) m).getProgress(), is(4f));
+		assertThat(appStatus.getBatchManager().getRunningBatches().get(0).getProgressStatus(), is( 100f));
 
 		m.done();
 
 		assertThat(((AbstractBatchProgressMonitor) m).isSuccess(), is(true));
 		assertThat(((AbstractBatchProgressMonitor) m).getProgress(), is(4f));
 	}
+	
+	
 
 }
