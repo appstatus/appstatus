@@ -98,6 +98,7 @@ public class NullPointerWhenStepFailedTest {
 
 		m.reject("rejected1", "for testing");
 		assertThat(((AbstractBatchProgressMonitor) m).getRejectedItems().size(), is(1));
+		assertThat(appStatus.getBatchManager().getRunningBatches().get(0).getRejectedItemsId().get(0), is( "rejected1"));
 		assertThat(appStatus.getBatchManager().getRunningBatches().get(0).getProgressStatus(), is( 25f));
 
 		IBatchProgressMonitor m1 = m.createSubTask(3);

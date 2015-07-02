@@ -1,10 +1,18 @@
 package net.sf.appstatus.batch.jdbc;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
+import java.io.StringWriter;
+import java.sql.Clob;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
 import net.sf.appstatus.core.batch.IBatch;
 
+import org.apache.commons.lang3.StringUtils;
 import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -163,8 +171,15 @@ public class BatchDao {
 		SqlRowSet srs = this.jdbcTemplate.queryForRowSet(getSql(BATCH_FETCH), parameters);
 
 		while (srs.next()) {
-			BdBatch bdBatch = mappinpBdbatch(srs);
-			results.add(bdBatch);
+			BdBatch bdBatch;
+			try {
+				bdBatch = mappinpBdbatch(srs);
+				results.add(bdBatch);
+			} catch (SQLException e) {
+				throw new RuntimeException(e);
+			} catch (IOException e) {
+				throw new RuntimeException(e);
+			}
 		}
 
 		return results;
@@ -246,8 +261,10 @@ public class BatchDao {
 	 * 
 	 * @param srs
 	 * @return
+	 * @throws IOException
+	 * @throws SQLException
 	 */
-	private BdBatch mappinpBdbatch(SqlRowSet srs) {
+	private BdBatch mappinpBdbatch(SqlRowSet srs) throws SQLException, IOException {
 		BdBatch bdBatch = new BdBatch();
 		bdBatch.setUuid(srs.getString("UUID_BATCH"));
 		bdBatch.setCurrentItem(srs.getString("ITEM"));
@@ -258,11 +275,31 @@ public class BatchDao {
 		bdBatch.setLastUpdate(srs.getDate("UPDATED"));
 		bdBatch.setName(srs.getString("NAME_BATCH"));
 		bdBatch.setProgress(srs.getFloat("PROGRESS"));
-		bdBatch.setReject(srs.getString("REJECT"));
 		bdBatch.setStartDate(srs.getDate("START_DATE"));
 		bdBatch.setStatus(srs.getString("STATUS"));
 		bdBatch.setSuccess(srs.getBoolean("SUCCESS"));
+
+		// Clob
+		Clob reject = (Clob) srs.getObject("REJECT");
+		bdBatch.setReject(clobToString(reject));
+
 		return bdBatch;
+	}
+
+	private String clobToString(Clob clob) throws SQLException, IOException {
+		if (clob == null)
+			return null;
+
+		InputStream in = clob.getAsciiStream();
+		Reader read = new InputStreamReader(in);
+		StringWriter w = new StringWriter();
+
+		int c = -1;
+		while ((c = read.read()) != -1) {
+			w.write(c);
+		}
+		w.flush();
+		return StringUtils.trim(w.toString());
 	}
 
 	public BdBatch save(BdBatch bdBatch) {
