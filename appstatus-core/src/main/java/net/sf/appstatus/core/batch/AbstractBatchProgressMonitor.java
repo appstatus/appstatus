@@ -32,7 +32,11 @@ import org.slf4j.LoggerFactory;
  */
 public abstract class AbstractBatchProgressMonitor implements IBatchProgressMonitorExt {
 
-	private static Date maxDate = new Date(3000, 01, 01);
+	/**
+	 * Do not show estimated end date if more than 1 year.
+	 */
+	private static Date maxDate = new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 24 * 365);
+
 	/**
 	 * Reference to the batch description
 	 */
@@ -257,12 +261,15 @@ public abstract class AbstractBatchProgressMonitor implements IBatchProgressMoni
 
 			long currentTime = System.currentTimeMillis();
 			long elapsed = currentTime - startTime;
-			long estEndTime = currentTime + (long) (totalWork * elapsed / getProgress());
 
-			Date endDate = new Date(estEndTime);
+			if (getProgress() != 0.0d) {
+				long estEndTime = currentTime + (long) (totalWork * elapsed / getProgress());
 
-			if (endDate.before(maxDate)) {
-				return endDate;
+				Date endDate = new Date(estEndTime);
+
+				if (endDate.before(maxDate)) {
+					return endDate;
+				}
 			}
 		}
 

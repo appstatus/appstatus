@@ -33,6 +33,7 @@ public class InProcessServiceManager implements IServiceManager {
 	boolean useThreadLocal = false;
 
 	Hashtable<String, IService> services = new Hashtable<String, IService>();
+	private int minMaxDelay = 0;
 
 	/**
 	 * {@inheritDoc}
@@ -62,7 +63,7 @@ public class InProcessServiceManager implements IServiceManager {
 			synchronized (this) {
 				result = services.get(group + "/" + name);
 				if (result == null) {
-					Service newService = new Service();
+					Service newService = new Service(minMaxDelay);
 					newService.setName(name);
 					newService.setGroup(group);
 					services.put(group + "/" + name, newService);
@@ -93,6 +94,11 @@ public class InProcessServiceManager implements IServiceManager {
 			String logEnabled = configuration.getProperty("services.log");
 			if (logEnabled != null) {
 				log = Boolean.valueOf(logEnabled);
+			}
+			
+			String confMinMaxDelay = configuration.getProperty("services.minMaxDelay");
+			if (confMinMaxDelay != null) {
+				minMaxDelay  = Integer.valueOf(confMinMaxDelay);
 			}
 
 			useThreadLocal = Boolean.valueOf(configuration.getProperty("services.useThreadLocal"));

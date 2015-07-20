@@ -7,6 +7,24 @@ import net.sf.appstatus.core.services.IService;
 import org.apache.commons.lang3.ObjectUtils;
 
 public class Service implements IService {
+	protected AtomicLong cacheHits = new AtomicLong();
+	protected AtomicLong hits = new AtomicLong();
+	protected AtomicLong running = new AtomicLong();
+	protected String name;
+	protected String group;
+	private CachedCallStatistics totalStats;
+	private CachedCallStatistics windowStats;
+	private CachedCallStatistics windowPrevisiousStats;
+	private long windowSize = 2000;
+	private long windowStart = 0;
+	private int minMaxDelay;
+
+	public Service(int minMaxDelay) {
+		this.minMaxDelay = minMaxDelay;
+		totalStats = new CachedCallStatistics(minMaxDelay);
+		windowStats = new CachedCallStatistics(minMaxDelay);
+		windowPrevisiousStats = new CachedCallStatistics(minMaxDelay);
+	}
 
 	public long getRunning() {
 
@@ -22,16 +40,6 @@ public class Service implements IService {
 
 	}
 
-	protected AtomicLong cacheHits = new AtomicLong();
-	protected AtomicLong hits = new AtomicLong();
-	protected AtomicLong running = new AtomicLong();
-	protected String name;
-	protected String group;
-	private CachedCallStatistics totalStats = new CachedCallStatistics();
-	private CachedCallStatistics windowStats = new CachedCallStatistics();
-	private CachedCallStatistics windowPrevisiousStats = new CachedCallStatistics();
-	private long windowSize = 2000;
-	private long windowStart = 0;
 
 	/**
 	 * This method is synchronized to ensure correct statistics computation
@@ -61,9 +69,9 @@ public class Service implements IService {
 					if (currentTime - windowStart <= 2 * windowSize) {
 						windowPrevisiousStats = windowStats;
 					} else {
-						windowPrevisiousStats = new CachedCallStatistics();
+						windowPrevisiousStats = new CachedCallStatistics(minMaxDelay);
 					}
-					windowStats = new CachedCallStatistics();
+					windowStats = new CachedCallStatistics(minMaxDelay);
 					windowStart = currentTime;
 				}
 
