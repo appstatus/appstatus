@@ -10,7 +10,6 @@ import net.sf.appstatus.core.batch.IBatchProgressMonitor;
 
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.builder.ToStringBuilder;
 
 public class Batch implements IBatch {
 	private Integer zombieInterval = 1000 * 60 * 10;
@@ -108,6 +107,9 @@ public class Batch implements IBatch {
 		this.monitor = (JdbcBatchProgressMonitor) monitor;
 	}
 
+	/* (non-Javadoc)
+	 * @see java.lang.Object#hashCode()
+	 */
 	@Override
 	public int hashCode() {
 		final int prime = 31;
@@ -116,6 +118,9 @@ public class Batch implements IBatch {
 		return result;
 	}
 
+	/* (non-Javadoc)
+	 * @see java.lang.Object#equals(java.lang.Object)
+	 */
 	@Override
 	public boolean equals(Object obj) {
 		if (this == obj) {
