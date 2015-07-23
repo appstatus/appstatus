@@ -22,6 +22,10 @@
 			<param-name>bean</param-name>
 			<param-value>appstatus</param-value>
 		</init-param>
+		<init-param>
+			<param-name>custom-pages</param-name>
+			<param-value>net.sf.appstatus.demo.pages.CustomPage</param-value>
+		</init-param>
 		<load-on-startup>1</load-on-startup>
 
 	</servlet>
