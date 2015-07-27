@@ -224,7 +224,7 @@ public class BatchDao {
 		case BATCH_DELETE:
 			return "delete from " + tableName + " where UUID_BATCH = ?";
 		case BATCH_DELETE_OLD:
-			return "delete from " + tableName + " where UPDATE =? AND STATUS != ?";
+			return "delete from " + tableName + " where UPDATED < ? AND STATUS != ?";
 		case BATCH_INSERT:
 			return "INSERT into " + tableName
 					+ " (UUID_BATCH,GROUP_BATCH,NAME_BATCH,START_DATE,STATUS,ITEMCOUNT) values (?,?,?,?,?,0)";
