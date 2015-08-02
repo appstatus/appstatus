@@ -1,20 +1,20 @@
-package net.sf.appstatus.core.batch;
-
 /*
- * Copyright 2010 Capgemini
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
+ * Copyright 2010 Capgemini and Contributors
+ *
+ * Licensed under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
  * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- *
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
  */
+
+package net.sf.appstatus.core.batch;
 
 import java.util.Date;
 import java.util.List;
@@ -142,16 +142,14 @@ public abstract class AbstractBatchProgressMonitor implements IBatchProgressMoni
 	public void beginTask(String name, String description, int totalWork) {
 		// This method can only be called one.
 		if (this.taskName != null) {
-			throw new IllegalStateException("beginTask can only be called once (" + name + ", " + description + ", "
-					+ totalWork + ")");
+			throw new IllegalStateException(
+					"beginTask can only be called once (" + name + ", " + description + ", " + totalWork + ")");
 		}
 		this.totalWork = totalWork;
 		this.taskName = name;
 		this.taskDescription = description;
-		getLogger().info(
-				"[{}] {}: Begin {} ({}), steps : {}",
-				new Object[] { getBatch().getGroup(), getBatch().getName(), name, description,
-						String.valueOf(totalWork) });
+		getLogger().info("[{}] {}: Begin {} ({}), steps : {}", new Object[] { getBatch().getGroup(),
+				getBatch().getName(), name, description, String.valueOf(totalWork) });
 		touch();
 
 	}
@@ -173,15 +171,11 @@ public abstract class AbstractBatchProgressMonitor implements IBatchProgressMoni
 	public void done() {
 		if (parent != null) {
 			endTask(true);
-			getLogger().info(
-					"[{}] {}: End {}, {} ms",
-					new Object[] { getBatch().getGroup(), getBatch().getName(), name,
-							System.currentTimeMillis() - startTime });
+			getLogger().info("[{}] {}: End {}, {} ms", new Object[] { getBatch().getGroup(), getBatch().getName(), name,
+					System.currentTimeMillis() - startTime });
 		} else {
 			endBatch(true);
-			getLogger()
-			.info("[{}] {}: End batch, {} ms",
-					new Object[] { getBatch().getGroup(), getBatch().getName(),
+			getLogger().info("[{}] {}: End batch, {} ms", new Object[] { getBatch().getGroup(), getBatch().getName(),
 					System.currentTimeMillis() - startTime });
 
 		}
