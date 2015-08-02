@@ -21,6 +21,7 @@
 				<ref bean="googlePingCheck" />
 				<ref bean="jvmCheck" />
 					<ref bean="servicesPerformanceCheck" />
+					<ref bean="servicesFailureCheck" />
 			</list>
 		</property>
 
@@ -80,6 +81,8 @@
 		<bean id="jvmCheck" class="net.sf.appstatus.core.check.impl.JvmCheck"
 		scope="singleton" />
 		<bean id="servicesPerformanceCheck" class="net.sf.appstatus.core.check.impl.ServicesPerformanceCheck"
+		scope="singleton" />
+				<bean id="servicesFailureCheck" class="net.sf.appstatus.core.check.impl.ServicesFailureCheck"
 		scope="singleton" />	
 		
 		
