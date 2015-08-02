@@ -1,5 +1,7 @@
 /*
- * Copyright 2010 Capgemini Licensed under the Apache License, Version 2.0 (the
+ * Copyright 2010 Capgemini and Contributors
+ *
+ * Licensed under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
@@ -29,9 +31,13 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import net.sf.appstatus.core.batch.IBatch;
 import net.sf.appstatus.core.batch.IBatchManager;
 import net.sf.appstatus.core.batch.IBatchProgressMonitor;
+import net.sf.appstatus.core.check.IAppStatusAware;
 import net.sf.appstatus.core.check.ICheck;
 import net.sf.appstatus.core.check.ICheckResult;
 import net.sf.appstatus.core.loggers.ILoggersManager;
@@ -39,9 +45,6 @@ import net.sf.appstatus.core.property.IPropertyProvider;
 import net.sf.appstatus.core.services.IService;
 import net.sf.appstatus.core.services.IServiceManager;
 import net.sf.appstatus.core.services.IServiceMonitor;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * This is the entry point for every feature of AppStatus.
@@ -99,7 +102,7 @@ public class AppStatus {
 		}
 
 		checkers.add(check);
-		logger.info("Registered status checker " + clazz);
+		logger.info("Registered status checker {}", clazz);
 	}
 
 	public List<ICheckResult> checkAll() {
@@ -111,6 +114,9 @@ public class AppStatus {
 
 			statusFutureList.add(executorService.submit(new Callable<ICheckResult>() {
 				public ICheckResult call() throws Exception {
+					if (check instanceof IAppStatusAware) {
+						((IAppStatusAware) check).setAppStatus(AppStatus.this);
+					}
 					return check.checkStatus();
 				}
 			}));
