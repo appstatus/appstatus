@@ -18,6 +18,8 @@ package net.sf.appstatus.core.check.impl;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.lang3.StringUtils;
+
 import net.sf.appstatus.core.AppStatus;
 import net.sf.appstatus.core.check.AbstractCheck;
 import net.sf.appstatus.core.check.IAppStatusAware;
@@ -53,12 +55,14 @@ public class ServicesPerformanceCheck extends AbstractCheck implements IAppStatu
 
 		ICheckResult result = null;
 		if (errors.size() > 0) {
-			result = createResult(FATAL);
+
+			result = result().code(ICheckResult.ERROR).fatal(true).description(StringUtils.join(errors, "<br/>"))
+					.build();
 		} else if (warns.size() > 0) {
-			result = createResult(WARN);
+			result = result().code(ICheckResult.ERROR).fatal(false).description(StringUtils.join(warns, "<br/>"))
+					.build();
 		} else {
-			result = createResult(OK);
-			result.setDescription("All average times under " + limitWarn + "ms");
+			result = result().code(ICheckResult.OK).description("All average times under " + limitWarn + "ms").build();
 		}
 		return result;
 	}
