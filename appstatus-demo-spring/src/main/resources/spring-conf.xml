@@ -19,6 +19,8 @@
 				<ref bean="dummyCheck" />
 				<ref bean="googleCheck" />
 				<ref bean="googlePingCheck" />
+				<ref bean="jvmCheck" />
+					<ref bean="servicesPerformanceCheck" />
 			</list>
 		</property>
 
@@ -26,7 +28,8 @@
 		<property name="propertyProviders">
 			<list>
 				<ref bean="dummyProperties" />
-				<ref bean="warProperties" />
+					<ref bean="warProperties" />
+				<ref bean="jvmProperties" />
 			</list>
 		</property>
 
@@ -74,11 +77,20 @@
 		scope="singleton" />
 	<bean id="googlePingCheck" class="net.sf.appstatus.demo.check.GooglePingStatusChecker"
 		scope="singleton" />
+		<bean id="jvmCheck" class="net.sf.appstatus.core.check.impl.JvmCheck"
+		scope="singleton" />
+		<bean id="servicesPerformanceCheck" class="net.sf.appstatus.core.check.impl.ServicesPerformanceCheck"
+		scope="singleton" />	
+		
+		
 	<!-- Property providers -->
 	<bean id="dummyProperties" class="net.sf.appstatus.demo.property.DummyPropertyProvider"
 		scope="singleton" />
 	<bean id="warProperties"
 		class="net.sf.appstatus.core.property.impl.WarMavenVersionProvider"
+		scope="singleton" />
+		<bean id="jvmProperties"
+		class="net.sf.appstatus.core.property.impl.JvmPropertyProvider"
 		scope="singleton" />
 
 

@@ -2,9 +2,9 @@
  * Copyright 2010-2013 Capgemini Licensed under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
@@ -21,21 +21,21 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.lang3.StringUtils;
+
 import net.sf.appstatus.core.batch.IBatchManager;
 import net.sf.appstatus.core.check.ICheckResult;
 import net.sf.appstatus.web.IPage;
 import net.sf.appstatus.web.StatusWebHandler;
-
-import org.apache.commons.lang3.StringUtils;
 
 /**
  * This is an Alpha radiator page. (Alpha version)
  * <p>
  * This page displays a quick overview of the application and reloads every
  * minute.
- * 
+ *
  * @author Nicolas Richeton
- * 
+ *
  */
 public class RadiatorPage implements IPage {
 
@@ -95,11 +95,9 @@ public class RadiatorPage implements IPage {
 		w.append("</head>");
 		w.append("<body style=\"background: #000; text-align: center; padding-top: 5%;\">");
 		w.append("<p style=\"color: #fff; font-size: 200%;\" >" + webHandler.getApplicationName() + "</p>");
-		w.append("<p style=\" padding-top: 10%;\"><a href=\"#\" class=\"btn btn-large " + btnClass
-				+ "\" >Status</a></p>");
-		w.append("<div class=\"progress "
-				+ batchStatus
-				+ active
+		w.append("<p style=\" padding-top: 10%;\"><a href=\"?p=status\" target=\"_blank\" class=\"btn btn-large "
+				+ btnClass + "\" >Status</a></p>");
+		w.append("<div class=\"progress " + batchStatus + active
 				+ "\" style=\"margin-top: 5%; width: 90%; margin-left: 5%; margin-right: 5%;\">  <div class=\"bar\" style=\"width: "
 				+ width + "%;\"></div></div>");
 		w.append("</body></html>");

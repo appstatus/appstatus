@@ -1,10 +1,12 @@
 /*
- * Copyright 2010 Capgemini Licensed under the Apache License, Version 2.0 (the
+ * Copyright 2010 Capgemini and Contributors
+ *
+ * Licensed under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
@@ -20,31 +22,30 @@ import java.util.Enumeration;
 import java.util.List;
 import java.util.Properties;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import net.sf.appstatus.core.services.IService;
 import net.sf.appstatus.core.services.IServiceManager;
 import net.sf.appstatus.core.services.IServiceMonitor;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 /**
  * This is the entry point for services monitor.
- * 
+ *
  * <p>
  * Must be initialized once before calling other methods.
  * <p>
  * AppStatusServices services = new AppStatusServices(); <br/>
  * services.init();
  * </p>
- * 
+ *
  * @author Nicolas Richeton
- * 
+ *
  */
 @Deprecated
 public class AppStatusServices {
 
-	private static Logger logger = LoggerFactory
-			.getLogger(AppStatusServices.class);
+	private static Logger logger = LoggerFactory.getLogger(AppStatusServices.class);
 
 	private boolean initDone = false;
 	private IObjectInstantiationListener objectInstanciationListener = null;
@@ -67,7 +68,7 @@ public class AppStatusServices {
 
 	/**
 	 * Try to instantiate a class.
-	 * 
+	 *
 	 * @param className
 	 * @return an object instance of "className" class or null if instantiation
 	 *         is not possible
@@ -87,8 +88,7 @@ public class AppStatusServices {
 			} catch (InstantiationException e) {
 				logger.warn("Cannot instanciate {} ", className, e);
 			} catch (IllegalAccessException e) {
-				logger.warn("Cannot access class {} for instantiation ",
-						className, e);
+				logger.warn("Cannot access class {} for instantiation ", className, e);
 			}
 		}
 
@@ -140,11 +140,8 @@ public class AppStatusServices {
 
 	private void injectServletContext(Object instance) {
 		// Inject servlet context if possible
-		if (instance instanceof IServletContextAware
-				&& servletContextProvider != null) {
-			((IServletContextAware) instance)
-					.setServletContext(servletContextProvider
-							.getServletContext());
+		if (instance instanceof IServletContextAware && servletContextProvider != null) {
+			((IServletContextAware) instance).setServletContext(servletContextProvider.getServletContext());
 		}
 	}
 
@@ -171,7 +168,7 @@ public class AppStatusServices {
 
 	/**
 	 * Load a properties file from a given URL.
-	 * 
+	 *
 	 * @param url
 	 *            an url
 	 * @return a {@link Properties} object
@@ -187,8 +184,7 @@ public class AppStatusServices {
 		return p;
 	}
 
-	public void setObjectInstanciationListener(
-			IObjectInstantiationListener objectInstanciationListener) {
+	public void setObjectInstanciationListener(IObjectInstantiationListener objectInstanciationListener) {
 		this.objectInstanciationListener = objectInstanciationListener;
 	}
 
