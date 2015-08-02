@@ -28,11 +28,11 @@ import net.sf.appstatus.core.services.IService;
  * @author Nicolas Richeton
  *
  */
-public class ServicesPerformanceCheck extends AbstractCheck implements IAppStatusAware {
+public class ServicesFailureCheck extends AbstractCheck implements IAppStatusAware {
 
 	private AppStatus appStatus;
-	private final int limitError = 3000;
-	private final int limitWarn = 1000;
+	private final int limitError = 10;
+	private final int limitWarn = 5;
 
 	public ICheckResult checkStatus() {
 		List<IService> services = appStatus.getServiceManager().getServices();
@@ -40,14 +40,17 @@ public class ServicesPerformanceCheck extends AbstractCheck implements IAppStatu
 		List<String> errors = new ArrayList<String>();
 
 		for (IService s : services) {
-			if (s.getAvgResponseTime() > limitError || s.getAvgResponseTimeWithCache() > limitError) {
-				errors.add("Service " + s.getGroup() + "-" + s.getName() + " average response time ("
-						+ s.getAvgResponseTime() + "/" + s.getAvgNestedCallsWithCache()
-						+ "cached) is over error limit (" + limitError + ")");
-			} else if (s.getAvgResponseTime() > limitWarn || s.getAvgResponseTimeWithCache() > limitWarn) {
-				warns.add("Service " + s.getGroup() + "-" + s.getName() + " average response time ("
-						+ s.getAvgResponseTime() + "/" + s.getAvgNestedCallsWithCache() + "cached) is over warn limit ("
-						+ limitWarn + ")");
+			if (s.getHits() == 0) {
+				continue;
+			}
+
+			long failureRatio = (s.getFailures() * 100) / s.getHits();
+			if (failureRatio > limitError) {
+				errors.add("Service " + s.getGroup() + "-" + s.getName() + " failure ratio (" + failureRatio
+						+ ") is over error limit (" + limitError + ")");
+			} else if (failureRatio > limitWarn) {
+				errors.add("Service " + s.getGroup() + "-" + s.getName() + " failure ratio (" + failureRatio
+						+ ") is over error limit (" + limitWarn + ")");
 			}
 		}
 
@@ -58,7 +61,7 @@ public class ServicesPerformanceCheck extends AbstractCheck implements IAppStatu
 			result = createResult(WARN);
 		} else {
 			result = createResult(OK);
-			result.setDescription("All average times under " + limitWarn + "ms");
+			result.setDescription("All failure ratios under " + limitWarn + "%");
 		}
 		return result;
 	}
@@ -68,7 +71,7 @@ public class ServicesPerformanceCheck extends AbstractCheck implements IAppStatu
 	}
 
 	public String getName() {
-		return "Performance";
+		return "Failures";
 	}
 
 	public void setAppStatus(AppStatus appStatus) {
