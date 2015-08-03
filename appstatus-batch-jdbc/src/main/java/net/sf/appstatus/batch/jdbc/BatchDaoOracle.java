@@ -121,7 +121,7 @@ public class BatchDaoOracle extends BatchDao {
 					+ "PRIMARY KEY (UUID_BATCH)" + ")  ";
 			
 		case BATCH_DELETE_SUCCESS:
-			return "delete from " + tableName + " where STATUS = ? AND dbms_lob.getlength(REJECT) = 0 ";
+			return "delete from " + tableName + " where STATUS = ? AND REJECT is NULL";
 		default:
 			return super.getSql(query);
 		}
