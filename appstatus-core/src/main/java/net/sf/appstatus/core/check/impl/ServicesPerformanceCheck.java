@@ -33,8 +33,8 @@ import org.apache.commons.lang3.StringUtils;
 public class ServicesPerformanceCheck extends AbstractCheck implements IAppStatusAware {
 
 	private AppStatus appStatus;
-	private final int limitError = 3000;
-	private final int limitWarn = 1000;
+	private int limitError = 3000;
+	private int limitWarn = 1000;
 
 	@Override
 	public ICheckResult checkStatus() {
@@ -82,6 +82,14 @@ public class ServicesPerformanceCheck extends AbstractCheck implements IAppStatu
 
 	public void setAppStatus(AppStatus appStatus) {
 		this.appStatus = appStatus;
+	}
+
+	public void setLimitError(int limitError) {
+		this.limitError = limitError;
+	}
+
+	public void setLimitWarn(int limitWarn) {
+		this.limitWarn = limitWarn;
 	}
 
 }

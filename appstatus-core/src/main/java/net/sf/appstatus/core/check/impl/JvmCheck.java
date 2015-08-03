@@ -30,15 +30,18 @@ import net.sf.appstatus.core.check.ICheckResult;
  */
 public class JvmCheck extends AbstractCheck {
 
+	private int limitError = 95;
+	private int limitWarn = 80;
+
 	@Override
 	public ICheckResult checkStatus(Locale locale) {
 		MemoryMXBean memory = ManagementFactory.getMemoryMXBean();
 		MemoryUsage heap = memory.getHeapMemoryUsage();
 		long heapRatio = heap.getUsed() * 100 / heap.getMax();
 		CheckResultBuilder result = result(this).messageBundle("net.sf.appstatus.core.check.impl.JvmCheck_msg", locale);
-		if (heapRatio > 95) {
+		if (heapRatio > limitError) {
 			result.code(ICheckResult.ERROR).fatal().resolutionSteps("resolutionSteps.error", new Object[] {});
-		} else if (heapRatio > 80) {
+		} else if (heapRatio > limitWarn) {
 			result.code(ICheckResult.ERROR).resolutionSteps("resolutionSteps.warn", new Object[] {});
 		} else {
 			result.code(ICheckResult.OK);
@@ -55,4 +58,11 @@ public class JvmCheck extends AbstractCheck {
 		return "Heap usage";
 	}
 
+	public void setLimitError(int limitError) {
+		this.limitError = limitError;
+	}
+
+	public void setLimitWarn(int limitWarn) {
+		this.limitWarn = limitWarn;
+	}
 }

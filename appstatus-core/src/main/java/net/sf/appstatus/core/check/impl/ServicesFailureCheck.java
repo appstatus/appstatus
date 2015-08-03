@@ -33,8 +33,8 @@ import org.apache.commons.lang3.StringUtils;
 public class ServicesFailureCheck extends AbstractCheck implements IAppStatusAware {
 
 	private AppStatus appStatus;
-	private final int limitError = 10;
-	private final int limitWarn = 5;
+	private int limitError = 10;
+	private int limitWarn = 5;
 
 	@Override
 	public ICheckResult checkStatus() {
@@ -84,6 +84,14 @@ public class ServicesFailureCheck extends AbstractCheck implements IAppStatusAwa
 	public void setAppStatus(AppStatus appStatus) {
 		this.appStatus = appStatus;
 
+	}
+
+	public void setLimitError(int limitError) {
+		this.limitError = limitError;
+	}
+
+	public void setLimitWarn(int limitWarn) {
+		this.limitWarn = limitWarn;
 	}
 
 }
