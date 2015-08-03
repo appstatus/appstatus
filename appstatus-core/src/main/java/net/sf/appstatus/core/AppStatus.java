@@ -31,12 +31,10 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import net.sf.appstatus.core.batch.IBatch;
 import net.sf.appstatus.core.batch.IBatchManager;
 import net.sf.appstatus.core.batch.IBatchProgressMonitor;
+import net.sf.appstatus.core.check.CheckResultBuilder;
 import net.sf.appstatus.core.check.IAppStatusAware;
 import net.sf.appstatus.core.check.ICheck;
 import net.sf.appstatus.core.check.ICheckResult;
@@ -45,6 +43,9 @@ import net.sf.appstatus.core.property.IPropertyProvider;
 import net.sf.appstatus.core.services.IService;
 import net.sf.appstatus.core.services.IServiceManager;
 import net.sf.appstatus.core.services.IServiceMonitor;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * This is the entry point for every feature of AppStatus.
@@ -108,7 +109,7 @@ public class AppStatus {
 	public List<ICheckResult> checkAll() {
 		checkInit();
 
-		ArrayList<Future<ICheckResult>> statusFutureList = new ArrayList<Future<ICheckResult>>();
+		List<Future<ICheckResult>> statusFutureList = new ArrayList<Future<ICheckResult>>();
 		for (final ICheck check : checkers) {
 			injectServletContext(check);
 
@@ -123,12 +124,18 @@ public class AppStatus {
 		}
 
 		ArrayList<ICheckResult> statusList = new ArrayList<ICheckResult>();
-		for (Future<ICheckResult> f : statusFutureList) {
+
+		for (int i = 0; i < statusFutureList.size(); i++) {
+			Future<ICheckResult> f = statusFutureList.get(i);
+			ICheck c = checkers.get(i);
+
 			try {
 				statusList.add(f.get());
 			} catch (InterruptedException e) {
+				statusList.add(createCheckResultFromException(c, e));
 				logger.error("", e);
 			} catch (ExecutionException e) {
+				statusList.add(createCheckResultFromException(c, e));
 				logger.error("", e);
 			}
 		}
@@ -141,6 +148,14 @@ public class AppStatus {
 			logger.warn("Not initialized. Starting init");
 			init();
 		}
+	}
+
+	private ICheckResult createCheckResultFromException(ICheck c, Exception e) {
+
+		return new CheckResultBuilder().from(c).code(ICheckResult.ERROR).fatal(true)
+				.description("Check failed with exception: " + e.getClass().getCanonicalName() + " " + e.getMessage())
+				.build();
+
 	}
 
 	public IBatchManager getBatchManager() {

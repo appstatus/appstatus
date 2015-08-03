@@ -18,13 +18,13 @@ package net.sf.appstatus.core.check.impl;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.lang3.StringUtils;
-
 import net.sf.appstatus.core.AppStatus;
 import net.sf.appstatus.core.check.AbstractCheck;
 import net.sf.appstatus.core.check.IAppStatusAware;
 import net.sf.appstatus.core.check.ICheckResult;
 import net.sf.appstatus.core.services.IService;
+
+import org.apache.commons.lang3.StringUtils;
 
 /**
  * @author Nicolas Richeton
@@ -48,21 +48,26 @@ public class ServicesPerformanceCheck extends AbstractCheck implements IAppStatu
 						+ "cached) is over error limit (" + limitError + ")");
 			} else if (s.getAvgResponseTime() > limitWarn || s.getAvgResponseTimeWithCache() > limitWarn) {
 				warns.add("Service " + s.getGroup() + "-" + s.getName() + " average response time ("
-						+ s.getAvgResponseTime() + "/" + s.getAvgNestedCallsWithCache() + "cached) is over warn limit ("
-						+ limitWarn + ")");
+						+ s.getAvgResponseTime() + "/" + s.getAvgNestedCallsWithCache()
+						+ "cached) is over warn limit (" + limitWarn + ")");
 			}
 		}
 
 		ICheckResult result = null;
 		if (errors.size() > 0) {
 
-			result = result().code(ICheckResult.ERROR).fatal(true).description(StringUtils.join(errors, "<br/>"))
-					.build();
+			result = result(this)
+					.code(ICheckResult.ERROR)
+					.fatal(true)
+					.description(
+							StringUtils.join(errors, "<br/>") + " <br/>Additional warnings: "
+									+ StringUtils.join(warns, "<br/>")).build();
 		} else if (warns.size() > 0) {
-			result = result().code(ICheckResult.ERROR).fatal(false).description(StringUtils.join(warns, "<br/>"))
+			result = result(this).code(ICheckResult.ERROR).fatal(false).description(StringUtils.join(warns, "<br/>"))
 					.build();
 		} else {
-			result = result().code(ICheckResult.OK).description("All average times under " + limitWarn + "ms").build();
+			result = result(this).code(ICheckResult.OK).description("All average times under " + limitWarn + "ms")
+					.build();
 		}
 		return result;
 	}
@@ -77,7 +82,6 @@ public class ServicesPerformanceCheck extends AbstractCheck implements IAppStatu
 
 	public void setAppStatus(AppStatus appStatus) {
 		this.appStatus = appStatus;
-
 	}
 
 }

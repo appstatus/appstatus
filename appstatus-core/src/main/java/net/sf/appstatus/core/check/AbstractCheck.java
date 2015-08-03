@@ -66,4 +66,8 @@ public abstract class AbstractCheck implements ICheck {
 	protected CheckResultBuilder result() {
 		return new CheckResultBuilder();
 	}
+
+	protected CheckResultBuilder result(ICheck check) {
+		return new CheckResultBuilder().from(check);
+	}
 }
