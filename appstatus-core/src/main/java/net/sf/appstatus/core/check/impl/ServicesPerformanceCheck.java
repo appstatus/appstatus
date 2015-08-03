@@ -44,25 +44,25 @@ public class ServicesPerformanceCheck extends AbstractCheck implements IAppStatu
 
 		for (IService s : services) {
 			if (s.getAvgResponseTime() > limitError || s.getAvgResponseTimeWithCache() > limitError) {
-				errors.add("Service " + s.getGroup() + "-" + s.getName() + " average response time ("
-						+ s.getAvgResponseTime() + "/" + s.getAvgNestedCallsWithCache()
-						+ "cached) is over error limit (" + limitError + ")");
+				errors.add("Service <b>" + s.getGroup() + "#" + s.getName() + "</b> average response time ("
+						+ Math.round(s.getAvgResponseTime()) + "ms without cache / "
+						+ Math.round(s.getAvgNestedCallsWithCache()) + "ms with cache) is over error limit ("
+						+ limitError + "ms)");
 			} else if (s.getAvgResponseTime() > limitWarn || s.getAvgResponseTimeWithCache() > limitWarn) {
-				warns.add("Service " + s.getGroup() + "-" + s.getName() + " average response time ("
-						+ s.getAvgResponseTime() + "/" + s.getAvgNestedCallsWithCache()
-						+ "cached) is over warn limit (" + limitWarn + ")");
+				warns.add("Service <b>" + s.getGroup() + "#" + s.getName() + "</b> average response time ("
+						+ Math.round(s.getAvgResponseTime()) + "ms without cache /"
+						+ Math.round(s.getAvgNestedCallsWithCache()) + "ms with cache) is over warn limit ("
+						+ limitWarn + "ms)");
 			}
 		}
 
 		ICheckResult result = null;
 		if (errors.size() > 0) {
-
-			result = result(this)
-					.code(ICheckResult.ERROR)
-					.fatal()
-					.description(
-							StringUtils.join(errors, "<br/>") + " <br/>Additional warnings: "
-									+ StringUtils.join(warns, "<br/>")).build();
+			String description = StringUtils.join(errors, "<br/>");
+			if (warns.size() > 0) {
+				description = description + " <br/>Additional warnings: " + StringUtils.join(warns, "<br/>");
+			}
+			result = result(this).code(ICheckResult.ERROR).fatal().description(description).build();
 		} else if (warns.size() > 0) {
 			result = result(this).code(ICheckResult.ERROR).description(StringUtils.join(warns, "<br/>")).build();
 		} else {
