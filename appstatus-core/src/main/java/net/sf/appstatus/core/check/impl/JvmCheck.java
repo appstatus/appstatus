@@ -20,6 +20,7 @@ import java.lang.management.MemoryMXBean;
 import java.lang.management.MemoryUsage;
 
 import net.sf.appstatus.core.check.AbstractCheck;
+import net.sf.appstatus.core.check.CheckResultBuilder;
 import net.sf.appstatus.core.check.ICheckResult;
 
 /**
@@ -33,20 +34,22 @@ public class JvmCheck extends AbstractCheck {
 		MemoryUsage heap = memory.getHeapMemoryUsage();
 
 		long heapRatio = heap.getUsed() * 100 / heap.getMax();
-		ICheckResult result = null;
+		CheckResultBuilder result = result(this);
 		if (heapRatio > 95) {
-			result = createResult(FATAL);
-			result.setResolutionSteps(
+			result.code(ICheckResult.ERROR)
+			.fatal(true)
+			.resolutionSteps(
 					"Increase memory allocation (JVM arg -Xmx) or reduce memory usage in application code.");
 		} else if (heapRatio > 80) {
-			result = createResult(WARN);
-			result.setResolutionSteps(
+			result.code(ICheckResult.ERROR)
+			.fatal(false)
+			.resolutionSteps(
 					"Monitor closely memory usage and increase memory allocation (JVM arg -Xmx) if necessary");
 		} else {
-			result = createResult(OK);
+			result.code(ICheckResult.OK);
 		}
-		result.setDescription("Using " + heapRatio + "% of maximum memory (Heap).");
-		return result;
+		result.description("Using " + heapRatio + "% of maximum memory (Heap).");
+		return result.build();
 	}
 
 	public String getGroup() {

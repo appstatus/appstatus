@@ -18,13 +18,13 @@ package net.sf.appstatus.core.check.impl;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.lang3.StringUtils;
-
 import net.sf.appstatus.core.AppStatus;
 import net.sf.appstatus.core.check.AbstractCheck;
 import net.sf.appstatus.core.check.IAppStatusAware;
 import net.sf.appstatus.core.check.ICheckResult;
 import net.sf.appstatus.core.services.IService;
+
+import org.apache.commons.lang3.StringUtils;
 
 /**
  * @author Nicolas Richeton
@@ -58,13 +58,18 @@ public class ServicesFailureCheck extends AbstractCheck implements IAppStatusAwa
 
 		ICheckResult result = null;
 		if (errors.size() > 0) {
-			result = result().code(ICheckResult.ERROR).fatal(true).description(StringUtils.join(errors, "<br/>"))
-					.build();
+			result = result(this)
+					.code(ICheckResult.ERROR)
+					.fatal(true)
+					.description(
+							StringUtils.join(errors, "<br/>") + " <br/>Additional warnings: "
+									+ StringUtils.join(warns, "<br/>")).build();
 		} else if (warns.size() > 0) {
-			result = result().code(ICheckResult.ERROR).fatal(false).description(StringUtils.join(warns, "<br/>"))
+			result = result(this).code(ICheckResult.ERROR).fatal(false).description(StringUtils.join(warns, "<br/>"))
 					.build();
 		} else {
-			result = result().code(ICheckResult.OK).description("All failure ratios under " + limitWarn + "%").build();
+			result = result(this).code(ICheckResult.OK).description("All failure ratios under " + limitWarn + "%")
+					.build();
 		}
 		return result;
 	}
