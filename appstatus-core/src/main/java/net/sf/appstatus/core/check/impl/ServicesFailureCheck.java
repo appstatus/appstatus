@@ -49,21 +49,21 @@ public class ServicesFailureCheck extends AbstractCheck implements IAppStatusAwa
 
 			long failureRatio = (s.getFailures() * 100) / s.getHits();
 			if (failureRatio > limitError) {
-				errors.add("Service " + s.getGroup() + "-" + s.getName() + " failure ratio (" + failureRatio
-						+ ") is over error limit (" + limitError + ")");
+				errors.add("Service <b>" + s.getGroup() + "#" + s.getName() + "</b> failure ratio (" + failureRatio
+						+ "%) is over error limit (" + limitError + "%)");
 			} else if (failureRatio > limitWarn) {
-				errors.add("Service " + s.getGroup() + "-" + s.getName() + " failure ratio (" + failureRatio
-						+ ") is over error limit (" + limitWarn + ")");
+				errors.add("Service <b>" + s.getGroup() + "#" + s.getName() + "</b> failure ratio (" + failureRatio
+						+ "%) is over error limit (" + limitWarn + "%)");
 			}
 		}
 
 		ICheckResult result = null;
 		if (errors.size() > 0) {
-			result = result(this)
-					.code(ICheckResult.ERROR)
-					.description(
-							StringUtils.join(errors, "<br/>") + " <br/>Additional warnings: "
-									+ StringUtils.join(warns, "<br/>")).build();
+			String description = StringUtils.join(errors, "<br/>");
+			if (warns.size() > 0) {
+				description = description + " <br/>Additional warnings: " + StringUtils.join(warns, "<br/>");
+			}
+			result = result(this).code(ICheckResult.ERROR).fatal().description(description).build();
 		} else if (warns.size() > 0) {
 			result = result(this).code(ICheckResult.ERROR).description(StringUtils.join(warns, "<br/>")).build();
 		} else {

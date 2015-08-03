@@ -53,15 +53,23 @@ public class CheckResultBuilder {
 		}
 
 		if (bundle != null) {
-			result.setDescription(MessageFormat.format(resBundle.getString(description), descriptionArgs));
-		} else {
-			result.setDescription(description);
-		}
 
-		if (bundle != null) {
-			result.setDescription(MessageFormat.format(resBundle.getString(resolutionSteps), resolutionStepArgs));
+			if (description != null) {
+				result.setDescription(MessageFormat.format(resBundle.getString(description), descriptionArgs));
+			}
+
+			if (resolutionSteps != null) {
+				result.setResolutionSteps(MessageFormat.format(resBundle.getString(resolutionSteps), resolutionStepArgs));
+			}
 		} else {
-			result.setResolutionSteps(resolutionSteps);
+			if (description != null) {
+				result.setDescription(description);
+			}
+
+			if (resolutionSteps != null) {
+				result.setResolutionSteps(resolutionSteps);
+			}
+
 		}
 		return result;
 	}
