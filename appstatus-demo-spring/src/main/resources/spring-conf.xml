@@ -10,7 +10,10 @@
 
 	<bean id="appstatus" class="net.sf.appstatus.core.AppStatus"
 		init-method="init" scope="singleton">
-		<property name="objectInstanciationListener" ref="appstatusInstanciation" />
+		<property name="objectInstanciationListener">
+			<bean
+				class="net.sf.appstatus.support.spring.SpringObjectInstantiationListener" />
+		</property>
 		<property name="batchManager">
 			<bean class="net.sf.appstatus.batch.InProcessBatchManager"></bean>
 		</property>
@@ -38,10 +41,7 @@
 		</property>
 	</bean>
 
-
-
-	<bean id="serviceManager" class="net.sf.appstatus.services.InProcessServiceManager"
-		scope="singleton">
+	<bean id="serviceManager" class="net.sf.appstatus.services.InProcessServiceManager">
 		<!-- Configuration -->
 		<property name="configuration">
 			<props>
@@ -53,10 +53,19 @@
 		</property>
 	</bean>
 
-	<bean id="appstatusInstanciation"
-		class="net.sf.appstatus.support.spring.SpringObjectInstantiationListener"
-		scope="singleton" />
+	<!-- AppStatus AOP -->
+	<bean id="appStatusInterceptor"
+		class="net.sf.appstatus.support.aop.AppStatusServiceInterceptor">
+		<property name="serviceManager" ref="serviceManager" />
+	</bean>
 
+	<aop:config>
+		<aop:advisor id="serviceCallAdvisor" advice-ref="appStatusInterceptor"
+			pointcut="execution(public * net.sf.appstatus.demo.batch.ServiceSample.getRefsAOP())" />
+	</aop:config>
+
+
+	<!-- Demo Application -->
 	<bean id="batch" class="net.sf.appstatus.demo.batch.BatchSample">
 		<property name="appstatus" ref="appstatus" />
 		<property name="service" ref="service" />
@@ -72,9 +81,7 @@
 	</bean>
 
 
-
-
-
+	<!-- Appstatus Spring Cache manager -->
 	<bean id="cacheManager"
 		class="net.sf.appstatus.support.spring.cache.AppStatusCacheManager"
 		p:cache-manager-ref="ehcacheCacheManager" />
@@ -87,18 +94,5 @@
 		p:config-location="classpath:/ehcache.xml" />
 
 	<cache:annotation-driven proxy-target-class="true" />
-
-	<!-- AOP -->
-
-	<bean id="appStatusInterceptor"
-		class="net.sf.appstatus.support.aop.AppStatusServiceInterceptor"
-		scope="singleton">
-		<property name="serviceManager" ref="serviceManager" />
-	</bean>
-
-	<aop:config>
-		<aop:advisor id="serviceCallAdvisor" advice-ref="appStatusInterceptor"
-			pointcut="execution(public * net.sf.appstatus.demo.batch.ServiceSample.getRefsAOP())" />
-	</aop:config>
 
 </beans>
