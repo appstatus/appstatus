@@ -7,7 +7,13 @@ AppStatus brings the information you need on developement and production to ensu
 This means: 
 * Self tests  (compatible with nagios and other monitoring applications)
 * Configuration information
-* Controler and Service statistics, including hits, average response time, cache usage, cache efficiency, functional and error ratio, hit rate. 
+* Controler and Service statistics, including:
+   * hits
+   * average response time
+   * cache usage
+   * cache efficiency
+   * functional and error ratio
+   * hit rate. 
 * Batch progress and history including failures and invalid objects. 
 * Radiator-compatible screen for monitoring
 
@@ -103,4 +109,4 @@ Spring context.xml
 
 ## Website 
 
-See http://appstatus.sourceforge.netfor additional details. 
+See http://appstatus.sourceforge.net for additional details. 
