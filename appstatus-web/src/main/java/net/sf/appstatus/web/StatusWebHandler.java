@@ -27,7 +27,7 @@ import net.sf.appstatus.core.AppStatus;
 import net.sf.appstatus.core.AppStatusStatic;
 import net.sf.appstatus.web.pages.Resources;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

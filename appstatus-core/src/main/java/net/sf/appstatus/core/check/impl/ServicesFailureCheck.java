@@ -36,6 +36,7 @@ public class ServicesFailureCheck extends AbstractCheck implements IAppStatusAwa
 	private final int limitError = 10;
 	private final int limitWarn = 5;
 
+	@Override
 	public ICheckResult checkStatus() {
 		List<IService> services = appStatus.getServiceManager().getServices();
 		List<String> warns = new ArrayList<String>();
@@ -60,13 +61,11 @@ public class ServicesFailureCheck extends AbstractCheck implements IAppStatusAwa
 		if (errors.size() > 0) {
 			result = result(this)
 					.code(ICheckResult.ERROR)
-					.fatal(true)
 					.description(
 							StringUtils.join(errors, "<br/>") + " <br/>Additional warnings: "
 									+ StringUtils.join(warns, "<br/>")).build();
 		} else if (warns.size() > 0) {
-			result = result(this).code(ICheckResult.ERROR).fatal(false).description(StringUtils.join(warns, "<br/>"))
-					.build();
+			result = result(this).code(ICheckResult.ERROR).description(StringUtils.join(warns, "<br/>")).build();
 		} else {
 			result = result(this).code(ICheckResult.OK).description("All failure ratios under " + limitWarn + "%")
 					.build();

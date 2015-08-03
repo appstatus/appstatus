@@ -53,7 +53,7 @@ public class StatusJmx implements ApplicationContextAware, ServletContextAware {
   @ManagedAttribute(description = "Status list", currencyTimeLimit = 15)
   public Map<String, String> getStatus() {
     Map<String, String> statusChecker = new HashMap<String, String>();
-    for (ICheckResult result : statusService.checkAll()) {
+    for (ICheckResult result : statusService.checkAll(null)) {
       statusChecker.put(result.getProbeName(), formatCodeDisplay(result.getCode()));
     }
     return statusChecker;
@@ -63,7 +63,7 @@ public class StatusJmx implements ApplicationContextAware, ServletContextAware {
   public Map<String, List<String>> getFullStatus() {
     Map<String, List<String>> statusChecker = new HashMap<String, List<String>>();
     List<String> statusAttributs = null;
-    for (ICheckResult result : statusService.checkAll()) {
+    for (ICheckResult result : statusService.checkAll(null)) {
       statusAttributs = new ArrayList<String>();
       statusAttributs.add(formatCodeDisplay(result.getCode()));
       statusAttributs.add(result.getDescription());

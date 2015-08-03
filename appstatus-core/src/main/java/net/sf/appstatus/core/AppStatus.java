@@ -21,6 +21,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
@@ -107,6 +108,10 @@ public class AppStatus {
 	}
 
 	public List<ICheckResult> checkAll() {
+		return checkAll(null);
+	}
+
+	public List<ICheckResult> checkAll(final Locale locale) {
 		checkInit();
 
 		List<Future<ICheckResult>> statusFutureList = new ArrayList<Future<ICheckResult>>();
@@ -118,7 +123,7 @@ public class AppStatus {
 					if (check instanceof IAppStatusAware) {
 						((IAppStatusAware) check).setAppStatus(AppStatus.this);
 					}
-					return check.checkStatus();
+					return check.checkStatus(locale);
 				}
 			}));
 		}
@@ -152,7 +157,7 @@ public class AppStatus {
 
 	private ICheckResult createCheckResultFromException(ICheck c, Exception e) {
 
-		return new CheckResultBuilder().from(c).code(ICheckResult.ERROR).fatal(true)
+		return new CheckResultBuilder().from(c).code(ICheckResult.ERROR).fatal()
 				.description("Check failed with exception: " + e.getClass().getCanonicalName() + " " + e.getMessage())
 				.build();
 

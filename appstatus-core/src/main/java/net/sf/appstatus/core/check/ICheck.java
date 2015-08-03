@@ -15,13 +15,15 @@
  */
 package net.sf.appstatus.core.check;
 
+import java.util.Locale;
+
 /**
  * Interface for status check
  *
  * @author Nicolas Richeton
  */
 public interface ICheck {
-	ICheckResult checkStatus();
+	ICheckResult checkStatus(Locale locale);
 
 	String getGroup();
 

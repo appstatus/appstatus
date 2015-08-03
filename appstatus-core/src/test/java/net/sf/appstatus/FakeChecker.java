@@ -1,12 +1,14 @@
 package net.sf.appstatus;
 
+import java.util.Locale;
+
 import net.sf.appstatus.core.check.ICheck;
 import net.sf.appstatus.core.check.ICheckResult;
 import net.sf.appstatus.core.check.impl.StatusResultImpl;
 
 public class FakeChecker implements ICheck {
 
-	public ICheckResult checkStatus() {
+	public ICheckResult checkStatus(Locale locale) {
 		StatusResultImpl result = new StatusResultImpl();
 		result.setCode(ICheckResult.OK);
 		result.setFatal(false);

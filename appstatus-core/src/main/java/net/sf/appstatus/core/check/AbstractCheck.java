@@ -15,6 +15,8 @@
  */
 package net.sf.appstatus.core.check;
 
+import java.util.Locale;
+
 import net.sf.appstatus.core.check.impl.StatusResultImpl;
 
 /**
@@ -26,6 +28,14 @@ public abstract class AbstractCheck implements ICheck {
 	protected static final int FATAL = 2;
 	protected static final int OK = 0;
 	protected static final int WARN = 1;
+
+	public ICheckResult checkStatus() {
+		return null;
+	}
+
+	public ICheckResult checkStatus(Locale locale) {
+		return checkStatus();
+	}
 
 	/**
 	 * Create result. Details can then be added using
