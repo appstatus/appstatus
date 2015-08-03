@@ -36,6 +36,7 @@ public class ServicesPerformanceCheck extends AbstractCheck implements IAppStatu
 	private final int limitError = 3000;
 	private final int limitWarn = 1000;
 
+	@Override
 	public ICheckResult checkStatus() {
 		List<IService> services = appStatus.getServiceManager().getServices();
 		List<String> warns = new ArrayList<String>();
@@ -58,13 +59,12 @@ public class ServicesPerformanceCheck extends AbstractCheck implements IAppStatu
 
 			result = result(this)
 					.code(ICheckResult.ERROR)
-					.fatal(true)
+					.fatal()
 					.description(
 							StringUtils.join(errors, "<br/>") + " <br/>Additional warnings: "
 									+ StringUtils.join(warns, "<br/>")).build();
 		} else if (warns.size() > 0) {
-			result = result(this).code(ICheckResult.ERROR).fatal(false).description(StringUtils.join(warns, "<br/>"))
-					.build();
+			result = result(this).code(ICheckResult.ERROR).description(StringUtils.join(warns, "<br/>")).build();
 		} else {
 			result = result(this).code(ICheckResult.OK).description("All average times under " + limitWarn + "ms")
 					.build();

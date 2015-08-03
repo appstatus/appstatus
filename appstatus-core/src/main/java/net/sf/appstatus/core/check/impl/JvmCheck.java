@@ -18,6 +18,7 @@ package net.sf.appstatus.core.check.impl;
 import java.lang.management.ManagementFactory;
 import java.lang.management.MemoryMXBean;
 import java.lang.management.MemoryUsage;
+import java.util.Locale;
 
 import net.sf.appstatus.core.check.AbstractCheck;
 import net.sf.appstatus.core.check.CheckResultBuilder;
@@ -29,26 +30,20 @@ import net.sf.appstatus.core.check.ICheckResult;
  */
 public class JvmCheck extends AbstractCheck {
 
-	public ICheckResult checkStatus() {
+	@Override
+	public ICheckResult checkStatus(Locale locale) {
 		MemoryMXBean memory = ManagementFactory.getMemoryMXBean();
 		MemoryUsage heap = memory.getHeapMemoryUsage();
-
 		long heapRatio = heap.getUsed() * 100 / heap.getMax();
-		CheckResultBuilder result = result(this);
+		CheckResultBuilder result = result(this).messageBundle("net.sf.appstatus.core.check.impl.JvmCheck_msg", locale);
 		if (heapRatio > 95) {
-			result.code(ICheckResult.ERROR)
-			.fatal(true)
-			.resolutionSteps(
-					"Increase memory allocation (JVM arg -Xmx) or reduce memory usage in application code.");
+			result.code(ICheckResult.ERROR).fatal().resolutionSteps("resolutionSteps.error", new Object[] {});
 		} else if (heapRatio > 80) {
-			result.code(ICheckResult.ERROR)
-			.fatal(false)
-			.resolutionSteps(
-					"Monitor closely memory usage and increase memory allocation (JVM arg -Xmx) if necessary");
+			result.code(ICheckResult.ERROR).resolutionSteps("resolutionSteps.warn", new Object[] {});
 		} else {
 			result.code(ICheckResult.OK);
 		}
-		result.description("Using " + heapRatio + "% of maximum memory (Heap).");
+		result.description("description", new Object[] { heapRatio });
 		return result.build();
 	}
 

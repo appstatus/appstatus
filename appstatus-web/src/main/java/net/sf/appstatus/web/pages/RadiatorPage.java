@@ -21,12 +21,12 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.commons.lang3.StringUtils;
-
 import net.sf.appstatus.core.batch.IBatchManager;
 import net.sf.appstatus.core.check.ICheckResult;
 import net.sf.appstatus.web.IPage;
 import net.sf.appstatus.web.StatusWebHandler;
+
+import org.apache.commons.lang3.StringUtils;
 
 /**
  * This is an Alpha radiator page. (Alpha version)
@@ -51,7 +51,7 @@ public class RadiatorPage implements IPage {
 		resp.setCharacterEncoding("UTF-8");
 
 		// Get Health checks
-		List<ICheckResult> results = webHandler.getAppStatus().checkAll();
+		List<ICheckResult> results = webHandler.getAppStatus().checkAll(req.getLocale());
 		int status = STATUS_OK;
 		for (ICheckResult r : results) {
 
@@ -97,7 +97,9 @@ public class RadiatorPage implements IPage {
 		w.append("<p style=\"color: #fff; font-size: 200%;\" >" + webHandler.getApplicationName() + "</p>");
 		w.append("<p style=\" padding-top: 10%;\"><a href=\"?p=status\" target=\"_blank\" class=\"btn btn-large "
 				+ btnClass + "\" >Status</a></p>");
-		w.append("<div class=\"progress " + batchStatus + active
+		w.append("<div class=\"progress "
+				+ batchStatus
+				+ active
 				+ "\" style=\"margin-top: 5%; width: 90%; margin-left: 5%; margin-right: 5%;\">  <div class=\"bar\" style=\"width: "
 				+ width + "%;\"></div></div>");
 		w.append("</body></html>");

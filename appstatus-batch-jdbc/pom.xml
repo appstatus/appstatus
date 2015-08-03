@@ -7,9 +7,6 @@
 	</parent>
 	<artifactId>appstatus-batch-jdbc</artifactId>
 
-	<properties>
-		<spring.version>4.1.6.RELEASE</spring.version>
-	</properties>
 	<dependencies>
 		<dependency>
 			<groupId>net.sf.appstatus</groupId>
@@ -29,7 +26,6 @@
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
-			<version>4.12</version>
 			<scope>test</scope>
 		</dependency>
 		<dependency>

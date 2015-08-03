@@ -2,9 +2,9 @@
  * Copyright 2010-2013 Capgemini Licensed under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
@@ -37,7 +37,7 @@ public class StatusPage extends AbstractPage {
 
 	/**
 	 * Returns status icon id.
-	 * 
+	 *
 	 * @param result
 	 * @return
 	 */
@@ -73,7 +73,7 @@ public class StatusPage extends AbstractPage {
 		ServletOutputStream os = resp.getOutputStream();
 
 		Map<String, String> valuesMap = new HashMap<String, String>();
-		List<ICheckResult> results = webHandler.getAppStatus().checkAll();
+		List<ICheckResult> results = webHandler.getAppStatus().checkAll(req.getLocale());
 		Collections.sort(results);
 		boolean statusOk = true;
 		int statusCode = 200;
@@ -132,9 +132,10 @@ public class StatusPage extends AbstractPage {
 			throws UnsupportedEncodingException, IOException {
 
 		setup(resp, "application/json");
+
 		ServletOutputStream os = resp.getOutputStream();
 		int statusCode = 200;
-		List<ICheckResult> results = webHandler.getAppStatus().checkAll();
+		List<ICheckResult> results = webHandler.getAppStatus().checkAll(req.getLocale());
 		for (ICheckResult r : results) {
 			if (r.isFatal()) {
 				resp.setStatus(500);
