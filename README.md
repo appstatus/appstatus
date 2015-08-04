@@ -148,6 +148,8 @@ AppStatus can also be used without Spring :
 * Configure with /status-check.properties
 * AOP is not available in this configuration.
 
-## Website 
+## Website and Wiki
 
-See http://appstatus.sourceforge.net for additional details. 
+
+* See website http://appstatus.sourceforge.net for additional details. 
+* Wiki has some configuration examples https://github.com/appstatus/appstatus/wiki
