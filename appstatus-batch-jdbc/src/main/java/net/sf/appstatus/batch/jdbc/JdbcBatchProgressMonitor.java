@@ -174,7 +174,15 @@ public class JdbcBatchProgressMonitor extends AbstractBatchProgressMonitor imple
 			try {
 				lastDbSave = System.currentTimeMillis();
 				getBatch().getBdBatch().setStatus(readableStatus());
-				getBatch().getBdBatch().setCurrentItem((String) currentItem);
+				
+				// Current Item. 
+				String dbCurrentItem = null;
+				if( currentItem != null ){
+					//Convert to string and ensure max size.
+					String toString  =currentItem.toString(); 
+					dbCurrentItem =toString.substring(0, Math.min(254, toString.length()));
+				}
+				getBatch().getBdBatch().setCurrentItem(dbCurrentItem);
 
 				if (!org.apache.commons.lang3.StringUtils.isEmpty(getMainMonitor().getLastMessage())
 						&& getMainMonitor().getLastMessage().length() > 1024) {
