@@ -31,7 +31,7 @@ pom.xml
 	<url>http://appstatus.sourceforge.net/maven2/repository</url>
 </repository>
 
-<!-- Optionally, use snapshots -->
+<!-- Optionally, you can also use snapshots -->
 <repository>
 	<id>appstatus-repository-snapshots</id>
 	<name>App Status repository</name>
