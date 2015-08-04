@@ -20,20 +20,54 @@ This means:
 
 ## Installation 
 
-With Maven and Spring 
+### Maven dependency 
 
 pom.xml
 ```xml
-  <dependency>
+<!-- Repository -->
+<repository>
+	<id>appstatus-repository</id>
+	<name>App Status repository</name>
+	<url>http://appstatus.sourceforge.net/maven2/repository</url>
+</repository>
+
+<!-- Optionally, use snapshots -->
+<repository>
+	<id>appstatus-repository-snapshots</id>
+	<name>App Status repository</name>
+	<url>http://appstatus.sourceforge.net/maven2/snapshots</url>
+</repository>
+
+
+<!-- Performance / cache / error monitoring -->
+<dependency>
+	<groupId>net.sf.appstatus</groupId>
+    	<artifactId>appstatus-services-inprocess</artifactId>
+    	<version>0.7.0-SNAPSHOT</version>
+    	<type>jar</type>
+</dependency>
+
+<!-- Batch / background tasks monitoring -->
+<dependency>
+    	<groupId>net.sf.appstatus</groupId>
+    	<artifactId>appstatus-batch-inprocess</artifactId>
+    	<version>0.7.0-SNAPSHOT</version>
+</dependency>
+    
+<!-- Web console -->    
+<dependency>
     	<groupId>net.sf.appstatus </groupId>
     	<artifactId>appstatus-web</artifactId>
     	<version>0.7.0-SNAPSHOT</version>
-    	<scope>compile</scope>
-    </dependency>
+</dependency>
 ``` 
 
 
-web.xml
+### With Spring 
+
+
+
+WEB-INF/web.xml  (only for web console )
 ```xml
 	<servlet>
 		<servlet-name>status</servlet-name>
@@ -52,7 +86,6 @@ web.xml
 ```
 
 Spring context.xml
-
 ```xml
 <bean id="appstatus" class="net.sf.appstatus.core.AppStatus"
 		init-method="init" >
@@ -106,6 +139,14 @@ Spring context.xml
 			pointcut="execution(public * package.Class.method())" />
 	</aop:config>
 ```
+
+### Without Spring 
+
+AppStatus can also be used without Spring : 
+
+* Just add dependencies (services, batch), they will be detected and used.
+* Configure with /status-check.properties
+* AOP is not available in this configuration.
 
 ## Website 
 
