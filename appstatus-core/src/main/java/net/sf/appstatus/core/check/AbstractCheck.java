@@ -29,10 +29,26 @@ public abstract class AbstractCheck implements ICheck {
 	protected static final int OK = 0;
 	protected static final int WARN = 1;
 
+	/**
+	 * @deprecated use {@link #checkStatus(Locale)} instead.
+	 * @return
+	 */
+	@Deprecated
 	public ICheckResult checkStatus() {
 		return null;
 	}
 
+	/**
+	 * This method must be overriden and implemented by Checks.
+	 * <p>
+	 * Note: default implementation ensure compatibility with old check by
+	 * calling {@link #checkStatus()}
+	 *
+	 * @param locale
+	 *            locale to used for description and resolution steps.
+	 *
+	 * @return check result.
+	 */
 	public ICheckResult checkStatus(Locale locale) {
 		return checkStatus();
 	}
@@ -42,7 +58,7 @@ public abstract class AbstractCheck implements ICheck {
 	 * {@link ICheckResult#setDescription(String)} and
 	 * {@link ICheckResult#setResolutionSteps(String)}.
 	 *
-	 * @deprecated
+	 * @deprecated use {@link CheckResultBuilder} instead.
 	 * @param code
 	 *            {@link AbstractCheck#OK} or {@link AbstractCheck#FATAL}
 	 * @return ICheckResult object
@@ -73,10 +89,23 @@ public abstract class AbstractCheck implements ICheck {
 		return result;
 	}
 
+	/**
+	 * Create a generic result. name and group are NOT set and it's up to the
+	 * caller to call {@link CheckResultBuilder#from(ICheck)}
+	 *
+	 * @return CheckResultBuilder to use.
+	 */
 	protected CheckResultBuilder result() {
 		return new CheckResultBuilder();
 	}
 
+	/**
+	 * Create a generic result.
+	 *
+	 * @param
+	 *
+	 * @return CheckResultBuilder to use.
+	 */
 	protected CheckResultBuilder result(ICheck check) {
 		return new CheckResultBuilder().from(check);
 	}
