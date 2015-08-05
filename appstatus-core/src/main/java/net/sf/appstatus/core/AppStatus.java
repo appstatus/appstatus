@@ -39,6 +39,7 @@ import net.sf.appstatus.core.check.CheckResultBuilder;
 import net.sf.appstatus.core.check.IAppStatusAware;
 import net.sf.appstatus.core.check.ICheck;
 import net.sf.appstatus.core.check.ICheckResult;
+import net.sf.appstatus.core.check.IConfigurationAware;
 import net.sf.appstatus.core.loggers.ILoggersManager;
 import net.sf.appstatus.core.property.IPropertyProvider;
 import net.sf.appstatus.core.services.IService;
@@ -120,8 +121,14 @@ public class AppStatus {
 
 			statusFutureList.add(executorService.submit(new Callable<ICheckResult>() {
 				public ICheckResult call() throws Exception {
+					// Inject Appstatus
 					if (check instanceof IAppStatusAware) {
 						((IAppStatusAware) check).setAppStatus(AppStatus.this);
+					}
+
+					// Inject configuration
+					if (check instanceof IConfigurationAware) {
+						((IConfigurationAware) check).setConfiguration(getConfiguration());
 					}
 					return check.checkStatus(locale);
 				}
@@ -226,6 +233,10 @@ public class AppStatus {
 		}
 
 		return obj;
+	}
+
+	protected Properties getConfiguration() {
+		return this.configuration;
 	}
 
 	public ILoggersManager getLoggersManager() {

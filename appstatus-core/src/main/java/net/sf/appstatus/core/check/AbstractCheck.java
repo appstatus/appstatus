@@ -16,6 +16,7 @@
 package net.sf.appstatus.core.check;
 
 import java.util.Locale;
+import java.util.Properties;
 
 import net.sf.appstatus.core.check.impl.StatusResultImpl;
 
@@ -23,11 +24,12 @@ import net.sf.appstatus.core.check.impl.StatusResultImpl;
  * @author Nicolas Richeton
  *
  */
-public abstract class AbstractCheck implements ICheck {
+public abstract class AbstractCheck implements ICheck, IConfigurationAware {
 
 	protected static final int FATAL = 2;
 	protected static final int OK = 0;
 	protected static final int WARN = 1;
+	private Properties configuration;
 
 	/**
 	 * @deprecated use {@link #checkStatus(Locale)} instead.
@@ -89,6 +91,10 @@ public abstract class AbstractCheck implements ICheck {
 		return result;
 	}
 
+	public Properties getConfiguration() {
+		return configuration;
+	}
+
 	/**
 	 * Create a generic result. name and group are NOT set and it's up to the
 	 * caller to call {@link CheckResultBuilder#from(ICheck)}
@@ -108,5 +114,9 @@ public abstract class AbstractCheck implements ICheck {
 	 */
 	protected CheckResultBuilder result(ICheck check) {
 		return new CheckResultBuilder().from(check);
+	}
+
+	public void setConfiguration(Properties configuration) {
+		this.configuration = configuration;
 	}
 }

@@ -19,6 +19,7 @@ import java.lang.management.ManagementFactory;
 import java.lang.management.MemoryMXBean;
 import java.lang.management.MemoryUsage;
 import java.util.Locale;
+import java.util.Properties;
 
 import net.sf.appstatus.core.check.AbstractCheck;
 import net.sf.appstatus.core.check.CheckResultBuilder;
@@ -58,11 +59,20 @@ public class JvmCheck extends AbstractCheck {
 		return "Heap usage";
 	}
 
-	public void setLimitError(int limitError) {
-		this.limitError = limitError;
+	@Override
+	public void setConfiguration(Properties configuration) {
+		super.setConfiguration(configuration);
+
+		String error = getConfiguration().getProperty("jvmCheck.limitError");
+		if (error != null) {
+			limitError = Integer.valueOf(error);
+		}
+
+		String warn = getConfiguration().getProperty("jvmCheck.limitWarn");
+		if (warn != null) {
+			limitWarn = Integer.valueOf(warn);
+		}
+
 	}
 
-	public void setLimitWarn(int limitWarn) {
-		this.limitWarn = limitWarn;
-	}
 }

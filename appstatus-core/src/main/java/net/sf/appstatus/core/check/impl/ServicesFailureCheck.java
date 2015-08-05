@@ -17,6 +17,7 @@ package net.sf.appstatus.core.check.impl;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Properties;
 
 import net.sf.appstatus.core.AppStatus;
 import net.sf.appstatus.core.check.AbstractCheck;
@@ -86,12 +87,18 @@ public class ServicesFailureCheck extends AbstractCheck implements IAppStatusAwa
 
 	}
 
-	public void setLimitError(int limitError) {
-		this.limitError = limitError;
-	}
+	@Override
+	public void setConfiguration(Properties configuration) {
+		super.setConfiguration(configuration);
 
-	public void setLimitWarn(int limitWarn) {
-		this.limitWarn = limitWarn;
-	}
+		String error = getConfiguration().getProperty("serviceFailureCheck.limitError");
+		if (error != null) {
+			limitError = Integer.valueOf(error);
+		}
 
+		String warn = getConfiguration().getProperty("serviceFailureCheck.limitWarn");
+		if (warn != null) {
+			limitWarn = Integer.valueOf(warn);
+		}
+	}
 }

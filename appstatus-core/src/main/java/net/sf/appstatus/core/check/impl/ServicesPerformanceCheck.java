@@ -17,6 +17,7 @@ package net.sf.appstatus.core.check.impl;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Properties;
 
 import net.sf.appstatus.core.AppStatus;
 import net.sf.appstatus.core.check.AbstractCheck;
@@ -33,6 +34,7 @@ import org.apache.commons.lang3.StringUtils;
 public class ServicesPerformanceCheck extends AbstractCheck implements IAppStatusAware {
 
 	private AppStatus appStatus;
+	private int delay = 10;
 	private int limitError = 3000;
 	private int limitWarn = 1000;
 
@@ -43,6 +45,11 @@ public class ServicesPerformanceCheck extends AbstractCheck implements IAppStatu
 		List<String> errors = new ArrayList<String>();
 
 		for (IService s : services) {
+			// Do not report if hit count is too small
+			if (this.delay > s.getHits()) {
+				continue;
+			}
+
 			if (s.getAvgResponseTime() > limitError || s.getAvgResponseTimeWithCache() > limitError) {
 				errors.add("Service <b>" + s.getGroup() + "#" + s.getName() + "</b> average response time ("
 						+ Math.round(s.getAvgResponseTime()) + "ms without cache / "
@@ -84,12 +91,23 @@ public class ServicesPerformanceCheck extends AbstractCheck implements IAppStatu
 		this.appStatus = appStatus;
 	}
 
-	public void setLimitError(int limitError) {
-		this.limitError = limitError;
-	}
+	@Override
+	public void setConfiguration(Properties configuration) {
+		super.setConfiguration(configuration);
 
-	public void setLimitWarn(int limitWarn) {
-		this.limitWarn = limitWarn;
-	}
+		String error = getConfiguration().getProperty("servicePerformanceCheck.limitError");
+		if (error != null) {
+			limitError = Integer.valueOf(error);
+		}
 
+		String warn = getConfiguration().getProperty("servicePerformanceCheck.limitWarn");
+		if (warn != null) {
+			limitWarn = Integer.valueOf(warn);
+		}
+
+		String delay = getConfiguration().getProperty("servicePerformanceCheck.delay");
+		if (delay != null) {
+			this.delay = Integer.valueOf(delay);
+		}
+	}
 }
