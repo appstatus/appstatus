@@ -5,7 +5,7 @@ AppStatus
 AppStatus brings the information you need on developement and production to ensure everything is running and gives pointers when issue happens. 
 
 This means: 
-* Self tests  (compatible with nagios and other monitoring applications)
+* Self tests  (compatible with nagios and other monitoring applications). Results include explainations and resolution steps.
 * Configuration information
 * Controler and Service statistics, including:
    * hits
@@ -17,6 +17,11 @@ This means:
 * Batch progress and history including failures and invalid objects. 
 * Radiator-compatible screen for monitoring
 
+## Why not use Metrics / Hawtio / another web console
+
+AppStatus does not show raw technical counters. It tries to use runtime behavior and developpers hint to produce high value reports. Its API can be used to improve reporting and diagnostics.
+
+The web console can be used by non technical users to ensure everything is working as expected with no possibility to break the application.
 
 ## Installation 
 
