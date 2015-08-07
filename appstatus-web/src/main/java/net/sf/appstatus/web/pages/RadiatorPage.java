@@ -79,12 +79,12 @@ public class RadiatorPage implements IPage {
 
 		String batchStatus = " progress-success ";
 		String active = StringUtils.EMPTY;
-		String width = "0%";
+		int width = 0;
 
 		if (manager != null) {
 			batchStatus = manager.getErrorBatches().size() > 0 ? " progress-danger " : " progress-success ";
 			active = manager.getRunningBatches().size() > 0 ? " progress-striped active " : "";
-			width = manager.getRunningBatches().size() + manager.getFinishedBatches().size() > 0 ? "100%" : "0%";
+			width = manager.getRunningBatches().size() + manager.getFinishedBatches().size() > 0 ? 100 : 0;
 		}
 
 		Writer w = resp.getWriter();
