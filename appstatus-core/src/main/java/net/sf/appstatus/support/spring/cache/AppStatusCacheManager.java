@@ -47,6 +47,9 @@ public class AppStatusCacheManager implements CacheManager {
 
 	public Cache getCache(String name) {
 		Cache cache = cacheManager.getCache(name);
+		if(cache == null){
+			return null;
+		}
 		AppStatusCacheAdapter result = cacheMap.get(cache.getName());
 
 		if (result == null) {
