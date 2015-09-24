@@ -53,7 +53,7 @@ public class ServicesFailureCheck extends AbstractCheck implements IAppStatusAwa
 				errors.add("Service <b>" + s.getGroup() + "#" + s.getName() + "</b> failure ratio (" + failureRatio
 						+ "%) is over error limit (" + limitError + "%)");
 			} else if (failureRatio > limitWarn) {
-				errors.add("Service <b>" + s.getGroup() + "#" + s.getName() + "</b> failure ratio (" + failureRatio
+				warns.add("Service <b>" + s.getGroup() + "#" + s.getName() + "</b> failure ratio (" + failureRatio
 						+ "%) is over error limit (" + limitWarn + "%)");
 			}
 		}
