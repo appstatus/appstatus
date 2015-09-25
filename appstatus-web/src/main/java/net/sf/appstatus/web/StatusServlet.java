@@ -136,16 +136,18 @@ public class StatusServlet extends HttpServlet {
 
 				if (instantiation != null) {
 					newPage = (IPage) instantiation.getInstance(pageBean);
-					try {
-						newPage = (IPage) Thread.currentThread().getContextClassLoader().loadClass(pageBean)
-								.newInstance();
-					} catch (ClassNotFoundException e) {
-						logger.warn("Class {} not found ", pageBean, e);
-					} catch (InstantiationException e) {
-						logger.warn("Cannot instanciate {} ", pageBean, e);
-					} catch (IllegalAccessException e) {
-						logger.warn("Cannot access class {} for instantiation ", pageBean, e);
-					}
+					if(newPage == null){
+						try {
+							newPage = (IPage) Thread.currentThread().getContextClassLoader().loadClass(pageBean)
+									.newInstance();
+						} catch (ClassNotFoundException e) {
+							logger.warn("Class {} not found ", pageBean, e);
+						} catch (InstantiationException e) {
+							logger.warn("Cannot instanciate {} ", pageBean, e);
+						} catch (IllegalAccessException e) {
+							logger.warn("Cannot access class {} for instantiation ", pageBean, e);
+						}
+					}	
 				}
 
 				addPage(pages, newPage);
