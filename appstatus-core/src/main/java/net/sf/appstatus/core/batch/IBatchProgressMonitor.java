@@ -40,7 +40,7 @@ import org.slf4j.Logger;
  * 			<br/>
  * 			monitor.worked(1);<br/>
  * 			monitor.done();
- *
+ * 
  * </code>
  *
  *
@@ -50,161 +50,168 @@ import org.slf4j.Logger;
  */
 public interface IBatchProgressMonitor {
 
-	/**
-	 * Unknown amount of work.
-	 */
-	public static final int UNKNOW = -1;
+    /**
+     * Unknown amount of work.
+     */
+    public static final int UNKNOW = -1;
 
-	/**
-	 * Begin a task execution.
-	 *
-	 * @param name
-	 *            task name
-	 * @param description
-	 *            task description
-	 * @param totalWork
-	 *            task amount of work to be done
-	 */
-	void beginTask(String name, String description, int totalWork);
+    /**
+     * Begin a task execution.
+     *
+     * @param name
+     *            task name
+     * @param description
+     *            task description
+     * @param totalWork
+     *            task amount of work to be done
+     */
+    void beginTask(String name, String description, int totalWork);
 
-	/**
-	 * Create a sub task of this task with the amount of work the subtask
-	 * execution will done.
-	 *
-	 * @param work
-	 *            work units of the task done by the subtask
-	 * @return sub task progress monitor
-	 */
-	IBatchProgressMonitor createSubTask(int work);
+    /**
+     * Create a sub task of this task with the amount of work the subtask
+     * execution will done.
+     *
+     * @param work
+     *            work units of the task done by the subtask
+     * @return sub task progress monitor
+     */
+    IBatchProgressMonitor createSubTask(int work);
 
-	/**
-	 * Set the task is done.
-	 */
-	void done();
+    /**
+     * Set the task is done.
+     */
+    void done();
 
-	/**
-	 * Report global failure.
-	 * <p>
-	 * Use this when the batch has issued a major error and cannot continue.
-	 *
-	 * @param reason
-	 */
-	void fail(String reason);
+    /**
+     * Set the task is done with custom status.
+     * 
+     * @param customStatus
+     */
+    void done(String customStatus);
 
-	/**
-	 * Report global failure.
-	 * <p>
-	 * Use this when the batch has issued a major error and cannot continue.
-	 *
-	 * @param reason
-	 * @param t
-	 *            Exception which caused the failure.
-	 */
-	void fail(String reason, Throwable t);
+    /**
+     * Report global failure.
+     * <p>
+     * Use this when the batch has issued a major error and cannot continue.
+     *
+     * @param reason
+     */
+    void fail(String reason);
 
-	Date getLastUpdate();
+    /**
+     * Report global failure.
+     * <p>
+     * Use this when the batch has issued a major error and cannot continue.
+     *
+     * @param reason
+     * @param t
+     *            Exception which caused the failure.
+     */
+    void fail(String reason, Throwable t);
 
-	/**
-	 * Retrieve the total amount of work for this task.
-	 *
-	 * @return the total amount of work
-	 */
-	int getTotalWork();
+    Date getLastUpdate();
 
-	/**
-	 * Returns true if cancel has been requested for the current job, usually
-	 * from a control UI.
-	 *
-	 * @return
-	 */
-	boolean isCancelRequested();
+    /**
+     * Retrieve the total amount of work for this task.
+     *
+     * @return the total amount of work
+     */
+    int getTotalWork();
 
-	/**
-	 * Send a message during the task execution.
-	 *
-	 * @param message
-	 *            message
-	 */
-	void message(String message);
+    /**
+     * Returns true if cancel has been requested for the current job, usually
+     * from a control UI.
+     *
+     * @return
+     */
+    boolean isCancelRequested();
 
-	/**
-	 * Reject one item during the task processing.
-	 * <p>
-	 * Use this when :
-	 * <ul>
-	 * <li>Item processing has failed (exception, invalid data, connection issue
-	 * ..) and a human action is probably required to before retry.</li>
-	 * <li>The batch is able to go on and process other items (item processing
-	 * is independent).</li>
-	 * </ul>
-	 * <p>
-	 *
-	 * @see IBatchProgressMonitor#reject(String, String, Throwable)
-	 *      IBatchProgressMonitor#reject(String, String, Throwable) can be used
-	 *      to provide the exception which has caused the failure.
-	 *
-	 * @param itemId
-	 *            rejected item id
-	 * @param reason
-	 *            the reason
-	 */
-	void reject(String itemId, String reason);
+    /**
+     * Send a message during the task execution.
+     *
+     * @param message
+     *            message
+     */
+    void message(String message);
 
-	/**
-	 * * Reject one item during the task processing.
-	 *
-	 * @see #reject(String, String)
-	 * @param itemId
-	 * @param reason
-	 * @param e
-	 *            Exception
-	 */
-	void reject(String itemId, String reason, Throwable e);
+    /**
+     * Reject one item during the task processing.
+     * <p>
+     * Use this when :
+     * <ul>
+     * <li>Item processing has failed (exception, invalid data, connection issue
+     * ..) and a human action is probably required to before retry.</li>
+     * <li>The batch is able to go on and process other items (item processing
+     * is independent).</li>
+     * </ul>
+     * <p>
+     *
+     * @see IBatchProgressMonitor#reject(String, String, Throwable)
+     *      IBatchProgressMonitor#reject(String, String, Throwable) can be used
+     *      to provide the exception which has caused the failure.
+     *
+     * @param itemId
+     *            rejected item id
+     * @param reason
+     *            the reason
+     */
+    void reject(String itemId, String reason);
 
-	/**
-	 * Reject a set of items during the task processing.
-	 *
-	 * @see #reject(String, String)
-	 *
-	 *
-	 * @param itemIds
-	 *            Array of item ids rejected
-	 * @param reason
-	 *            the reason
-	 */
-	void reject(String[] itemIds, String reason);
+    /**
+     * * Reject one item during the task processing.
+     *
+     * @see #reject(String, String)
+     * @param itemId
+     * @param reason
+     * @param e
+     *            Exception
+     */
+    void reject(String itemId, String reason, Throwable e);
 
-	/**
-	 * Reject a set of items during the task processing.
-	 *
-	 * @see #reject(String, String)
-	 * @param itemIds
-	 * @param reason
-	 * @param e
-	 *            Exception
-	 */
-	void reject(String[] itemIds, String reason, Throwable e);
+    /**
+     * Reject a set of items during the task processing.
+     *
+     * @see #reject(String, String)
+     *
+     *
+     * @param itemIds
+     *            Array of item ids rejected
+     * @param reason
+     *            the reason
+     */
+    void reject(String[] itemIds, String reason);
 
-	/**
-	 * Set the current item which is being processed.
-	 *
-	 * @param item
-	 *            current processed item
-	 */
-	void setCurrentItem(Object item);
+    /**
+     * Reject a set of items during the task processing.
+     *
+     * @see #reject(String, String)
+     * @param itemIds
+     * @param reason
+     * @param e
+     *            Exception
+     */
+    void reject(String[] itemIds, String reason, Throwable e);
 
-	/**
-	 * Set the logger to use for the current batch.
-	 *
-	 * @param logger
-	 */
-	void setLogger(Logger logger);
+    /**
+     * Set the current item which is being processed.
+     *
+     * @param item
+     *            current processed item
+     */
+    void setCurrentItem(Object item);
 
-	/**
-	 * Notify the processing of items.
-	 *
-	 * @param work
-	 *            items processed
-	 */
-	void worked(int work);
+    /**
+     * Set the logger to use for the current batch.
+     *
+     * @param logger
+     */
+    void setLogger(Logger logger);
+
+    /**
+     * Notify the processing of items.
+     *
+     * @param work
+     *            items processed
+     */
+    void worked(int work);
 }
