@@ -74,7 +74,7 @@ public class JdbcBatchProgressMonitor extends AbstractBatchProgressMonitor imple
     @Override
     public void done(String customStatus) {
         super.done(customStatus);
-        updateDb(true);
+        updateDb(true, customStatus);
     }
 
     @Override
