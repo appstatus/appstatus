@@ -7,7 +7,9 @@ import java.util.List;
 import java.util.Properties;
 import java.util.Vector;
 
+import net.sf.appstatus.core.batch.BatchConfiguration;
 import net.sf.appstatus.core.batch.IBatch;
+import net.sf.appstatus.core.batch.IBatchExprAdapter;
 import net.sf.appstatus.core.batch.IBatchManager;
 import net.sf.appstatus.core.batch.IBatchProgressMonitor;
 
@@ -27,6 +29,8 @@ import org.slf4j.LoggerFactory;
 public class InProcessBatchManager implements IBatchManager {
 
 	private static Logger logger = LoggerFactory.getLogger(InProcessBatchManager.class);
+
+	private IBatchExprAdapter batchExprAdapter;
 
 	private List<IBatch> errorBatches = new Vector<IBatch>();
 
@@ -57,7 +61,30 @@ public class InProcessBatchManager implements IBatchManager {
 			runningBatches.add(b);
 		}
 
+		addExecutionExprInformations(b);
+
 		return b;
+	}
+
+	/**
+	 * Adding execution expressions informations.
+	 *
+	 * @param b
+	 */
+	private void addExecutionExprInformations(IBatch b) {
+		if (null != batchExprAdapter) {
+			BatchConfiguration conf = batchExprAdapter.getBatchConfiguration(b.getGroup(), b.getName());
+
+			if (null != conf) {
+				if (null == conf.getLastExecution() //
+						|| null == b.getStartDate() //
+						|| b.getStartDate().after(conf.getLastExecution())) {
+					conf.setLastExecution(b.getStartDate());
+				}
+
+				conf.setNextExecution(batchExprAdapter.getNextDate(conf.getExecutionExpr(), new Date()));
+			}
+		}
 	}
 
 	protected void addTo(List<IBatch> l, IBatch b) {
@@ -76,6 +103,10 @@ public class InProcessBatchManager implements IBatchManager {
 		if (!batch.isSuccess()) {
 			addTo(errorBatches, batch);
 		}
+	}
+
+	public IBatchExprAdapter getBatchExprAdapter() {
+		return this.batchExprAdapter;
 	}
 
 	public Properties getConfiguration() {
@@ -182,6 +213,10 @@ public class InProcessBatchManager implements IBatchManager {
 		removeBatch(b);
 	}
 
+	public void setBatchExprAdapter(IBatchExprAdapter batchExprAdapter) {
+		this.batchExprAdapter = batchExprAdapter;
+	}
+
 	public void setConfiguration(Properties configuration) {
 		try {
 
@@ -206,5 +241,4 @@ public class InProcessBatchManager implements IBatchManager {
 		logger.info("Zombie interval: {}", zombieInterval);
 
 	}
-
 }
