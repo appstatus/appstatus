@@ -42,13 +42,6 @@ public interface IBatchManager {
     IBatch addBatch(String name, String group, String uuid);
 
     /**
-     * Getting the batchExprAdapter.
-     *
-     * @return IBatchExprReader
-     */
-    IBatchExprAdapter getBatchExprAdapter();
-
-    /**
      * Get current configuration.
      *
      * @return
@@ -97,13 +90,6 @@ public interface IBatchManager {
      * @param b
      */
     void removeBatch(String uuid);
-
-    /**
-     * Setting the batch expr reader.
-     *
-     * @param reader
-     */
-    void setBatchExprAdapter(IBatchExprAdapter batchExprAdapter);
 
     /**
      * Inject configuration for service manager.

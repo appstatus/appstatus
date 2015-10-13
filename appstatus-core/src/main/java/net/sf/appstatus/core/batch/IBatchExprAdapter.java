@@ -11,15 +11,6 @@ import java.util.List;
  */
 public interface IBatchExprAdapter {
     /**
-     * Getting the batch configuration for a Single batch
-     * 
-     * @param group
-     * @param name
-     * @return BatchConfiguration
-     */
-    BatchConfiguration getBatchConfiguration(String group, String name);
-
-    /**
      * Getting the batch's configurations.
      */
     List<BatchConfiguration> getBatchConfigurations();

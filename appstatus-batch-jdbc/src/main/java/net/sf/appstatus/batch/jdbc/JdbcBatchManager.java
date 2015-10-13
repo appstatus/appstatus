@@ -6,9 +6,7 @@ import java.util.List;
 import java.util.Properties;
 import java.util.Vector;
 
-import net.sf.appstatus.core.batch.BatchConfiguration;
 import net.sf.appstatus.core.batch.IBatch;
-import net.sf.appstatus.core.batch.IBatchExprAdapter;
 import net.sf.appstatus.core.batch.IBatchManager;
 import net.sf.appstatus.core.batch.IBatchProgressMonitor;
 
@@ -24,8 +22,6 @@ public class JdbcBatchManager implements IBatchManager {
     private int logInterval;
 
     private int zombieInterval;
-
-    private IBatchExprAdapter batchExprAdapter;
 
     public void setBatchDao(BatchDao batchDao) {
         this.batchDao = batchDao;
@@ -69,33 +65,10 @@ public class JdbcBatchManager implements IBatchManager {
                 Batch b = new Batch(bdb);
                 b.setZombieInterval(zombieInterval);
 
-                addExecutionExprInformations(b);
-
                 result.add(b);
             }
         }
         return result;
-    }
-
-    /**
-     * Adding execution expressions informations.
-     * 
-     * @param b
-     */
-    private void addExecutionExprInformations(Batch b) {
-        if (null != batchExprAdapter) {
-            BatchConfiguration conf = batchExprAdapter.getBatchConfiguration(b.getGroup(), b.getName());
-
-            if (null != conf) {
-                if (null == conf.getLastExecution() //
-                        || null == b.getStartDate() //
-                        || b.getStartDate().after(conf.getLastExecution())) {
-                    conf.setLastExecution(b.getStartDate());
-                }
-
-                conf.setNextExecution(batchExprAdapter.getNextDate(conf.getExecutionExpr(), new Date()));
-            }
-        }
     }
 
     public List<IBatch> getErrorBatches() {
@@ -166,13 +139,4 @@ public class JdbcBatchManager implements IBatchManager {
         // Check database for table
         batchDao.createDbIfNecessary();
     }
-
-    public IBatchExprAdapter getBatchExprAdapter() {
-        return this.batchExprAdapter;
-    }
-
-    public void setBatchExprAdapter(IBatchExprAdapter batchExprAdapter) {
-        this.batchExprAdapter = batchExprAdapter;
-    }
-
 }
