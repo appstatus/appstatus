@@ -32,9 +32,13 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import net.sf.appstatus.core.batch.IBatch;
 import net.sf.appstatus.core.batch.IBatchManager;
 import net.sf.appstatus.core.batch.IBatchProgressMonitor;
+import net.sf.appstatus.core.batch.IBatchScheduleManager;
 import net.sf.appstatus.core.check.CheckResultBuilder;
 import net.sf.appstatus.core.check.IAppStatusAware;
 import net.sf.appstatus.core.check.ICheck;
@@ -45,9 +49,6 @@ import net.sf.appstatus.core.property.IPropertyProvider;
 import net.sf.appstatus.core.services.IService;
 import net.sf.appstatus.core.services.IServiceManager;
 import net.sf.appstatus.core.services.IServiceMonitor;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * This is the entry point for every feature of AppStatus.
@@ -66,6 +67,7 @@ public class AppStatus {
 	private static final String CONFIG_LOCATION = "status-check.properties";
 	private static Logger logger = LoggerFactory.getLogger(AppStatus.class);
 	private IBatchManager batchManager = null;
+	private IBatchScheduleManager batchScheduleManager;
 	protected List<ICheck> checkers;
 	private Properties configuration = null;
 	private ExecutorService executorService = null;
@@ -185,6 +187,13 @@ public class AppStatus {
 		}
 
 		return null;
+	}
+
+	/**
+	 * @return the batchScheduleManager
+	 */
+	public IBatchScheduleManager getBatchScheduleManager() {
+		return batchScheduleManager;
 	}
 
 	/**
@@ -469,6 +478,14 @@ public class AppStatus {
 
 	public void setBatchManager(IBatchManager batchManager) {
 		this.batchManager = batchManager;
+	}
+
+	/**
+	 * @param batchScheduleManager
+	 *            the batchScheduleManager to set
+	 */
+	public void setBatchScheduleManager(IBatchScheduleManager batchScheduleManager) {
+		this.batchScheduleManager = batchScheduleManager;
 	}
 
 	public void setCheckers(List<ICheck> checkers) {

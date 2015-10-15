@@ -17,6 +17,7 @@ public class Batch implements IBatch {
 
 	private final String group;
 	private InProcessBatchProgressMonitor monitor;
+
 	private final String name;
 
 	/**
@@ -60,7 +61,7 @@ public class Batch implements IBatch {
 
 	/*
 	 * (non-Javadoc)
-	 *
+	 * 
 	 * @see java.lang.Object#equals(java.lang.Object)
 	 */
 	@Override
@@ -207,5 +208,4 @@ public class Batch implements IBatch {
 	public void setZombieInterval(int zombieInterval) {
 		this.zombieInterval = zombieInterval;
 	}
-
 }

@@ -88,43 +88,54 @@ package net.sf.appstatus.batch.jdbc;
  */
 public class BatchDaoOracle extends BatchDao {
 
-	@Override
-	protected String getSql(int query) {
+    @Override
+    protected String getSql(int query) {
 
-		switch (query) {
+        switch (query) {
 
-		case BATCH_FETCH:
-			return "SELECT " //
-					+" UUID_BATCH, ITEM, CURRENT_TASK, END_DATE, GROUP_BATCH, ITEMCOUNT, LAST_MSG, UPDATED, NAME_BATCH, PROGRESS, REJECT, START_DATE, STATUS,SUCCESS " //
-					+ "FROM ( " //
-					 + "SELECT UUID_BATCH, ITEM, CURRENT_TASK, END_DATE, GROUP_BATCH, ITEMCOUNT, LAST_MSG, UPDATED, NAME_BATCH, PROGRESS, REJECT, START_DATE, STATUS,SUCCESS FROM "
-					+ tableName + " WHERE STATUS = ?  ORDER BY UPDATED DESC " //
-					+ ") WHERE ROWNUM <= ? ";
-		
-		
-		case BATCH_CREATE_TABLE:
-			return "CREATE TABLE " + tableName + " (" //
-					+ " UUID_BATCH varchar(256) NOT NULL," //
-					+ "GROUP_BATCH varchar(256) NULL," //
-					+ "NAME_BATCH varchar(256) NULL," //
-					+ "START_DATE DATE  NULL," //
-					+ "END_DATE DATE NULL," //
-					+ "UPDATED DATE NULL," //
-					+ "STATUS varchar(64) NULL," //
-					+ "SUCCESS BOOLEAN NULL," //
-					+ "ITEMCOUNT BIGINT NULL," //
-					+ "ITEM varchar(256) NULL," //
-					+ "CURRENT_TASK varchar(256) NULL," //
-					+ "PROGRESS Float NULL," //
-					+ "REJECT CLOB NULL," //
-					+ "LAST_MSG varchar(1024) NULL," //
-					+ "PRIMARY KEY (UUID_BATCH)" + ")  ";
-			
-		case BATCH_DELETE_SUCCESS:
-			return "delete from " + tableName + " where STATUS = ? AND REJECT is NULL";
-		default:
-			return super.getSql(query);
-		}
+        case BATCH_FETCH:
+            return "SELECT " //
+                    + " UUID_BATCH, ITEM, CURRENT_TASK, END_DATE, GROUP_BATCH, ITEMCOUNT, LAST_MSG, UPDATED, NAME_BATCH, PROGRESS, REJECT, START_DATE, STATUS,SUCCESS " //
+                    + "FROM ( " //
+                    + "SELECT UUID_BATCH, ITEM, CURRENT_TASK, END_DATE, GROUP_BATCH, ITEMCOUNT, LAST_MSG, UPDATED, NAME_BATCH, PROGRESS, REJECT, START_DATE, STATUS,SUCCESS FROM "
+                    + tableName
+                    + " WHERE STATUS IN ( %s )  ORDER BY UPDATED DESC " //
+                    + ") WHERE ROWNUM <= ? ";
 
-	}
+            
+        case BATCH_FETCH_BY_NAME:
+            return "SELECT " //
+                    + " UUID_BATCH, ITEM, CURRENT_TASK, END_DATE, GROUP_BATCH, ITEMCOUNT, LAST_MSG, UPDATED, NAME_BATCH, PROGRESS, REJECT, START_DATE, STATUS,SUCCESS " //
+                    + "FROM ( " //
+                    + "SELECT UUID_BATCH, ITEM, CURRENT_TASK, END_DATE, GROUP_BATCH, ITEMCOUNT, LAST_MSG, UPDATED, NAME_BATCH, PROGRESS, REJECT, START_DATE, STATUS,SUCCESS FROM "
+                    + tableName
+                    + " WHERE GROUP_BATCH = ? AND NAME_BATCH = ? AND STATUS IN ( %s )  ORDER BY UPDATED DESC " //
+                    + ") WHERE ROWNUM <= ? ";
+
+            
+        case BATCH_CREATE_TABLE:
+            return "CREATE TABLE " + tableName + " (" //
+                    + " UUID_BATCH varchar(256) NOT NULL," //
+                    + "GROUP_BATCH varchar(256) NULL," //
+                    + "NAME_BATCH varchar(256) NULL," //
+                    + "START_DATE DATE  NULL," //
+                    + "END_DATE DATE NULL," //
+                    + "UPDATED DATE NULL," //
+                    + "STATUS varchar(64) NULL," //
+                    + "SUCCESS BOOLEAN NULL," //
+                    + "ITEMCOUNT BIGINT NULL," //
+                    + "ITEM varchar(256) NULL," //
+                    + "CURRENT_TASK varchar(256) NULL," //
+                    + "PROGRESS Float NULL," //
+                    + "REJECT CLOB NULL," //
+                    + "LAST_MSG varchar(1024) NULL," //
+                    + "PRIMARY KEY (UUID_BATCH)" + ")  ";
+
+        case BATCH_DELETE_SUCCESS:
+            return "delete from " + tableName + " where STATUS = ? AND REJECT is NULL";
+        default:
+            return super.getSql(query);
+        }
+
+    }
 }

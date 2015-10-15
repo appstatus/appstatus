@@ -42,6 +42,14 @@ public interface IBatchManager {
 	IBatch addBatch(String name, String group, String uuid);
 
 	/**
+	 * Ordered by update date DESC
+	 * 
+	 * @return
+	 */
+
+	List<IBatch> getBatches(String group, String name);
+
+	/**
 	 * Get current configuration.
 	 *
 	 * @return
@@ -49,10 +57,17 @@ public interface IBatchManager {
 	Properties getConfiguration();
 
 	/**
-	 *
+	 * Ordered by update date DESC
+	 * 
 	 * @return
 	 */
 	List<IBatch> getErrorBatches();
+
+	/**
+	 * Ordered by update date DESC
+	 * 
+	 * @return
+	 */
 
 	List<IBatch> getFinishedBatches();
 

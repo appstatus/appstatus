@@ -114,6 +114,7 @@ public class BatchDao {
 	public static final int BATCH_INSERT = 6;
 	public static final int BATCH_UPDATE = 7;
 	public static final int BATCH_CREATE_TABLE = 1;
+	public static final int BATCH_FETCH_BY_NAME = 8;
 
 	private static Logger logger = LoggerFactory.getLogger(BatchDao.class);
 
@@ -165,10 +166,16 @@ public class BatchDao {
 		logger.info("Batchs with success status deleted.");
 	}
 
-	private List<BdBatch> fetchBdBatch(final int max, String status) {
+	private List<BdBatch> fetchBdBatch(final int max, String[] status) {
+
+		SqlRowSet srs = this.jdbcTemplate.queryForRowSet(insertParametersFromList(getSql(BATCH_FETCH), status),
+				new Object[] { max });
+
+		return resultSet2Batches(srs);
+	}
+
+	private List<BdBatch> resultSet2Batches(SqlRowSet srs) {
 		List<BdBatch> results = new ArrayList<BdBatch>();
-		Object[] parameters = new Object[] { status, max };
-		SqlRowSet srs = this.jdbcTemplate.queryForRowSet(getSql(BATCH_FETCH), parameters);
 
 		while (srs.next()) {
 			BdBatch bdBatch;
@@ -185,19 +192,42 @@ public class BatchDao {
 		return results;
 	}
 
+	private List<BdBatch> fetchBdBatch(String group, String name, final int max, String[] status) {
+		List<BdBatch> results = new ArrayList<BdBatch>();
+
+		SqlRowSet srs = this.jdbcTemplate.queryForRowSet(insertParametersFromList(getSql(BATCH_FETCH_BY_NAME), status),
+				new Object[] { group, name, max });
+		return resultSet2Batches(srs);
+
+	}
+
+	/**
+	 * Replace %s by values passed as parameter
+	 * 
+	 * @param values
+	 * @return String
+	 */
+	private String insertParametersFromList(String sql, String[] values) {
+		for (int i = 0; i < values.length; ++i) {
+			values[i] = String.format("'%s'", values[i]);
+		}
+
+		return String.format(sql, StringUtils.join(values, ","));
+	}
+
 	public List<BdBatch> fetchError(final int max) {
 
-		List<BdBatch> results = fetchBdBatch(max, IBatch.STATUS_FAILURE);
+		List<BdBatch> results = fetchBdBatch(max, new String[] { IBatch.STATUS_FAILURE });
 		return results;
 	}
 
 	public List<BdBatch> fetchFinished(final int max) {
-		List<BdBatch> results = fetchBdBatch(max, IBatch.STATUS_SUCCESS);
+		List<BdBatch> results = fetchBdBatch(max, new String[] { IBatch.STATUS_SUCCESS, IBatch.STATUS_FAILURE });
 		return results;
 	}
 
 	public List<BdBatch> fetchRunning(final int max) {
-		List<BdBatch> results = fetchBdBatch(max, IBatch.STATUS_RUNNING);
+		List<BdBatch> results = fetchBdBatch(max, new String[] { IBatch.STATUS_RUNNING });
 		return results;
 	}
 
@@ -232,7 +262,12 @@ public class BatchDao {
 		case BATCH_FETCH:
 			return "SELECT UUID_BATCH, ITEM, CURRENT_TASK, END_DATE, GROUP_BATCH, ITEMCOUNT, LAST_MSG, UPDATED,"
 					+ " NAME_BATCH, PROGRESS, REJECT, START_DATE, STATUS,SUCCESS FROM "//
-					+ tableName + " WHERE STATUS = ? ORDER BY UPDATED DESC LIMIT ?";
+					+ tableName + " WHERE STATUS IN ( %s ) ORDER BY UPDATED DESC LIMIT ? ";
+		case BATCH_FETCH_BY_NAME:
+			return "SELECT UUID_BATCH, ITEM, CURRENT_TASK, END_DATE, GROUP_BATCH, ITEMCOUNT, LAST_MSG, UPDATED,"
+					+ " NAME_BATCH, PROGRESS, REJECT, START_DATE, STATUS,SUCCESS FROM "//
+					+ tableName
+					+ " WHERE  GROUP_BATCH = ? AND NAME_BATCH = ? AND STATUS IN ( %s ) ORDER BY UPDATED DESC LIMIT ? ";
 		case BATCH_CREATE_TABLE:
 			return "CREATE TABLE " + tableName + " (" //
 					+ " UUID_BATCH varchar(256) NOT NULL," //
@@ -323,5 +358,11 @@ public class BatchDao {
 				bdBatch.getName(), bdBatch.getProgress(), bdBatch.getReject(), bdBatch.getStatus(),
 				bdBatch.getSuccess(), bdBatch.getUuid() };
 		this.jdbcTemplate.update(getSql(BATCH_UPDATE), parameters);
+	}
+
+	public List<BdBatch> fetch(String group, String name, int max) {
+		List<BdBatch> results = fetchBdBatch(group, name, max,
+				new String[] { IBatch.STATUS_SUCCESS, IBatch.STATUS_FAILURE });
+		return results;
 	}
 }

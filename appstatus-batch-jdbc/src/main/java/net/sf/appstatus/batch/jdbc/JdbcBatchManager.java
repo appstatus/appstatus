@@ -64,6 +64,7 @@ public class JdbcBatchManager implements IBatchManager {
 			for (BdBatch bdb : bdBaches) {
 				Batch b = new Batch(bdb);
 				b.setZombieInterval(zombieInterval);
+
 				result.add(b);
 			}
 		}
@@ -81,7 +82,7 @@ public class JdbcBatchManager implements IBatchManager {
 	public IBatchProgressMonitor getMonitor(IBatch batch) {
 		Batch b = (Batch) batch;
 		if (b.getProgressMonitor() == null) {
-			JdbcBatchProgressMonitor monitor = new JdbcBatchProgressMonitor(batch.getUuid(), batch, batchDao);			
+			JdbcBatchProgressMonitor monitor = new JdbcBatchProgressMonitor(batch.getUuid(), batch, batchDao);
 			monitor.setManager(this);
 		}
 		return b.getProgressMonitor();
@@ -139,4 +140,7 @@ public class JdbcBatchManager implements IBatchManager {
 		batchDao.createDbIfNecessary();
 	}
 
+	public List<IBatch> getBatches(String group, String name) {
+		return convertToIBatch(batchDao.fetch(group, name, 25));
+	}
 }
