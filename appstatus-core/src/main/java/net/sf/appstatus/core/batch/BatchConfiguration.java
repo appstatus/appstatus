@@ -9,91 +9,87 @@ import java.util.Date;
  * @author Idriss Neumann
  *
  */
-public class BatchConfiguration implements Serializable {
-    private static final long serialVersionUID = 1L;
+public class BatchConfiguration implements Serializable, IBatchConfiguration {
+	private static final long serialVersionUID = 1L;
 
-    private String executionExpr;
+	private String group;
 
-    private String group;
+	private Date lastExecution;
 
-    private Date lastExecution;
+	private final IBatchScheduleManager manager;
 
-    private String name;
+	private String name;
 
-    private Date nextExecution;
+	private String schedule;
 
-    /**
-     * @return the executionExpr
-     */
-    public String getExecutionExpr() {
-        return executionExpr;
-    }
+	public BatchConfiguration(IBatchScheduleManager manager) {
+		this.manager = manager;
+	}
 
-    /**
-     * @return the group
-     */
-    public String getGroup() {
-        return group;
-    }
+	/**
+	 * @return the group
+	 */
+	public String getGroup() {
+		return group;
+	}
 
-    /**
-     * @return the lastExecution
-     */
-    public Date getLastExecution() {
-        return lastExecution;
-    }
+	/**
+	 * @return the lastExecution
+	 */
+	public Date getLastExecution() {
+		return lastExecution;
+	}
 
-    /**
-     * @return the name
-     */
-    public String getName() {
-        return name;
-    }
+	/**
+	 * @return the name
+	 */
+	public String getName() {
+		return name;
+	}
 
-    /**
-     * @return the nextExecution
-     */
-    public Date getNextExecution() {
-        return nextExecution;
-    }
+	/**
+	 * @return the nextExecution
+	 */
+	public Date getNextExecution() {
+		return manager.getNextDate(schedule, new Date());
+	}
 
-    /**
-     * @param executionExpr
-     *            the executionExpr to set
-     */
-    public void setExecutionExpr(String executionExpr) {
-        this.executionExpr = executionExpr;
-    }
+	/**
+	 * @return the schedule
+	 */
+	public String getSchedule() {
+		return schedule;
+	}
 
-    /**
-     * @param group
-     *            the group to set
-     */
-    public void setGroup(String group) {
-        this.group = group;
-    }
+	/**
+	 * @param group
+	 *            the group to set
+	 */
+	public void setGroup(String group) {
+		this.group = group;
+	}
 
-    /**
-     * @param lastExecution
-     *            the lastExecution to set
-     */
-    public void setLastExecution(Date lastExecution) {
-        this.lastExecution = lastExecution;
-    }
+	/**
+	 * @param lastExecution
+	 *            the lastExecution to set
+	 */
+	public void setLastExecution(Date lastExecution) {
+		this.lastExecution = lastExecution;
+	}
 
-    /**
-     * @param name
-     *            the name to set
-     */
-    public void setName(String name) {
-        this.name = name;
-    }
+	/**
+	 * @param name
+	 *            the name to set
+	 */
+	public void setName(String name) {
+		this.name = name;
+	}
 
-    /**
-     * @param nextExecution
-     *            the nextExecution to set
-     */
-    public void setNextExecution(Date nextExecution) {
-        this.nextExecution = nextExecution;
-    }
+	/**
+	 * @param schedule
+	 *            the schedule to set
+	 */
+	public void setSchedule(String executionExpr) {
+		this.schedule = executionExpr;
+	}
 }

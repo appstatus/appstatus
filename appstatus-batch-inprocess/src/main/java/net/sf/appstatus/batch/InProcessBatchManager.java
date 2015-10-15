@@ -7,12 +7,13 @@ import java.util.List;
 import java.util.Properties;
 import java.util.Vector;
 
+import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import net.sf.appstatus.core.batch.IBatch;
 import net.sf.appstatus.core.batch.IBatchManager;
 import net.sf.appstatus.core.batch.IBatchProgressMonitor;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * This implementation stores batch history and status in memory.
@@ -76,6 +77,24 @@ public class InProcessBatchManager implements IBatchManager {
 		if (!batch.isSuccess()) {
 			addTo(errorBatches, batch);
 		}
+	}
+
+	public List<IBatch> getBatches(String group, String name) {
+		List<IBatch> result = new ArrayList<IBatch>();
+
+		for (IBatch b : runningBatches) {
+			if (StringUtils.equals(group, b.getGroup()) && StringUtils.equals(name, b.getName())) {
+				result.add(b);
+			}
+		}
+
+		for (IBatch b : finishedBatches) {
+			if (StringUtils.equals(group, b.getGroup()) && StringUtils.equals(name, b.getName())) {
+				result.add(b);
+			}
+		}
+
+		return result;
 	}
 
 	public Properties getConfiguration() {
