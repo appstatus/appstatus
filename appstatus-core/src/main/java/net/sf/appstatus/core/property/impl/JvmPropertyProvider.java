@@ -61,7 +61,7 @@ public class JvmPropertyProvider extends AbstractPropertyProvider {
         map.put("uptime", DurationFormatUtils.formatDurationHMS(runtimeMXBean.getUptime()));
 
         Date date = new Date(runtimeMXBean.getStartTime());
-        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy hh:mm:ss");
+        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
         map.put("start time", sdf.format(date));
 
         MemoryMXBean memory = ManagementFactory.getMemoryMXBean();
