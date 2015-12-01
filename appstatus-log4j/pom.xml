@@ -3,7 +3,7 @@
   <parent>
     <groupId>net.sf.appstatus</groupId>
     <artifactId>appstatus-parent</artifactId>
-    <version>0.7.4-SNAPSHOT</version>
+    <version>0.7.3-SNAPSHOT</version>
   </parent>
   <artifactId>appstatus-log4j12</artifactId>
   <dependencies>
@@ -15,7 +15,7 @@
   <dependency>
   	<groupId>net.sf.appstatus</groupId>
   	<artifactId>appstatus-core</artifactId>
-  	<version>0.7.4-SNAPSHOT</version>
+  	<version>0.7.3-SNAPSHOT</version>
   </dependency>
   </dependencies>
 </project>
