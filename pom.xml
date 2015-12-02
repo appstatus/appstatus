@@ -37,7 +37,6 @@
         <connection>scm:git:https://github.com/appstatus/appstatus.git</connection>
         <developerConnection>scm:git:https://github.com/appstatus/appstatus.git</developerConnection>
         <url>https://github.com/appstatus/appstatus</url>
-        <tag>appstatus-parent-0.7.3</tag>
     </scm>
     <build>
         <extensions>
