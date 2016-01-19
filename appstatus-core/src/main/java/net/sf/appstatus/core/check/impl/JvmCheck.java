@@ -41,7 +41,7 @@ public class JvmCheck extends AbstractCheck {
 		long heapRatio = heap.getUsed() * 100 / heap.getMax();
 		CheckResultBuilder result = result(this).messageBundle("net.sf.appstatus.core.check.impl.JvmCheck_msg", locale);
 		if (heapRatio > limitError) {
-			result.code(ICheckResult.ERROR).fatal().resolutionSteps("resolutionSteps.error", new Object[] {});
+			result.code(ICheckResult.ERROR).fatal().resolutionSteps("resolutionSteps.fatal", new Object[] {});
 		} else if (heapRatio > limitWarn) {
 			result.code(ICheckResult.ERROR).resolutionSteps("resolutionSteps.warn", new Object[] {});
 		} else {
