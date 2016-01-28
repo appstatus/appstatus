@@ -1,6 +1,9 @@
 package net.sf.appstatus.batch;
 
 import static org.junit.Assert.assertSame;
+
+import java.util.Properties;
+
 import net.sf.appstatus.core.batch.IBatch;
 
 import org.junit.Test;
@@ -13,6 +16,7 @@ public class InProcessBatchManagerTest {
 	@Test
 	public void testAddBatch() {
 		InProcessBatchManager bm = new InProcessBatchManager();
+		bm.setConfiguration(new Properties());
 
 		IBatch b1 = bm.addBatch("name1", "group1", "1");
 		IBatch b2 = bm.addBatch("name2", "group2", "1");

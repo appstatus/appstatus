@@ -1,10 +1,12 @@
 /*
- * Copyright 2010 Capgemini Licensed under the Apache License, Version 2.0 (the
+ * Copyright 2010 Capgemini and Contributors
+ *
+ * Licensed under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
@@ -19,44 +21,56 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 import java.util.TreeMap;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import net.sf.appstatus.core.batch.IBatch;
 import net.sf.appstatus.core.batch.IBatchManager;
 import net.sf.appstatus.core.batch.IBatchProgressMonitor;
+import net.sf.appstatus.core.batch.IBatchScheduleManager;
+import net.sf.appstatus.core.check.CheckResultBuilder;
+import net.sf.appstatus.core.check.IAppStatusAware;
 import net.sf.appstatus.core.check.ICheck;
 import net.sf.appstatus.core.check.ICheckResult;
+import net.sf.appstatus.core.check.IConfigurationAware;
 import net.sf.appstatus.core.loggers.ILoggersManager;
 import net.sf.appstatus.core.property.IPropertyProvider;
 import net.sf.appstatus.core.services.IService;
 import net.sf.appstatus.core.services.IServiceManager;
 import net.sf.appstatus.core.services.IServiceMonitor;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 /**
  * This is the entry point for every feature of AppStatus.
- * 
+ *
  * <p>
  * Must be initialized once before calling other methods.
  * <p>
  * AppStatus status = new AppStatus(); <br/>
  * status.init();
  * </p>
- * 
+ *
  * @author Nicolas Richeton
- * 
+ *
  */
 public class AppStatus {
 	private static final String CONFIG_LOCATION = "status-check.properties";
 	private static Logger logger = LoggerFactory.getLogger(AppStatus.class);
 	private IBatchManager batchManager = null;
+	private IBatchScheduleManager batchScheduleManager;
 	protected List<ICheck> checkers;
 	private Properties configuration = null;
+	private ExecutorService executorService = null;
 	private boolean initDone = false;
 	private ILoggersManager loggersManager = null;
 	private IObjectInstantiationListener objectInstanciationListener = null;
@@ -93,17 +107,53 @@ public class AppStatus {
 		}
 
 		checkers.add(check);
-		logger.info("Registered status checker " + clazz);
+		logger.info("Registered status checker {}", clazz);
 	}
 
 	public List<ICheckResult> checkAll() {
+		return checkAll(null);
+	}
+
+	public List<ICheckResult> checkAll(final Locale locale) {
 		checkInit();
 
-		ArrayList<ICheckResult> statusList = new ArrayList<ICheckResult>();
-		for (ICheck check : checkers) {
+		List<Future<ICheckResult>> statusFutureList = new ArrayList<Future<ICheckResult>>();
+		for (final ICheck check : checkers) {
 			injectServletContext(check);
-			statusList.add(check.checkStatus());
+
+			statusFutureList.add(executorService.submit(new Callable<ICheckResult>() {
+				public ICheckResult call() throws Exception {
+					// Inject Appstatus
+					if (check instanceof IAppStatusAware) {
+						((IAppStatusAware) check).setAppStatus(AppStatus.this);
+					}
+
+					// Inject configuration
+					if (check instanceof IConfigurationAware) {
+						((IConfigurationAware) check).setConfiguration(getConfiguration());
+					}
+					return check.checkStatus(locale);
+				}
+			}));
 		}
+
+		ArrayList<ICheckResult> statusList = new ArrayList<ICheckResult>();
+
+		for (int i = 0; i < statusFutureList.size(); i++) {
+			Future<ICheckResult> f = statusFutureList.get(i);
+			ICheck c = checkers.get(i);
+
+			try {
+				statusList.add(f.get());
+			} catch (InterruptedException e) {
+				statusList.add(createCheckResultFromException(c, e));
+				logger.error("", e);
+			} catch (ExecutionException e) {
+				statusList.add(createCheckResultFromException(c, e));
+				logger.error("", e);
+			}
+		}
+
 		return statusList;
 	}
 
@@ -112,6 +162,14 @@ public class AppStatus {
 			logger.warn("Not initialized. Starting init");
 			init();
 		}
+	}
+
+	private ICheckResult createCheckResultFromException(ICheck c, Exception e) {
+
+		return new CheckResultBuilder().from(c).code(ICheckResult.ERROR).fatal()
+				.description("Check failed with exception: " + e.getClass().getCanonicalName() + " " + e.getMessage())
+				.build();
+
 	}
 
 	public IBatchManager getBatchManager() {
@@ -132,8 +190,15 @@ public class AppStatus {
 	}
 
 	/**
+	 * @return the batchScheduleManager
+	 */
+	public IBatchScheduleManager getBatchScheduleManager() {
+		return batchScheduleManager;
+	}
+
+	/**
 	 * Try to instantiate a class.
-	 * 
+	 *
 	 * @param className
 	 * @return an object instance of "className" class or null if instantiation
 	 *         is not possible
@@ -177,6 +242,10 @@ public class AppStatus {
 		}
 
 		return obj;
+	}
+
+	protected Properties getConfiguration() {
+		return this.configuration;
 	}
 
 	public ILoggersManager getLoggersManager() {
@@ -242,6 +311,8 @@ public class AppStatus {
 			logger.warn("Already initialized");
 			return;
 		}
+		executorService = Executors.newCachedThreadPool();
+
 		// Load plugins
 		loadPlugins();
 
@@ -293,7 +364,9 @@ public class AppStatus {
 
 		// If configuration is null (Spring with no configuration block), create
 		// empty object
-		configuration = new Properties();
+		if (configuration == null) {
+			configuration = new Properties();
+		}
 
 		// Give all configuration properties to managers.
 		if (getBatchManager() != null) {
@@ -387,7 +460,7 @@ public class AppStatus {
 
 	/**
 	 * Load a properties file from a given URL.
-	 * 
+	 *
 	 * @param url
 	 *            an url
 	 * @return a {@link Properties} object
@@ -405,6 +478,14 @@ public class AppStatus {
 
 	public void setBatchManager(IBatchManager batchManager) {
 		this.batchManager = batchManager;
+	}
+
+	/**
+	 * @param batchScheduleManager
+	 *            the batchScheduleManager to set
+	 */
+	public void setBatchScheduleManager(IBatchScheduleManager batchScheduleManager) {
+		this.batchScheduleManager = batchScheduleManager;
 	}
 
 	public void setCheckers(List<ICheck> checkers) {

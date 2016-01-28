@@ -2,9 +2,9 @@
  * Copyright 2010-2013 Capgemini Licensed under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
@@ -33,9 +33,9 @@ import org.apache.commons.lang3.StringUtils;
  * <p>
  * This page displays a quick overview of the application and reloads every
  * minute.
- * 
+ *
  * @author Nicolas Richeton
- * 
+ *
  */
 public class RadiatorPage implements IPage {
 
@@ -51,7 +51,7 @@ public class RadiatorPage implements IPage {
 		resp.setCharacterEncoding("UTF-8");
 
 		// Get Health checks
-		List<ICheckResult> results = webHandler.getAppStatus().checkAll();
+		List<ICheckResult> results = webHandler.getAppStatus().checkAll(req.getLocale());
 		int status = STATUS_OK;
 		for (ICheckResult r : results) {
 
@@ -79,12 +79,12 @@ public class RadiatorPage implements IPage {
 
 		String batchStatus = " progress-success ";
 		String active = StringUtils.EMPTY;
-		String width = "0%";
+		int width = 0;
 
 		if (manager != null) {
 			batchStatus = manager.getErrorBatches().size() > 0 ? " progress-danger " : " progress-success ";
 			active = manager.getRunningBatches().size() > 0 ? " progress-striped active " : "";
-			width = manager.getRunningBatches().size() + manager.getFinishedBatches().size() > 0 ? "100%" : "0%";
+			width = manager.getRunningBatches().size() + manager.getFinishedBatches().size() > 0 ? 100 : 0;
 		}
 
 		Writer w = resp.getWriter();
@@ -95,8 +95,8 @@ public class RadiatorPage implements IPage {
 		w.append("</head>");
 		w.append("<body style=\"background: #000; text-align: center; padding-top: 5%;\">");
 		w.append("<p style=\"color: #fff; font-size: 200%;\" >" + webHandler.getApplicationName() + "</p>");
-		w.append("<p style=\" padding-top: 10%;\"><a href=\"#\" class=\"btn btn-large " + btnClass
-				+ "\" >Status</a></p>");
+		w.append("<p style=\" padding-top: 10%;\"><a href=\"?p=status\" target=\"_blank\" class=\"btn btn-large "
+				+ btnClass + "\" >Status</a></p>");
 		w.append("<div class=\"progress "
 				+ batchStatus
 				+ active

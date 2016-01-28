@@ -15,8 +15,7 @@ public abstract class AbstractServiceMonitor implements IServiceMonitor {
 
 	public void beginCall(Object... parameters) {
 		if (useThreadLocal) {
-			IServiceMonitor current = ServiceMonitorLocator
-					.getCurrentServiceMonitor();
+			IServiceMonitor current = ServiceMonitorLocator.getCurrentServiceMonitor();
 			if (null != current) {
 				current.nestedCall();
 			}

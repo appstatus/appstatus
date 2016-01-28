@@ -4,84 +4,143 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Properties;
+import java.util.Vector;
 
 import net.sf.appstatus.core.batch.IBatch;
 import net.sf.appstatus.core.batch.IBatchManager;
 import net.sf.appstatus.core.batch.IBatchProgressMonitor;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 public class JdbcBatchManager implements IBatchManager {
 
-    private BatchDao batchDao;
+	private static Logger logger = LoggerFactory.getLogger(JdbcBatchManager.class);
 
-    public void setBatchDao(BatchDao batchDao) {
-        this.batchDao = batchDao;
-    }
+	private BatchDao batchDao;
+	List<IBatch> runningBatches = new Vector<IBatch>();
+	private int logInterval;
 
-    public IBatch addBatch(String name, String group, String uuid) {
-        BdBatch b = new BdBatch();
-        b.setName(name);
-        b.setGroup(group);
-        b.setUuid(uuid);
-        b.setStartDate(new Date());
-        b.setStatus(Batch.STATUS_RUNNING);
-        batchDao.save(b);
-        return new Batch(b);
-    }
+	private int zombieInterval;
 
-    private List<IBatch> convertToIBatch(List<BdBatch> bdBaches) {
-        List<IBatch> result = null;
-        if (bdBaches != null) {
-            result = new ArrayList<IBatch>();
-            for (BdBatch b : bdBaches) {
-                result.add(new Batch(b));
-            }
-        }
-        return result;
-    }
+	public void setBatchDao(BatchDao batchDao) {
+		this.batchDao = batchDao;
+	}
 
-    public List<IBatch> getErrorBatches() {
-        return convertToIBatch(batchDao.fetchError(25));
-    }
+	public void batchEnd(Batch batch) {
+		runningBatches.remove(batch);
+	}
 
-    public List<IBatch> getFinishedBatches() {
-        return convertToIBatch(batchDao.fetchFinished(25));
-    }
+	public IBatch addBatch(String name, String group, String uuid) {
+		BdBatch bdBatch = new BdBatch();
+		bdBatch.setName(name);
+		bdBatch.setGroup(group);
+		bdBatch.setUuid(uuid);
+		bdBatch.setStartDate(new Date());
+		bdBatch.setStatus(Batch.STATUS_RUNNING);
 
-    public IBatchProgressMonitor getMonitor(IBatch batch) {
-        return new JdbcBatchProgressMonitor(batch.getUuid(), batch, batchDao);
-    }
+		IBatch b = new Batch(bdBatch);
+		((Batch) b).setZombieInterval(zombieInterval);
+		int currentPosition = runningBatches.indexOf(b);
+		if (currentPosition >= 0) {
+			// Reuse existing object (and keep monitor).
+			b = runningBatches.get(currentPosition);
+		} else {
+			// Add new batch
 
-    public List<IBatch> getRunningBatches() {
-        return convertToIBatch(batchDao.fetchRunning(25));
+			// runningBatches is not limited in size.
+			runningBatches.add(b);
 
-    }
+			batchDao.save(bdBatch);
+		}
 
-    /**
-     * {@inheritDoc}
-     * 
-     * @see net.sf.appstatus.core.batch.IBatchManager#removeAllBatches(int)
-     */
-    public void removeAllBatches(int scope) {
-        switch (scope) {
-        case IBatchManager.REMOVE_OLD:
-            batchDao.deleteOldBatches(6);
-            break;
+		return b;
+	}
 
-        default:
-            batchDao.deleteSuccessBatches();
-            break;
-        }
-    }
+	private List<IBatch> convertToIBatch(List<BdBatch> bdBaches) {
+		List<IBatch> result = null;
+		if (bdBaches != null) {
+			result = new ArrayList<IBatch>();
+			for (BdBatch bdb : bdBaches) {
+				Batch b = new Batch(bdb);
+				b.setZombieInterval(zombieInterval);
 
-    public void removeBatch(String uuid) {
-        batchDao.deleteBatch(uuid);
-    }
+				result.add(b);
+			}
+		}
+		return result;
+	}
 
-    public void setConfiguration(Properties configuration) {
-    }
+	public List<IBatch> getErrorBatches() {
+		return convertToIBatch(batchDao.fetchError(25));
+	}
+
+	public List<IBatch> getFinishedBatches() {
+		return convertToIBatch(batchDao.fetchFinished(25));
+	}
+
+	public IBatchProgressMonitor getMonitor(IBatch batch) {
+		Batch b = (Batch) batch;
+		if (b.getProgressMonitor() == null) {
+			JdbcBatchProgressMonitor monitor = new JdbcBatchProgressMonitor(batch.getUuid(), batch, batchDao);
+			monitor.setManager(this);
+		}
+		return b.getProgressMonitor();
+	}
+
+	public List<IBatch> getRunningBatches() {
+		return convertToIBatch(batchDao.fetchRunning(25));
+
+	}
+
+	/**
+	 * {@inheritDoc}
+	 * 
+	 * @see net.sf.appstatus.core.batch.IBatchManager#removeAllBatches(int)
+	 */
+	public void removeAllBatches(int scope) {
+		switch (scope) {
+		case IBatchManager.REMOVE_OLD:
+			batchDao.deleteOldBatches(6);
+			break;
+
+		default:
+			batchDao.deleteSuccessBatches();
+			break;
+		}
+	}
+
+	public void removeBatch(String uuid) {
+		batchDao.deleteBatch(uuid);
+	}
+
+	public void setConfiguration(Properties configuration) {
+		try {
+			logInterval = Integer.parseInt(configuration.getProperty("batch.logInterval"));
+		} catch (NumberFormatException e) {
+			logInterval = 1000;
+		}
+		logger.info("Batch log interval: {}ms", logInterval);
+
+		try {
+			zombieInterval = Integer.parseInt(configuration.getProperty("batch.zombieInterval"));
+		} catch (NumberFormatException e) {
+			zombieInterval = 1000 * 60 * 10;
+		}
+		logger.info("Zombie interval: {}", zombieInterval);
+
+	}
 
 	public Properties getConfiguration() {
 		return null;
 	}
 
+	public void init() {
+		// Check database for table
+		batchDao.createDbIfNecessary();
+	}
+
+	public List<IBatch> getBatches(String group, String name) {
+		return convertToIBatch(batchDao.fetch(group, name, 25));
+	}
 }

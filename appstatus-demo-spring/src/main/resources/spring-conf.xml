@@ -10,50 +10,69 @@
 
 	<bean id="appstatus" class="net.sf.appstatus.core.AppStatus"
 		init-method="init" scope="singleton">
-		<property name="objectInstanciationListener" ref="appstatusInstanciation" />
-		<property name="batchManager" ref="batchManager" />
+		<property name="objectInstanciationListener">
+			<bean
+				class="net.sf.appstatus.support.spring.SpringObjectInstantiationListener" />
+		</property>
+		<property name="batchManager">
+			<bean class="net.sf.appstatus.batch.InProcessBatchManager"></bean>
+		</property>
 		<property name="serviceManager" ref="serviceManager" />
+
 		<!-- Status Checkers -->
 		<property name="checkers">
 			<list>
-				<ref bean="dummyCheck" />
-				<ref bean="googleCheck" />
-				<ref bean="googlePingCheck" />
+				<bean class="net.sf.appstatus.demo.check.DummyStatusChecker" />
+				<bean class="net.sf.appstatus.demo.check.GoogleHttpStatusChecker" />
+				<bean class="net.sf.appstatus.demo.check.GooglePingStatusChecker" />
+				<bean class="net.sf.appstatus.core.check.impl.JvmCheck" />
+				<bean class="net.sf.appstatus.core.check.impl.ServicesPerformanceCheck" />
+				<bean class="net.sf.appstatus.core.check.impl.ServicesFailureCheck" />
 			</list>
 		</property>
 
 		<!-- Property providers -->
 		<property name="propertyProviders">
 			<list>
-				<ref bean="dummyProperties" />
-				<ref bean="warProperties" />
+				<bean class="net.sf.appstatus.core.property.impl.JvmPropertyProvider" />
+				<bean class="net.sf.appstatus.core.property.impl.WarMavenVersionProvider" />
+				<bean class="net.sf.appstatus.demo.property.DummyPropertyProvider" />
 			</list>
 		</property>
-
-
-
 	</bean>
 
-	<bean id="batchManager" class="net.sf.appstatus.batch.InProcessBatchManager"
-		scope="singleton"></bean>
-
-	<bean id="serviceManager" class="net.sf.appstatus.services.InProcessServiceManager"
-		scope="singleton">
+	<bean id="serviceManager" class="net.sf.appstatus.services.InProcessServiceManager">
 		<!-- Configuration -->
 		<property name="configuration">
 			<props>
 				<prop key="services.log.format">spring:${correlationId}|${group}|${name}|${responseTime}|${cache}|${status}|${statusMessage}
 				</prop>
 				<prop key="services.useThreadLocal">true</prop>
+				<prop key="services.minMaxDelay">10</prop>
 			</props>
 		</property>
 	</bean>
 
-	<bean id="appstatusInstanciation"
-		class="net.sf.appstatus.support.spring.SpringObjectInstantiationListener"
-		scope="singleton" />
+	<!-- AppStatus AOP -->
+	<bean id="appStatusInterceptor"
+		class="net.sf.appstatus.support.aop.AppStatusServiceInterceptor">
+		<property name="serviceManager" ref="serviceManager" />
+	</bean>
 
+	<aop:config>
+		<aop:advisor id="serviceCallAdvisor" advice-ref="appStatusInterceptor"
+			pointcut="execution(public * net.sf.appstatus.demo.batch.ServiceSample.getRefsAOP())" />
+	</aop:config>
+
+
+	<!-- Demo Application -->
 	<bean id="batch" class="net.sf.appstatus.demo.batch.BatchSample">
+		<property name="appstatus" ref="appstatus" />
+		<property name="service" ref="service" />
+	</bean>
+
+
+	<bean id="batch2" class="net.sf.appstatus.demo.batch.BatchSample2">
 		<property name="appstatus" ref="appstatus" />
 		<property name="service" ref="service" />
 	</bean>
@@ -61,21 +80,8 @@
 	<bean id="service" class="net.sf.appstatus.demo.batch.ServiceSample">
 	</bean>
 
-	<!-- Status Checkers -->
-	<bean id="dummyCheck" class="net.sf.appstatus.demo.check.DummyStatusChecker"
-		scope="singleton" />
-	<bean id="googleCheck" class="net.sf.appstatus.demo.check.GoogleHttpStatusChecker"
-		scope="singleton" />
-	<bean id="googlePingCheck" class="net.sf.appstatus.demo.check.GooglePingStatusChecker"
-		scope="singleton" />
-	<!-- Property providers -->
-	<bean id="dummyProperties" class="net.sf.appstatus.demo.property.DummyPropertyProvider"
-		scope="singleton" />
-	<bean id="warProperties"
-		class="net.sf.appstatus.core.property.impl.WarMavenVersionProvider"
-		scope="singleton" />
 
-
+	<!-- Appstatus Spring Cache manager -->
 	<bean id="cacheManager"
 		class="net.sf.appstatus.support.spring.cache.AppStatusCacheManager"
 		p:cache-manager-ref="ehcacheCacheManager" />
@@ -88,18 +94,5 @@
 		p:config-location="classpath:/ehcache.xml" />
 
 	<cache:annotation-driven proxy-target-class="true" />
-
-	<!-- AOP -->
-
-	<bean id="appStatusInterceptor"
-		class="net.sf.appstatus.support.aop.AppStatusServiceInterceptor"
-		scope="singleton">
-		<property name="serviceManager" ref="serviceManager" />
-	</bean>
-
-	<aop:config>
-		<aop:advisor id="serviceCallAdvisor" advice-ref="appStatusInterceptor"
-			pointcut="execution(public * net.sf.appstatus.demo.batch.ServiceSample.getRefsAOP())" />
-	</aop:config>
 
 </beans>

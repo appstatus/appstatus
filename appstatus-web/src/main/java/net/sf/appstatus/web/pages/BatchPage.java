@@ -2,9 +2,9 @@
  * Copyright 2010-2013 Capgemini Licensed under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
@@ -14,6 +14,7 @@
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -22,12 +23,15 @@ import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.text.StrBuilder;
+
 import net.sf.appstatus.core.batch.IBatch;
+import net.sf.appstatus.core.batch.IBatchConfiguration;
 import net.sf.appstatus.core.batch.IBatchManager;
+import net.sf.appstatus.core.batch.IBatchScheduleManager;
 import net.sf.appstatus.web.HtmlUtils;
 import net.sf.appstatus.web.StatusWebHandler;
-
-import org.apache.commons.lang3.text.StrBuilder;
 
 public class BatchPage extends AbstractPage {
 	private static final String CLEAR_ITEM = "clear-item";
@@ -36,6 +40,29 @@ public class BatchPage extends AbstractPage {
 	private static final String ENCODING = "UTF-8";
 	private static final String ITEM_UUID = "item-uuid";
 	private static final String PAGECONTENTLAYOUT = "batchesContentLayout.html";
+
+	/**
+	 * Adding execution expressions informations from a list of IBatch.
+	 *
+	 * @param conf
+	 * @param listBatchs
+	 */
+	private void addExecutionInformations(IBatchConfiguration conf, List<? extends IBatch> listBatchs) {
+
+		if (CollectionUtils.isEmpty(listBatchs)) {
+			return;
+		}
+
+		IBatch latestExecution = null;
+
+		for (IBatch batch : listBatchs) {
+			if (latestExecution == null || latestExecution.getStartDate().before(batch.getEndDate())) {
+				latestExecution = batch;
+			}
+
+		}
+		conf.setLastExecution(latestExecution.getStartDate());
+	}
 
 	@Override
 	public void doGet(StatusWebHandler webHandler, HttpServletRequest req, HttpServletResponse resp)
@@ -47,38 +74,65 @@ public class BatchPage extends AbstractPage {
 		StrBuilder sbRunningBatchesBatchesTable = new StrBuilder();
 		StrBuilder sbFinishedBatchesBatchesTable = new StrBuilder();
 		StrBuilder sbErrorsBatchesBatchesTable = new StrBuilder();
+		StrBuilder sbConfBatchesBatchesTable = new StrBuilder();
 
 		IBatchManager manager = webHandler.getAppStatus().getBatchManager();
 		List<IBatch> runningBatches = manager.getRunningBatches();
 		if (HtmlUtils.generateBeginTable(sbRunningBatchesBatchesTable, runningBatches.size())) {
 
-			HtmlUtils.generateHeaders(sbRunningBatchesBatchesTable, "", "Id", "Group", "Name", "Start", "Progress",
+			HtmlUtils.generateHeaders(sbRunningBatchesBatchesTable, "", "Id", "Group", "Name", "Start", "Progress", //
 					"End (est.)", "Status", "Task", "Last Msg", "Items", "Rejected", "Last Update");
 
 			for (IBatch batch : runningBatches) {
-				HtmlUtils.generateRow(sbRunningBatchesBatchesTable, getIcon(batch), generateId(resp, batch.getUuid()),
-						batch.getGroup(), batch.getName(), batch.getStartDate(), getProgressBar(batch),
-						batch.getEndDate(), batch.getStatus(), batch.getCurrentTask(), batch.getLastMessage(),
-						batch.getItemCount(), HtmlUtils.countAndDetail(batch.getRejectedItemsId()),
-						batch.getLastUpdate());
+				HtmlUtils.generateRow(sbRunningBatchesBatchesTable, getIcon(batch), generateId(resp, batch.getUuid()), //
+						batch.getGroup(), batch.getName(), batch.getStartDate(), getProgressBar(batch), //
+						batch.getEndDate(), batch.getStatus(), batch.getCurrentTask(), //
+						batch.getLastMessage(), batch.getItemCount(),
+						HtmlUtils.countAndDetail(batch.getRejectedItemsId()), //
+						batch.getLastUpdate(), //
+						batch.getStatus() != IBatch.STATUS_ZOMBIE ? "" //
+								: "<form action='?p=batch' method='post'><input type='submit' name='" + CLEAR_ITEM //
+										+ "' value='Delete'  class='btn btn-small' /><input type=hidden name='" //
+										+ ITEM_UUID + "' value='" + batch.getUuid() + "'/></form>");
 			}
 
 			HtmlUtils.generateEndTable(sbRunningBatchesBatchesTable, runningBatches.size());
+		}
+
+		// Batch Schedule
+		List<IBatchConfiguration> batchConfigurations = new ArrayList<IBatchConfiguration>();
+
+		IBatchScheduleManager scheduleManager = webHandler.getAppStatus().getBatchScheduleManager();
+		if (scheduleManager != null) {
+			batchConfigurations.addAll(scheduleManager.getBatchConfigurations());
+		}
+
+		if (HtmlUtils.generateBeginTable(sbConfBatchesBatchesTable, batchConfigurations.size())) {
+			HtmlUtils.generateHeaders(sbConfBatchesBatchesTable, "", "Group", "Name", "Last run", "Next", "Exec. expr");
+
+			for (IBatchConfiguration batch : batchConfigurations) {
+				addExecutionInformations(batch, manager.getBatches(batch.getGroup(), batch.getName()));
+				HtmlUtils.generateRow(sbConfBatchesBatchesTable, Resources.STATUS_JOB, batch.getGroup(),
+						batch.getName(), batch.getLastExecution(), batch.getNextExecution(), batch.getSchedule());
+			}
+
+			HtmlUtils.generateEndTable(sbConfBatchesBatchesTable, runningBatches.size());
 		}
 
 		List<IBatch> finishedBatches = manager.getFinishedBatches();
 
 		if (HtmlUtils.generateBeginTable(sbFinishedBatchesBatchesTable, finishedBatches.size())) {
 
-			HtmlUtils.generateHeaders(sbFinishedBatchesBatchesTable, "", "Id", "Group", "Name", "Start", "Progress",
+			HtmlUtils.generateHeaders(sbFinishedBatchesBatchesTable, "", "Id", "Group", "Name", "Start", "Progress", //
 					"End", "Status", "Task", "Last Msg", "Items", "Rejected", "Last Update", "");
 			for (IBatch batch : finishedBatches) {
-				HtmlUtils.generateRow(sbFinishedBatchesBatchesTable, getIcon(batch), generateId(resp, batch.getUuid()),
-						batch.getGroup(), batch.getName(), batch.getStartDate(), getProgressBar(batch),
-						batch.getEndDate(), batch.getStatus(), batch.getCurrentTask(), batch.getLastMessage(),
-						batch.getItemCount(), HtmlUtils.countAndDetail(batch.getRejectedItemsId()),
-						batch.getLastUpdate(), "<form action='?p=batch' method='post'><input type='submit' name='"
-								+ CLEAR_ITEM + "' value='Delete'  class='btn btn-small' /><input type=hidden name='"
+				HtmlUtils.generateRow(sbFinishedBatchesBatchesTable, getIcon(batch), generateId(resp, batch.getUuid()), //
+						batch.getGroup(), batch.getName(), batch.getStartDate(), getProgressBar(batch), //
+						batch.getEndDate(), batch.getStatus(), batch.getCurrentTask(), batch.getLastMessage(), //
+						batch.getItemCount(), HtmlUtils.countAndDetail(batch.getRejectedItemsId()), //
+						batch.getLastUpdate(), //
+						"<form action='?p=batch' method='post'><input type='submit' name='" //
+								+ CLEAR_ITEM + "' value='Delete'  class='btn btn-small' /><input type=hidden name='" //
 								+ ITEM_UUID + "' value='" + batch.getUuid() + "'/></form>");
 			}
 
@@ -89,21 +143,23 @@ public class BatchPage extends AbstractPage {
 
 		if (HtmlUtils.generateBeginTable(sbErrorsBatchesBatchesTable, errorBatches.size())) {
 
-			HtmlUtils.generateHeaders(sbErrorsBatchesBatchesTable, "", "Id", "Group", "Name", "Start", "Progress",
+			HtmlUtils.generateHeaders(sbErrorsBatchesBatchesTable, "", "Id", "Group", "Name", "Start", "Progress", //
 					"End", "Status", "Task", "Last Msg", "Items", "Rejected", "Last Update", "");
 
 			for (IBatch batch : errorBatches) {
-				HtmlUtils.generateRow(sbErrorsBatchesBatchesTable, getIcon(batch), generateId(resp, batch.getUuid()),
-						batch.getGroup(), batch.getName(), batch.getStartDate(), getProgressBar(batch),
-						batch.getEndDate(), batch.getStatus(), batch.getCurrentTask(), batch.getLastMessage(),
-						batch.getItemCount(), HtmlUtils.countAndDetail(batch.getRejectedItemsId()),
-						batch.getLastUpdate(), "<form action='?p=batch' method='post'><input type='submit' name='"
-								+ CLEAR_ITEM + "' value='Delete' class='btn btn-small'/><input type=hidden name='"
+				HtmlUtils.generateRow(sbErrorsBatchesBatchesTable, getIcon(batch), generateId(resp, batch.getUuid()), //
+						batch.getGroup(), batch.getName(), batch.getStartDate(), getProgressBar(batch), //
+						batch.getEndDate(), batch.getStatus(), batch.getCurrentTask(), batch.getLastMessage(), //
+						batch.getItemCount(), HtmlUtils.countAndDetail(batch.getRejectedItemsId()), //
+						batch.getLastUpdate(), //
+						"<form action='?p=batch' method='post'><input type='submit' name='" //
+								+ CLEAR_ITEM + "' value='Delete' class='btn btn-small'/><input type=hidden name='" //
 								+ ITEM_UUID + "' value='" + batch.getUuid() + "'/></form>");
 			}
 			HtmlUtils.generateEndTable(sbErrorsBatchesBatchesTable, errorBatches.size());
 		}
 
+		valuesMap.put("confBatchesBatchesTable", sbConfBatchesBatchesTable.toString());
 		valuesMap.put("runningBatchesBatchesTable", sbRunningBatchesBatchesTable.toString());
 		valuesMap.put("finishedBatchesBatchesTable", sbFinishedBatchesBatchesTable.toString());
 		valuesMap.put("errorsBatchesBatchesTable", sbErrorsBatchesBatchesTable.toString());
@@ -131,8 +187,8 @@ public class BatchPage extends AbstractPage {
 
 	private String generateClearActions() throws IOException {
 		StrBuilder sb = new StrBuilder();
-		sb.append("<p>Actions :</p><form action='?p=batch' method='post'><input type='submit' name='" + CLEAR_OLD
-				+ "' value='Delete old (6 months)' class='btn'/> <input type='submit' name='" + CLEAR_SUCCESS
+		sb.append("<p>Actions :</p><form action='?p=batch' method='post'><input type='submit' name='" + CLEAR_OLD //
+				+ "' value='Delete old (6 months)' class='btn'/> <input type='submit' name='" + CLEAR_SUCCESS //
 				+ "' value='Delete Success w/o rejected' class='btn'/></form>");
 		return sb.toString();
 	}
@@ -157,7 +213,7 @@ public class BatchPage extends AbstractPage {
 			return Resources.STATUS_JOB_ERROR;
 		}
 
-		if (IBatch.STATUS_SUCCESS.equals(b.getStatus()) && b.getRejectedItemsId() != null
+		if (IBatch.STATUS_SUCCESS.equals(b.getStatus()) && b.getRejectedItemsId() != null //
 				&& b.getRejectedItemsId().size() > 0) {
 			return Resources.STATUS_JOB_WARNING;
 		}
@@ -182,22 +238,36 @@ public class BatchPage extends AbstractPage {
 		if (batch.getRejectedItemsId() != null && batch.getRejectedItemsId().size() > 0) {
 			color = "warning";
 		}
+
+		if (IBatch.STATUS_ZOMBIE.equals(batch.getStatus())) {
+			color = "warning";
+		}
+
 		if (IBatch.STATUS_FAILURE.equals(batch.getStatus())) {
 			color = "danger";
 		}
 
 		int percent = Math.round(batch.getProgressStatus());
 
-		String status = "";
-		if (percent < 100) {
-			status = "active progress-" + color;
+		String status = "progress-" + color;
+		String active = "active";
+		String striped = "progress-striped";
+		// progress is animated if job is running (not complete and still
+		// updated)
+		if (IBatch.STATUS_ZOMBIE.equals(batch.getStatus()) || IBatch.STATUS_FAILURE.equals(batch.getStatus()) //
+				|| IBatch.STATUS_SUCCESS.equals(batch.getStatus())) {
+			active = "";
 		}
 
-		if (percent == 100) {
-			status = "progress-" + color;
+		if (IBatch.STATUS_FAILURE.equals(batch.getStatus()) || IBatch.STATUS_SUCCESS.equals(batch.getStatus())) {
+			striped = "";
 		}
 
-		return "<div class=\"progress progress-striped " + status + "\">" + "<div class=\"bar\" style=\"width: "
-				+ percent + "%;\"></div>" + "</div>";
+		if (percent == -1) {
+			percent = 100;
+		}
+
+		return "<div class=\"progress " + striped + " " + active + " " + status + "\">" //
+				+ "<div class=\"bar\" style=\"width: " + percent + "%;\"></div>" + "</div>";
 	}
 }

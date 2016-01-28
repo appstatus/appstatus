@@ -10,6 +10,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import net.sf.appstatus.core.batch.IBatch;
@@ -270,6 +271,7 @@ public class BatchTest {
 
 		// monitor say is not done => status running
 		when(mockedProgressMonitor.isDone()).thenReturn(false);
+		when(mockedProgressMonitor.getLastUpdate()).thenReturn(new Date());
 		assertThat(batch.getStatus(), is(IBatch.STATUS_RUNNING));
 
 		// monitor say is done and it's not successful => status failure

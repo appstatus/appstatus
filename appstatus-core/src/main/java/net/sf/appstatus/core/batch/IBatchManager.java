@@ -6,9 +6,9 @@ import java.util.Properties;
 import net.sf.appstatus.core.AppStatus;
 
 /**
- * 
+ *
  * @author Nicolas Richeton
- * 
+ *
  */
 public interface IBatchManager {
 
@@ -27,32 +27,47 @@ public interface IBatchManager {
 	 * Creates and adds a new Batch to the batch manager.
 	 * <p>
 	 * If the batch already exists (same uuid). The existing one is returned.
-	 * 
+	 *
 	 * <p>
 	 * NOTE: This method is not intended to be called directly.
-	 * 
+	 *
 	 * @see AppStatus#getBatchProgressMonitor()
-	 * 
+	 *
 	 * @param name
 	 * @param group
 	 * @param uuid
 	 * @return new or existing batch object.
-	 * 
+	 *
 	 */
 	IBatch addBatch(String name, String group, String uuid);
 
 	/**
-	 * Get current configuration.
+	 * Ordered by update date DESC
 	 * 
+	 * @return
+	 */
+
+	List<IBatch> getBatches(String group, String name);
+
+	/**
+	 * Get current configuration.
+	 *
 	 * @return
 	 */
 	Properties getConfiguration();
 
 	/**
+	 * Ordered by update date DESC
 	 * 
 	 * @return
 	 */
 	List<IBatch> getErrorBatches();
+
+	/**
+	 * Ordered by update date DESC
+	 * 
+	 * @return
+	 */
 
 	List<IBatch> getFinishedBatches();
 
@@ -61,7 +76,7 @@ public interface IBatchManager {
 	 * <p>
 	 * The same progress monitor is always returned. It is expected that only a
 	 * single thread updates the monitor.
-	 * 
+	 *
 	 * @param batch
 	 * @return
 	 */
@@ -69,14 +84,16 @@ public interface IBatchManager {
 
 	/**
 	 * Returns the list of batchs which are currently running.
-	 * 
+	 *
 	 * @return
 	 */
 	List<IBatch> getRunningBatches();
 
+	void init();
+
 	/**
 	 * Removes all jobs matching the scope value.
-	 * 
+	 *
 	 * @param scope
 	 *            {@value #REMOVE_OLD} or {@link #REMOVE_SUCCESS}
 	 */
@@ -84,14 +101,14 @@ public interface IBatchManager {
 
 	/**
 	 * Removes a specific job.
-	 * 
+	 *
 	 * @param b
 	 */
 	void removeBatch(String uuid);
 
 	/**
 	 * Inject configuration for service manager.
-	 * 
+	 *
 	 * @param configuration
 	 */
 	void setConfiguration(Properties configuration);

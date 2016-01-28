@@ -7,21 +7,42 @@ import java.util.List;
 import java.util.Properties;
 import java.util.Vector;
 
+import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import net.sf.appstatus.core.batch.IBatch;
 import net.sf.appstatus.core.batch.IBatchManager;
 import net.sf.appstatus.core.batch.IBatchProgressMonitor;
 
+/**
+ * This implementation stores batch history and status in memory.
+ * <p>
+ * Can be used when batch is run within the same JVM as the console.
+ * <p>
+ * History is lost on restart.
+ *
+ * @author Nicolas Richeton
+ *
+ */
 public class InProcessBatchManager implements IBatchManager {
-	List<IBatch> errorBatches = new Vector<IBatch>();
+
+	private static Logger logger = LoggerFactory.getLogger(InProcessBatchManager.class);
+
+	private List<IBatch> errorBatches = new Vector<IBatch>();
 
 	List<IBatch> finishedBatches = new Vector<IBatch>();
+	private int logInterval = 1000;
 	private long maxSize = 25;
 	List<IBatch> runningBatches = new Vector<IBatch>();
+
+	private int zombieInterval;
 
 	public IBatch addBatch(String name, String group, String uuid) {
 
 		// Add batch
 		IBatch b = new Batch(uuid, name, group);
+		((Batch) b).setZombieInterval(this.zombieInterval);
 
 		int currentPosition = runningBatches.indexOf(b);
 		if (currentPosition >= 0) {
@@ -50,13 +71,30 @@ public class InProcessBatchManager implements IBatchManager {
 	}
 
 	public void batchEnd(Batch batch) {
-
 		runningBatches.remove(batch);
 		addTo(finishedBatches, batch);
 
 		if (!batch.isSuccess()) {
 			addTo(errorBatches, batch);
 		}
+	}
+
+	public List<IBatch> getBatches(String group, String name) {
+		List<IBatch> result = new ArrayList<IBatch>();
+
+		for (IBatch b : runningBatches) {
+			if (StringUtils.equals(group, b.getGroup()) && StringUtils.equals(name, b.getName())) {
+				result.add(b);
+			}
+		}
+
+		for (IBatch b : finishedBatches) {
+			if (StringUtils.equals(group, b.getGroup()) && StringUtils.equals(name, b.getName())) {
+				result.add(b);
+			}
+		}
+
+		return result;
 	}
 
 	public Properties getConfiguration() {
@@ -75,6 +113,8 @@ public class InProcessBatchManager implements IBatchManager {
 		Batch b = (Batch) batch;
 		// If batch has no progress monitor, create one.
 		if (b.getProgressMonitor() == null) {
+			// Calling this method automatically call
+			// IBatch#setProgressMonitor()
 			new InProcessBatchProgressMonitor(batch.getUuid(), batch, this);
 		}
 
@@ -86,9 +126,12 @@ public class InProcessBatchManager implements IBatchManager {
 		return runningBatches;
 	}
 
+	public void init() {
+	}
+
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see net.sf.appstatus.core.batch.IBatchManager#removeAllBatches(int)
 	 */
 	public void removeAllBatches(int scope) {
@@ -122,7 +165,7 @@ public class InProcessBatchManager implements IBatchManager {
 			break;
 		}
 
-		// Remove all batches maked for deletion.
+		// Remove all batches marked for deletion.
 		for (IBatch b : toRemove) {
 			removeBatch(b);
 		}
@@ -148,7 +191,7 @@ public class InProcessBatchManager implements IBatchManager {
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see
 	 * net.sf.appstatus.core.batch.IBatchManager#removeBatch(net.sf.appstatus
 	 * .core.batch.IBatch)
@@ -159,10 +202,27 @@ public class InProcessBatchManager implements IBatchManager {
 	}
 
 	public void setConfiguration(Properties configuration) {
-		// Not configurable.
-	}
+		try {
 
-	public void setMaxSize(long maxSize) {
-		this.maxSize = maxSize;
+			logInterval = Integer.parseInt(configuration.getProperty("batch.logInterval"));
+		} catch (NumberFormatException e) {
+			logInterval = 1000;
+		}
+		logger.info("Batch log interval: {}ms", logInterval);
+
+		try {
+			maxSize = Integer.parseInt(configuration.getProperty("batch.maxHistory"));
+		} catch (NumberFormatException e) {
+			maxSize = 25;
+		}
+		logger.info("Batch history size: {}", maxSize);
+
+		try {
+			zombieInterval = Integer.parseInt(configuration.getProperty("batch.zombieInterval"));
+		} catch (NumberFormatException e) {
+			zombieInterval = 1000 * 60 * 10;
+		}
+		logger.info("Zombie interval: {}", zombieInterval);
+
 	}
 }

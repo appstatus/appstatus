@@ -8,23 +8,29 @@ import net.sf.appstatus.core.batch.IBatch;
 import net.sf.appstatus.core.batch.IBatchProgressMonitor;
 
 /**
- * Bean batch implementation, it used a progress monitor to track the batch
- * status informations.
- * 
+ * Bean batch implementation,
+ * <p>
+ * It uses a progress monitor to track the batch status informations.
+ *
  */
 public class Batch implements IBatch {
 
 	private final String group;
 	private InProcessBatchProgressMonitor monitor;
+
 	private final String name;
 
+	/**
+	 * Unique ID for this batch instance.
+	 */
 	private final String uuid;
+	private int zombieInterval = 1000 * 60 * 10;
 
 	/**
 	 * Creates a new Batch.
 	 * <p>
 	 * This method is not intended to be used directly.
-	 * 
+	 *
 	 * @param uuid
 	 *            unique batch identifier
 	 */
@@ -36,7 +42,7 @@ public class Batch implements IBatch {
 	 * Creates a new Batch.
 	 * <p>
 	 * This method is not intended to be used directly.
-	 * 
+	 *
 	 * @param uuid
 	 *            unique batch identifier
 	 * @param name
@@ -163,6 +169,12 @@ public class Batch implements IBatch {
 		}
 
 		if (!monitor.isDone()) {
+
+			// If batch was not updated since 1 hour, report as Zombie.
+			if (new Date().getTime() - monitor.getLastUpdate().getTime() > zombieInterval) {
+				return STATUS_ZOMBIE;
+			}
+
 			return STATUS_RUNNING;
 		}
 
@@ -186,11 +198,14 @@ public class Batch implements IBatch {
 
 	/**
 	 * @inheritDoc
-	 * 
+	 *
 	 * @see net.sf.appstatus.core.batch.IBatch#setProgressMonitor(net.sf.appstatus.core.batch.IBatchProgressMonitor)
 	 */
 	public void setProgressMonitor(IBatchProgressMonitor monitor) {
 		this.monitor = (InProcessBatchProgressMonitor) monitor;
 	}
 
+	public void setZombieInterval(int zombieInterval) {
+		this.zombieInterval = zombieInterval;
+	}
 }
