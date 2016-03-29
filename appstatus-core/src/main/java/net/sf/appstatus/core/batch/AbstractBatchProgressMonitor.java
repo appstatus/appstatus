@@ -368,6 +368,10 @@ public abstract class AbstractBatchProgressMonitor implements IBatchProgressMoni
 		return this.totalWork;
 	}
 
+	public long getWritingDelay() {
+		return writingDelay;
+	}
+
 	public boolean isCancelRequested() {
 		return false;
 	}
