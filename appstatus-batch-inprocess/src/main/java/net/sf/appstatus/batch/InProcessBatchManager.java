@@ -115,7 +115,8 @@ public class InProcessBatchManager implements IBatchManager {
 		if (b.getProgressMonitor() == null) {
 			// Calling this method automatically call
 			// IBatch#setProgressMonitor()
-			new InProcessBatchProgressMonitor(batch.getUuid(), batch, this);
+			InProcessBatchProgressMonitor pm = new InProcessBatchProgressMonitor(batch.getUuid(), batch, this);
+			pm.setWritingDelay(logInterval);
 		}
 
 		// Return current monitor.
