@@ -133,7 +133,10 @@ public class JdbcBatchManager implements IBatchManager {
 	}
 
 	public Properties getConfiguration() {
-		return null;
+		Properties props = new Properties();
+		props.put("batch.logInterval", String.valueOf(logInterval));
+		props.put("batch.zombieInterval", String.valueOf(zombieInterval));
+		return props;
 	}
 
 	public void init() {
