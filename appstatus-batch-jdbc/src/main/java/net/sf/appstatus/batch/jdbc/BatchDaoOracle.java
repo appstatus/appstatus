@@ -3,28 +3,28 @@ package net.sf.appstatus.batch.jdbc;
 /**
  * Oracle-Compatible implementation.
  * <p>
- * 
+ *
  * <pre>
  * &lt;bean id="jdbcTemplate" class="org.springframework.jdbc.core.JdbcTemplate"
  * scope="singleton">
- *     &lt;constructor-arg ref="dataSource" /> 
+ *     &lt;constructor-arg ref="dataSource" />
  * &lt;/bean>
- * 
+ *
  * &lt;bean id="batchDao" class="net.sf.appstatus.batch.jdbc.BatchDao"
  * scope="singleton"> &lt;property name="jdbcTemplate" ref="jdbcTemplate" />
  * &lt;/bean>
- * 
- * 
- * 
+ *
+ *
+ *
  * &lt;bean id="jdbcBatchManager"
  * class="net.sf.appstatus.batch.jdbc.JdbcBatchManager" scope="singleton">
- * 		&lt;property name="batchDao" ref="batchDao" /> 
+ * 		&lt;property name="batchDao" ref="batchDao" />
  * &lt;/bean>
- * 
+ *
  * </pre>
- * 
+ *
  * Create table: BATCH
- * 
+ *
  * <p>
  * <table>
  * <tr>
@@ -98,11 +98,9 @@ public class BatchDaoOracle extends BatchDao {
                     + " UUID_BATCH, ITEM, CURRENT_TASK, END_DATE, GROUP_BATCH, ITEMCOUNT, LAST_MSG, UPDATED, NAME_BATCH, PROGRESS, REJECT, START_DATE, STATUS,SUCCESS " //
                     + "FROM ( " //
                     + "SELECT UUID_BATCH, ITEM, CURRENT_TASK, END_DATE, GROUP_BATCH, ITEMCOUNT, LAST_MSG, UPDATED, NAME_BATCH, PROGRESS, REJECT, START_DATE, STATUS,SUCCESS FROM "
-                    + tableName
-                    + " WHERE STATUS IN ( %s )  ORDER BY UPDATED DESC " //
+                    + tableName + " WHERE STATUS IN ( %s )  ORDER BY UPDATED DESC " //
                     + ") WHERE ROWNUM <= ? ";
 
-            
         case BATCH_FETCH_BY_NAME:
             return "SELECT " //
                     + " UUID_BATCH, ITEM, CURRENT_TASK, END_DATE, GROUP_BATCH, ITEMCOUNT, LAST_MSG, UPDATED, NAME_BATCH, PROGRESS, REJECT, START_DATE, STATUS,SUCCESS " //
@@ -112,23 +110,22 @@ public class BatchDaoOracle extends BatchDao {
                     + " WHERE GROUP_BATCH = ? AND NAME_BATCH = ? AND STATUS IN ( %s )  ORDER BY UPDATED DESC " //
                     + ") WHERE ROWNUM <= ? ";
 
-            
         case BATCH_CREATE_TABLE:
             return "CREATE TABLE " + tableName + " (" //
-                    + " UUID_BATCH varchar(256) NOT NULL," //
-                    + "GROUP_BATCH varchar(256) NULL," //
-                    + "NAME_BATCH varchar(256) NULL," //
+                    + " UUID_BATCH VARCHAR2(256 BYTE) NOT NULL," //
+                    + "GROUP_BATCH VARCHAR2(256 BYTE) NULL," //
+                    + "NAME_BATCH VARCHAR2(256 BYTE) NULL," //
                     + "START_DATE DATE  NULL," //
                     + "END_DATE DATE NULL," //
                     + "UPDATED DATE NULL," //
-                    + "STATUS varchar(64) NULL," //
-                    + "SUCCESS BOOLEAN NULL," //
-                    + "ITEMCOUNT BIGINT NULL," //
-                    + "ITEM varchar(256) NULL," //
-                    + "CURRENT_TASK varchar(256) NULL," //
-                    + "PROGRESS Float NULL," //
+                    + "STATUS VARCHAR2(64 BYTE) NULL," //
+                    + "SUCCESS CHAR(1) NULL," //
+                    + "ITEMCOUNT NUMBER(12) NULL," //
+                    + "ITEM VARCHAR2(256 BYTE) NULL," //
+                    + "CURRENT_TASK VARCHAR2(256 BYTE) NULL," //
+                    + "PROGRESS FLOAT(15) NULL," //
                     + "REJECT CLOB NULL," //
-                    + "LAST_MSG varchar(1024) NULL," //
+                    + "LAST_MSG VARCHAR2(1024 BYTE) NULL, " //
                     + "PRIMARY KEY (UUID_BATCH)" + ")  ";
 
         case BATCH_DELETE_SUCCESS:

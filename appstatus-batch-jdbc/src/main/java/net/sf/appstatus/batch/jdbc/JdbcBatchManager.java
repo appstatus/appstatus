@@ -15,7 +15,8 @@ import org.slf4j.LoggerFactory;
 
 public class JdbcBatchManager implements IBatchManager {
 
-	private static Logger logger = LoggerFactory.getLogger(JdbcBatchManager.class);
+	private static Logger logger = LoggerFactory
+			.getLogger(JdbcBatchManager.class);
 
 	private BatchDao batchDao;
 	List<IBatch> runningBatches = new Vector<IBatch>();
@@ -57,7 +58,7 @@ public class JdbcBatchManager implements IBatchManager {
 		return b;
 	}
 
-	private List<IBatch> convertToIBatch(List<BdBatch> bdBaches) {
+	protected List<IBatch> convertToIBatch(List<BdBatch> bdBaches) {
 		List<IBatch> result = null;
 		if (bdBaches != null) {
 			result = new ArrayList<IBatch>();
@@ -82,7 +83,8 @@ public class JdbcBatchManager implements IBatchManager {
 	public IBatchProgressMonitor getMonitor(IBatch batch) {
 		Batch b = (Batch) batch;
 		if (b.getProgressMonitor() == null) {
-			JdbcBatchProgressMonitor monitor = new JdbcBatchProgressMonitor(batch.getUuid(), batch, batchDao);
+			JdbcBatchProgressMonitor monitor = new JdbcBatchProgressMonitor(
+					batch.getUuid(), batch, batchDao);
 			monitor.setManager(this);
 			monitor.setWritingDelay(logInterval);
 		}
@@ -117,14 +119,16 @@ public class JdbcBatchManager implements IBatchManager {
 
 	public void setConfiguration(Properties configuration) {
 		try {
-			logInterval = Integer.parseInt(configuration.getProperty("batch.logInterval"));
+			logInterval = Integer.parseInt(configuration
+					.getProperty("batch.logInterval"));
 		} catch (NumberFormatException e) {
 			logInterval = 1000;
 		}
 		logger.info("Batch log interval: {}ms", logInterval);
 
 		try {
-			zombieInterval = Integer.parseInt(configuration.getProperty("batch.zombieInterval"));
+			zombieInterval = Integer.parseInt(configuration
+					.getProperty("batch.zombieInterval"));
 		} catch (NumberFormatException e) {
 			zombieInterval = 1000 * 60 * 10;
 		}
@@ -133,7 +137,10 @@ public class JdbcBatchManager implements IBatchManager {
 	}
 
 	public Properties getConfiguration() {
-		return null;
+		Properties props = new Properties();
+		props.put("batch.logInterval", String.valueOf(logInterval));
+		props.put("batch.zombieInterval", String.valueOf(zombieInterval));
+		return props;
 	}
 
 	public void init() {
