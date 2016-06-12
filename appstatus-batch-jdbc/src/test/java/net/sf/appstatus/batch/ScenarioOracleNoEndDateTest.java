@@ -1,14 +1,11 @@
 package net.sf.appstatus.batch;
 
 import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 
 import java.util.UUID;
-
-import net.sf.appstatus.core.AppStatus;
-import net.sf.appstatus.core.batch.AbstractBatchProgressMonitor;
-import net.sf.appstatus.core.batch.IBatchProgressMonitor;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -18,6 +15,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+import net.sf.appstatus.batch.jdbc.CleanBatchHelper;
+import net.sf.appstatus.core.AppStatus;
+import net.sf.appstatus.core.batch.AbstractBatchProgressMonitor;
+import net.sf.appstatus.core.batch.IBatchProgressMonitor;
+
 /**
  * Test the failed feature.
  */
@@ -26,29 +28,35 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 @ContextConfiguration(locations = { "/appstatus-jdbc-ora-test-config.xml" })
 public class ScenarioOracleNoEndDateTest {
 
-	@Autowired
-	AppStatus appStatus;
+    @Autowired
+    AppStatus appStatus;
 
-	private final Logger logger = LoggerFactory.getLogger(ScenarioOracleNoEndDateTest.class);
+    private final Logger logger = LoggerFactory.getLogger(ScenarioOracleNoEndDateTest.class);
 
-	@Test
-	public void testNoEndDateScenario() throws Exception {
-		String uuid = UUID.randomUUID().toString();
-		IBatchProgressMonitor m = appStatus.getBatchProgressMonitor("Batch name", "Batch group", uuid);
-		m.setLogger(this.logger);
+    @Test
+    public void testNoEndDateScenario() throws Exception {
+        CleanBatchHelper.cleanBatches(appStatus);
+        String uuid = UUID.randomUUID().toString();
+        IBatchProgressMonitor m = appStatus.getBatchProgressMonitor("Batch name", "Batch group", uuid);
+        m.setLogger(this.logger);
 
-		// Before first task
-		m.message("Test message");
-		m.setCurrentItem("");
+        // Before first task
+        m.message("Test message");
+        m.setCurrentItem("");
 
-		assertThat(appStatus.getBatchManager().getRunningBatches().get(0).getProgressStatus(), is(-1f));
+        assertThat(appStatus.getBatchManager().getRunningBatches().get(0).getProgressStatus(), is(-1f));
 
-		// Task 1
-		m.beginTask("Task 1 name", "Task 1 description ", 4);
-		assertThat(((AbstractBatchProgressMonitor) m).getProgress(), is(0f));
-		assertThat(appStatus.getBatchManager().getRunningBatches().get(0).getProgressStatus(), is(0f));
+        // Task 1
+        m.beginTask("Task 1 name", "Task 1 description ", 4);
+        assertThat(((AbstractBatchProgressMonitor) m).getProgress(), is(0f));
+        assertThat(appStatus.getBatchManager().getRunningBatches().get(0).getProgressStatus(), is(0f));
 
-		assertNull(appStatus.getBatchManager().getRunningBatches().get(0).getEndDate());
-	}
+        assertNull(appStatus.getBatchManager().getRunningBatches().get(0).getEndDate());
+
+        m.worked(4);
+        assertNotNull(appStatus.getBatchManager().getRunningBatches().get(0).getEndDate());
+
+        m.done();
+    }
 
 }

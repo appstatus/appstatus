@@ -4,176 +4,179 @@ import java.util.Date;
 
 public class BdBatch {
 
-	private String currentItem;
+    private String currentItem;
 
-	private String currentTask;
+    private String currentTask;
 
-	private Date endDate;
+    private Date endDate;
 
-	private String group;
+    private String group;
 
-	private long itemCount;
+    private long itemCount;
 
-	private String lastMessage;
+    private String lastMessage;
 
-	private Date lastUpdate;
+    private Date lastUpdate;
 
-	private String name;
+    private String name;
 
-	private Float progress;
+    private Float progress;
 
-	private String reject;
+    private String reject;
 
-	private Date startDate;
+    private Date startDate;
 
-	private String status;
+    private String status;
 
-	private Boolean success;
+    private Boolean success;
 
-	private String uuid;
+    private String uuid;
 
-	public String getCurrentItem() {
-		return currentItem;
-	}
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        BdBatch other = (BdBatch) obj;
+        if (uuid == null) {
+            if (other.uuid != null) {
+                return false;
+            }
+        } else if (!uuid.equals(other.uuid)) {
+            return false;
+        }
+        return true;
+    }
 
-	public String getCurrentTask() {
-		return currentTask;
-	}
+    public String getCurrentItem() {
+        return currentItem;
+    }
 
-	public Date getEndDate() {
-		return endDate;
-	}
+    public String getCurrentTask() {
+        return currentTask;
+    }
 
-	public String getGroup() {
-		return group;
-	}
+    public Date getEndDate() {
+        return endDate;
+    }
 
-	public long getItemCount() {
-		return itemCount;
-	}
+    public String getGroup() {
+        return group;
+    }
 
-	public String getLastMessage() {
-		return lastMessage;
-	}
+    public long getItemCount() {
+        return itemCount;
+    }
 
-	public Date getLastUpdate() {
-		return lastUpdate;
-	}
+    public String getLastMessage() {
+        return lastMessage;
+    }
 
-	public String getName() {
-		return name;
-	}
+    public Date getLastUpdate() {
+        return lastUpdate;
+    }
 
-	public Float getProgress() {
-		return progress;
-	}
+    public String getName() {
+        return name;
+    }
 
-	public String getReject() {
-		return reject;
-	}
+    public Float getProgress() {
+        return progress;
+    }
 
-	public Date getStartDate() {
-		return startDate;
-	}
+    public String getReject() {
+        return reject;
+    }
 
-	public String getStatus() {
-		return status;
-	}
+    public Date getStartDate() {
+        return startDate;
+    }
 
-	public Boolean getSuccess() {
-		return success;
-	}
+    public String getStatus() {
+        return status;
+    }
 
-	public String getUuid() {
-		return uuid;
-	}
+    public Boolean getSuccess() {
+        return success;
+    }
 
-	public void setCurrentItem(String currentItem) {
-		this.currentItem = currentItem;
-	}
+    public String getUuid() {
+        return uuid;
+    }
 
-	public void setCurrentTask(String currentTask) {
-		this.currentTask = currentTask;
-	}
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ((uuid == null) ? 0 : uuid.hashCode());
+        return result;
+    }
 
-	public void setEndDate(Date endDate) {
-		this.endDate = endDate;
-	}
+    public void setCurrentItem(String currentItem) {
+        this.currentItem = currentItem;
+    }
 
-	public void setGroup(String group) {
-		this.group = group;
-	}
+    public void setCurrentTask(String currentTask) {
+        this.currentTask = currentTask;
+    }
 
-	public void setItemCount(long itemCount) {
-		this.itemCount = itemCount;
-	}
+    public void setEndDate(Date endDate) {
+        this.endDate = endDate;
+    }
 
-	public void setLastMessage(String lastMessage) {
-		this.lastMessage = lastMessage;
-	}
+    public void setGroup(String group) {
+        this.group = group;
+    }
 
-	public void setLastUpdate(Date lastUpdate) {
-		this.lastUpdate = lastUpdate;
-	}
+    public void setItemCount(long itemCount) {
+        this.itemCount = itemCount;
+    }
 
-	public void setName(String name) {
-		this.name = name;
-	}
+    public void setLastMessage(String lastMessage) {
+        this.lastMessage = lastMessage;
+    }
 
-	public void setProgress(Float progress) {
-		this.progress = progress;
-	}
+    public void setLastUpdate(Date lastUpdate) {
+        this.lastUpdate = lastUpdate;
+    }
 
-	public void setReject(String reject) {
-		this.reject = reject;
-	}
+    public void setName(String name) {
+        this.name = name;
+    }
 
-	public void setStartDate(Date startDate) {
-		this.startDate = startDate;
-	}
+    public void setProgress(Float progress) {
+        this.progress = progress;
+    }
 
-	public void setStatus(String status) {
-		this.status = status;
-	}
+    public void setReject(String reject) {
+        this.reject = reject;
+    }
 
-	public void setSuccess(Boolean success) {
-		this.success = success;
-	}
+    public void setStartDate(Date startDate) {
+        this.startDate = startDate;
+    }
 
-	public void setUuid(String id) {
-		this.uuid = id;
-	}
+    public void setStatus(String status) {
+        this.status = status;
+    }
 
-	@Override
-	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result + ((uuid == null) ? 0 : uuid.hashCode());
-		return result;
-	}
+    public void setSuccess(Boolean success) {
+        this.success = success;
+    }
 
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj) {
-			return true;
-		}
-		if (obj == null) {
-			return false;
-		}
-		if (getClass() != obj.getClass()) {
-			return false;
-		}
-		BdBatch other = (BdBatch) obj;
-		if (uuid == null) {
-			if (other.uuid != null) {
-				return false;
-			}
-		} else if (!uuid.equals(other.uuid)) {
-			return false;
-		}
-		return true;
-	}
-	
+    public void setUuid(String id) {
+        this.uuid = id;
+    }
 
-	
+    @Override
+    public String toString() {
+        return String.format("Batch group[%s] name [%s] uid[%s] progress[%s]", group, name, uuid, progress);
+    }
+
 }
