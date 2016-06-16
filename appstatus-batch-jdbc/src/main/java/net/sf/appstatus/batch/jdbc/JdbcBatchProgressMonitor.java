@@ -36,7 +36,6 @@ public class JdbcBatchProgressMonitor extends AbstractBatchProgressMonitor imple
 	BatchDao batchDao;
 
 	private long lastDbSave;
-	private long writingDelay = 1000;
 
 	/**
 	 * Private constructor used to create a sub task.
@@ -119,7 +118,7 @@ public class JdbcBatchProgressMonitor extends AbstractBatchProgressMonitor imple
 	}
 
 	private boolean isLoggable(long lastWriteTimestamp) {
-		if (System.currentTimeMillis() - lastWriteTimestamp > writingDelay) {
+		if (System.currentTimeMillis() - lastWriteTimestamp > getWritingDelay()) {
 			return true;
 		}
 		return false;
