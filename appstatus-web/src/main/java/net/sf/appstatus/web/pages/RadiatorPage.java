@@ -15,18 +15,20 @@ package net.sf.appstatus.web.pages;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
-import java.io.Writer;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.lang3.StringUtils;
+
 import net.sf.appstatus.core.batch.IBatchManager;
 import net.sf.appstatus.core.check.ICheckResult;
+import net.sf.appstatus.web.HtmlUtils;
 import net.sf.appstatus.web.IPage;
 import net.sf.appstatus.web.StatusWebHandler;
-
-import org.apache.commons.lang3.StringUtils;
 
 /**
  * This is an Alpha radiator page. (Alpha version)
@@ -43,8 +45,7 @@ public class RadiatorPage implements IPage {
 	private static final int STATUS_OK = 0;
 	private static final int STATUS_WARN = 1;
 
-	public void doGet(StatusWebHandler webHandler, HttpServletRequest req, HttpServletResponse resp)
-			throws UnsupportedEncodingException, IOException {
+	public void doGet(StatusWebHandler webHandler, HttpServletRequest req, HttpServletResponse resp) throws UnsupportedEncodingException, IOException {
 
 		// Setup response
 		resp.setContentType("text/html");
@@ -87,22 +88,14 @@ public class RadiatorPage implements IPage {
 			width = manager.getRunningBatches().size() + manager.getFinishedBatches().size() > 0 ? 100 : 0;
 		}
 
-		Writer w = resp.getWriter();
-		w.append("<html>");
-		w.append("<head>");
-		w.append("<meta http-equiv=\"refresh\" content=\"60;\">");
-		w.append("<link href=\"?resource=appstatus.css\" rel=\"stylesheet\">");
-		w.append("</head>");
-		w.append("<body style=\"background: #000; text-align: center; padding-top: 5%;\">");
-		w.append("<p style=\"color: #fff; font-size: 200%;\" >" + webHandler.getApplicationName() + "</p>");
-		w.append("<p style=\" padding-top: 10%;\"><a href=\"?p=status\" target=\"_blank\" class=\"btn btn-large "
-				+ btnClass + "\" >Status</a></p>");
-		w.append("<div class=\"progress "
-				+ batchStatus
-				+ active
-				+ "\" style=\"margin-top: 5%; width: 90%; margin-left: 5%; margin-right: 5%;\">  <div class=\"bar\" style=\"width: "
-				+ width + "%;\"></div></div>");
-		w.append("</body></html>");
+		Map<String, String> model = new HashMap<String, String>();
+		model.put("applicationName", webHandler.getApplicationName());
+		model.put("batchBtnClass", btnClass);
+		model.put("batchStatus", batchStatus);
+		model.put("batchActive", active);
+		model.put("batchBarWidth", width + "%");
+
+		resp.getWriter().append(HtmlUtils.applyLayout(model, "radiatorLayout.html"));
 	}
 
 	public void doPost(StatusWebHandler webHandler, HttpServletRequest req, HttpServletResponse resp) {

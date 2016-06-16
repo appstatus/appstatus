@@ -1,0 +1,15 @@
+<html>
+    <head>
+        <meta http-equiv="refresh" content="60">
+        <link href="?resource=appstatus.css" rel="stylesheet">
+    </head>
+    <body style="background: #000; text-align: center; padding-top: 5%">
+        <p style="color: #fff; font-size: 200%">${applicationName}</p>
+        <p style=" padding-top: 10%">
+            <a href="?p=status" target="_blank" class="btn btn-large ${batchBtnClass}" >Status</a>
+        </p>
+        <div class="progress ${batchStatus}${batchActive}" style="margin-top: 5%; width: 90%; margin-left: 5%; margin-right: 5%">
+            <div class="bar" style="width: ${batchBarWidth}"></div>
+        </div>
+    </body>
+</html>
