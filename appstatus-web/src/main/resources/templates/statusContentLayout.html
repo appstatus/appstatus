@@ -1,7 +1,10 @@
-	<p>Online:${statusOk}</p>
-	<p>Code:${statusCode}</p>
+<p>Online: ${statusOk}</p>
+<form name="mode" action="?mode=${nextMode}" method="post">
+<p>Maintenance : <button type="submit" class="btn-toggle ${maintenanceModeActive}"><span class="on">On</span><span class="off">Off</span><span class="switch"></span></button></p>
+</form>
+<p>Code: ${statusCode}</p>
 <h3 class="status">Status</h3>
-	${statusTable}
+${statusTable}
 
 <h3 class="properties">Properties</h3>
-	${propertiesTable}
+${propertiesTable}

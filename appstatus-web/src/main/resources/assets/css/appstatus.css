@@ -7332,3 +7332,62 @@ a.badge:focus {
     overflow: visible !important;
   }
 }
+
+form#mode {
+    margin: 0;
+}
+button.btn-toggle {
+    border: 1px solid #DDD;
+    border-radius: .4em;
+    box-sizing: content-box;
+    height: 1.6em;
+    margin: 0;
+    overflow: hidden;
+    padding: 0;
+    position: relative;
+    width: 4.2em;
+}
+button.btn-toggle:focus {
+    outline: none;
+}
+button.btn-toggle > .on,
+button.btn-toggle > .off {
+    background-color: #BBB;
+    color: #FAFAFA;
+    display: inline-block;
+    height: 1.6em;
+    line-height: 1.6em;
+    width: 2.4em;
+}
+button.btn-toggle > .on {
+    float: left;
+}
+button.btn-toggle > .off {
+    float: right;
+}
+button.btn-toggle > .switch {
+    background: linear-gradient(to top, #DDD, #EEE);
+    height: 1.6em;
+    position: absolute;
+    width: 1.8em;
+}
+button.btn-toggle.on > .on {
+    display: inline-block;
+}
+button.btn-toggle.on > .off {
+    display: none;
+}
+button.btn-toggle.on > .switch {
+    border-left: 1px solid #DDD;
+    right: 0;
+}
+button.btn-toggle.off > .on {
+    display: none;
+}
+button.btn-toggle.off > .off {
+    display: inline-block;
+}
+button.btn-toggle.off > .switch {
+    border-right: 1px solid #DDD;
+    left: 0;
+}

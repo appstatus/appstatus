@@ -2,3 +2,4 @@
 *.versionsBackup
 
 appstatus-services-inprocess/.settings/org.eclipse.core.resources.prefs
+/target/

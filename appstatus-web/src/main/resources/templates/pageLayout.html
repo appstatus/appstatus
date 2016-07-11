@@ -1,46 +1,41 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="utf-8">
-    <title>AppStatus - ${applicationName}</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <!-- Le styles -->
-    ${css}
-    <style>
-      body {
-        padding-top: 60px; /* 60px to make the container go all the way to the bottom of the topbar */
-      }
-    </style>
-    <!-- Ze javascript
+<head>
+<meta charset="utf-8">
+<title>AppStatus - ${applicationName}</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<!-- Le styles -->
+${css}
+<style>
+body {
+    padding-top: 60px; /* 60px to make the container go all the way to the bottom of the topbar */
+}
+</style>
+<!-- Ze javascript
     ================================================== -->
-    <!-- Placed in the header so it can be used in pages -->
-     <script src="?resource=jquery.js"></script>
-  </head>
-
-  <body>
-
+<!-- Placed in the header so it can be used in pages -->
+<script src="?resource=jquery.js"></script>
+</head>
+<body>
     <div class="navbar navbar-inverse navbar-fixed-top">
-    	<div class="navbar-inner">
-    		<div class="container">
-    			<a class="brand" href="${UrlAppStatus}">AppStatus</a>
-    				<div class="nav-collapse collapse">
-    					<ul class="nav">
-             				${menu}
-            			</ul>
-            			<ul class="nav pull-right">
-<!--             			 	<li><a href="#" id="btnRefresh"><i class="icon-refresh  icon-white"></i></a></li> -->
-                      		<li class="divider-vertical"></li>
-                      		<li class="brand">${applicationName}</li>
-                    	</ul>
-            		</div>
+        <div class="navbar-inner">
+            <div class="container">
+                <a class="brand" href="${UrlAppStatus}">AppStatus</a>
+                <div class="nav-collapse collapse">
+                    <ul class="nav">${menu}</ul>
+                    <ul class="nav pull-right">
+                        <!-- <li><a href="#" id="btnRefresh"><i class="icon-refresh  icon-white"></i></a></li> -->
+                        <li class="divider-vertical"></li>
+                        <li class="brand">${applicationName}</li>
+                    </ul>
+                </div>
             </div>
-       </div>
+        </div>
     </div>
-
     <div class="container">
-   <!--  <h1>${applicationName}</h1>-->
-    
-	${content}
-    </div> <!-- /container -->
-  </body>
+        <!--  <h1>${applicationName}</h1>-->
+        ${content}
+    </div>
+    <!-- /container -->
+</body>
 </html>
