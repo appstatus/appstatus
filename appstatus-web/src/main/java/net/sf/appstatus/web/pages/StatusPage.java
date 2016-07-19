@@ -38,184 +38,189 @@ import net.sf.appstatus.web.StatusWebHandler;
 
 public class StatusPage extends AbstractPage {
 
-    private static Logger LOGGER = LoggerFactory.getLogger(StatusPage.class);
+	private static Logger LOGGER = LoggerFactory.getLogger(StatusPage.class);
 
-    private static final String ENCODING = "UTF-8";
+	private static final String ENCODING = "UTF-8";
 
-    private static final String PAGECONTENTLAYOUT = "statusContentLayout.html";
+	private static final String PAGECONTENTLAYOUT = "statusContentLayout.html";
 
-    /**
-     * Returns status icon id.
-     *
-     * @param result
-     * @return
-     */
-    private static String getStatus(final ICheckResult result) {
+	/**
+	 * Returns status icon id.
+	 *
+	 * @param result
+	 * @return
+	 */
+	private static String getStatus(final ICheckResult result) {
 
-        if (result.getCode() == ICheckResult.OK) {
-            return Resources.STATUS_OK;
-        }
+		if (result.getCode() == ICheckResult.OK) {
+			return Resources.STATUS_OK;
+		}
 
-        if (result.isFatal()) {
-            return Resources.STATUS_ERROR;
-        }
+		if (result.isFatal()) {
+			return Resources.STATUS_ERROR;
+		}
 
-        return Resources.STATUS_WARN;
-    }
+		return Resources.STATUS_WARN;
+	}
 
-    @Override
-    public void doGet(final StatusWebHandler webHandler, final HttpServletRequest req, final HttpServletResponse resp) throws UnsupportedEncodingException, IOException {
+	@Override
+	public void doGet(final StatusWebHandler webHandler, final HttpServletRequest req, final HttpServletResponse resp)
+			throws UnsupportedEncodingException, IOException {
 
-        if (req.getParameter("json") != null) {
-            doGetJSON(webHandler, req, resp);
-        } else {
-            doGetHTML(webHandler, req, resp);
-        }
+		if (req.getParameter("json") != null) {
+			doGetJSON(webHandler, req, resp);
+		} else {
+			doGetHTML(webHandler, req, resp);
+		}
 
-    }
+	}
 
-    public void doGetHTML(final StatusWebHandler webHandler, final HttpServletRequest req, final HttpServletResponse resp) throws UnsupportedEncodingException, IOException {
+	public void doGetHTML(final StatusWebHandler webHandler, final HttpServletRequest req,
+			final HttpServletResponse resp) throws UnsupportedEncodingException, IOException {
 
-        setup(resp, "text/html");
-        final ServletOutputStream os = resp.getOutputStream();
+		setup(resp, "text/html");
+		final ServletOutputStream os = resp.getOutputStream();
 
-        final AppStatus appStatus = webHandler.getAppStatus();
+		final AppStatus appStatus = webHandler.getAppStatus();
 
-        final Map<String, String> valuesMap = new HashMap<String, String>();
-        final List<ICheckResult> results = appStatus.checkAll(req.getLocale());
-        Collections.sort(results);
-        boolean statusOk = true;
-        int statusCode = 200;
-        for (final ICheckResult r : results) {
-            if (r.getCode() != ICheckResult.OK && r.isFatal()) {
-                statusCode = 500;
-                statusOk = false;
-                break;
-            }
-        }
+		final Map<String, String> valuesMap = new HashMap<String, String>();
+		final List<ICheckResult> results = appStatus.checkAll(req.getLocale());
+		Collections.sort(results);
+		boolean statusOk = true;
+		int statusCode = 200;
+		for (final ICheckResult r : results) {
+			if (r.getCode() != ICheckResult.OK && r.isFatal()) {
+				statusCode = 500;
+				statusOk = false;
+				break;
+			}
+		}
 
-        if (statusOk && appStatus.isMaintenance()) {
-            statusCode = 503;
-        }
+		if (statusOk && appStatus.isMaintenance()) {
+			statusCode = 503;
+		}
 
-        valuesMap.put("maintenanceModeActive", appStatus.isMaintenance() ? "on" : "off");
-        valuesMap.put("nextMode", appStatus.isMaintenance() ? "available" : "maintenance");
+		valuesMap.put("maintenanceModeActive", appStatus.isMaintenance() ? "on" : "off");
+		valuesMap.put("nextMode", appStatus.isMaintenance() ? "available" : "maintenance");
 
-        valuesMap.put("statusOk", String.valueOf(statusOk));
-        valuesMap.put("statusCode", String.valueOf(statusCode));
+		valuesMap.put("statusOk", String.valueOf(statusOk));
+		valuesMap.put("statusCode", String.valueOf(statusCode));
 
-        resp.setStatus(statusCode);
+		resp.setStatus(statusCode);
 
-        // STATUS TABLE
-        final StrBuilder sbStatusTable = new StrBuilder();
-        if (HtmlUtils.generateBeginTable(sbStatusTable, results.size())) {
+		// STATUS TABLE
+		final StrBuilder sbStatusTable = new StrBuilder();
+		if (HtmlUtils.generateBeginTable(sbStatusTable, results.size())) {
 
-            HtmlUtils.generateHeaders(sbStatusTable, "", "Group", "Name", "Description", "Code", "Resolution");
+			HtmlUtils.generateHeaders(sbStatusTable, "", "Group", "Name", "Description", "Code", "Resolution");
 
-            for (final ICheckResult r : results) {
-                HtmlUtils.generateRow(sbStatusTable, getStatus(r), r.getGroup(), r.getProbeName(), r.getDescription(), String.valueOf(r.getCode()), r.getResolutionSteps());
-            }
-            HtmlUtils.generateEndTable(sbStatusTable, results.size());
-        }
-        valuesMap.put("statusTable", sbStatusTable.toString());
+			for (final ICheckResult r : results) {
+				HtmlUtils.generateRow(sbStatusTable, getStatus(r), r.getGroup(), r.getProbeName(), r.getDescription(),
+						String.valueOf(r.getCode()), r.getResolutionSteps());
+			}
+			HtmlUtils.generateEndTable(sbStatusTable, results.size());
+		}
+		valuesMap.put("statusTable", sbStatusTable.toString());
 
-        // PROPERTIES TABLE
-        final StrBuilder sbPropertiesTable = new StrBuilder();
-        final Map<String, Map<String, String>> properties = appStatus.getProperties();
-        if (HtmlUtils.generateBeginTable(sbPropertiesTable, properties.size())) {
+		// PROPERTIES TABLE
+		final StrBuilder sbPropertiesTable = new StrBuilder();
+		final Map<String, Map<String, String>> properties = appStatus.getProperties();
+		if (HtmlUtils.generateBeginTable(sbPropertiesTable, properties.size())) {
 
-            HtmlUtils.generateHeaders(sbPropertiesTable, "", "Group", "Name", "Value");
+			HtmlUtils.generateHeaders(sbPropertiesTable, "", "Group", "Name", "Value");
 
-            for (final Entry<String, Map<String, String>> cat : properties.entrySet()) {
-                final String category = cat.getKey();
+			for (final Entry<String, Map<String, String>> cat : properties.entrySet()) {
+				final String category = cat.getKey();
 
-                for (final Entry<String, String> r : cat.getValue().entrySet()) {
-                    HtmlUtils.generateRow(sbPropertiesTable, Resources.STATUS_PROP, category, r.getKey(), r.getValue());
-                }
+				for (final Entry<String, String> r : cat.getValue().entrySet()) {
+					HtmlUtils.generateRow(sbPropertiesTable, Resources.STATUS_PROP, category, r.getKey(), r.getValue());
+				}
 
-            }
-            HtmlUtils.generateEndTable(sbPropertiesTable, properties.size());
-        }
-        valuesMap.put("propertiesTable", sbPropertiesTable.toString());
-        final String content = HtmlUtils.applyLayout(valuesMap, PAGECONTENTLAYOUT);
+			}
+			HtmlUtils.generateEndTable(sbPropertiesTable, properties.size());
+		}
+		valuesMap.put("propertiesTable", sbPropertiesTable.toString());
+		final String content = HtmlUtils.applyLayout(valuesMap, PAGECONTENTLAYOUT);
 
-        valuesMap.clear();
-        valuesMap.put("content", content);
-        os.write(getPage(webHandler, valuesMap).getBytes(ENCODING));
-    }
+		valuesMap.clear();
+		valuesMap.put("content", content);
+		os.write(getPage(webHandler, valuesMap).getBytes(ENCODING));
+	}
 
-    public void doGetJSON(final StatusWebHandler webHandler, final HttpServletRequest req, final HttpServletResponse resp) throws UnsupportedEncodingException, IOException {
+	public void doGetJSON(final StatusWebHandler webHandler, final HttpServletRequest req,
+			final HttpServletResponse resp) throws UnsupportedEncodingException, IOException {
 
-        setup(resp, "application/json");
+		setup(resp, "application/json");
 
-        final AppStatus appStatus = webHandler.getAppStatus();
+		final AppStatus appStatus = webHandler.getAppStatus();
 
-        final ServletOutputStream os = resp.getOutputStream();
-        int statusCode = 200;
-        final List<ICheckResult> results = appStatus.checkAll(req.getLocale());
-        for (final ICheckResult r : results) {
-            if (r.isFatal()) {
-                resp.setStatus(500);
-                statusCode = 500;
-                break;
-            }
-        }
+		final ServletOutputStream os = resp.getOutputStream();
+		int statusCode = 200;
+		final List<ICheckResult> results = appStatus.checkAll(req.getLocale());
+		for (final ICheckResult r : results) {
+			if (r.isFatal()) {
+				resp.setStatus(500);
+				statusCode = 500;
+				break;
+			}
+		}
 
-        if (appStatus.isMaintenance()) {
-            resp.setStatus(503);
-            statusCode = 503;
-        }
+		if (appStatus.isMaintenance()) {
+			resp.setStatus(503);
+			statusCode = 503;
+		}
 
-        os.write("{".getBytes(ENCODING));
+		os.write("{".getBytes(ENCODING));
 
-        os.write(("\"code\" : " + statusCode + ",").getBytes(ENCODING));
-        os.write(("\"status\" : {").getBytes(ENCODING));
+		os.write(("\"code\" : " + statusCode + ",").getBytes(ENCODING));
+		os.write(("\"status\" : {").getBytes(ENCODING));
 
-        boolean first = true;
-        for (final ICheckResult r : results) {
-            if (!first) {
-                os.write((",").getBytes(ENCODING));
-            }
+		boolean first = true;
+		for (final ICheckResult r : results) {
+			if (!first) {
+				os.write((",").getBytes(ENCODING));
+			}
 
-            os.write(("\"" + r.getProbeName() + "\" : " + r.getCode()).getBytes(ENCODING));
+			os.write(("\"" + r.getProbeName() + "\" : " + r.getCode()).getBytes(ENCODING));
 
-            if (first) {
-                first = false;
-            }
-        }
+			if (first) {
+				first = false;
+			}
+		}
 
-        os.write("}".getBytes(ENCODING));
-        os.write("}".getBytes(ENCODING));
+		os.write("}".getBytes(ENCODING));
+		os.write("}".getBytes(ENCODING));
 
-    }
+	}
 
-    @Override
-    public void doPost(final StatusWebHandler webHandler, final HttpServletRequest req, final HttpServletResponse resp) {
-        updateMode(webHandler, req.getParameter("mode"));
-        try {
-            resp.sendRedirect(req.getRequestURI());
-        } catch (final IOException ex) {
-            LOGGER.warn("Unable to redirect to main status page after updating mode", ex);
-        }
-    }
+	@Override
+	public void doPost(final StatusWebHandler webHandler, final HttpServletRequest req,
+			final HttpServletResponse resp) {
+		updateMode(webHandler, req.getParameter("mode"));
+		try {
+			resp.sendRedirect(req.getRequestURI());
+		} catch (final IOException ex) {
+			LOGGER.warn("Unable to redirect to main status page after updating mode", ex);
+		}
+	}
 
-    private void updateMode(final StatusWebHandler webHandler, final String mode) {
-        if (null != mode) {
-            try {
-                webHandler.getAppStatus().setMaintenance("maintenance".equalsIgnoreCase(mode));
-            } catch (final IOException ex) {
-                throw new RuntimeException("Error while updating maintenance status", ex);
-            }
-        }
-    }
+	private void updateMode(final StatusWebHandler webHandler, final String mode) {
+		if (null != mode) {
+			try {
+				webHandler.getAppStatus().setMaintenance("maintenance".equalsIgnoreCase(mode));
+			} catch (final IOException ex) {
+				throw new RuntimeException("Error while updating maintenance status", ex);
+			}
+		}
+	}
 
-    @Override
-    public String getId() {
-        return "status";
-    }
+	@Override
+	public String getId() {
+		return "status";
+	}
 
-    @Override
-    public String getName() {
-        return "Status";
-    }
+	@Override
+	public String getName() {
+		return "Status";
+	}
 }

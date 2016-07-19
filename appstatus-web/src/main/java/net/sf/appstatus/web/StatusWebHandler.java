@@ -38,173 +38,175 @@ import net.sf.appstatus.web.pages.Resources;
  * @author Nicolas Richeton
  */
 public class StatusWebHandler {
-    private static Logger logger = LoggerFactory.getLogger(StatusWebHandler.class);
-    private String allowIp = null;
-    private String applicationName = StringUtils.EMPTY;
-    private AppStatus appStatus = null;
-    private String cssLocation = null;
-    private Map<String, IPage> pages = null;
+	private static Logger logger = LoggerFactory.getLogger(StatusWebHandler.class);
+	private String allowIp = null;
+	private String applicationName = StringUtils.EMPTY;
+	private AppStatus appStatus = null;
+	private String cssLocation = null;
+	private Map<String, IPage> pages = null;
 
-    /**
-     * Handle a GET request.
-     *
-     * @param req
-     * @param resp
-     * @throws IOException
-     */
-    public void doGet(final HttpServletRequest req, final HttpServletResponse resp) throws IOException {
+	/**
+	 * Handle a GET request.
+	 *
+	 * @param req
+	 * @param resp
+	 * @throws IOException
+	 */
+	public void doGet(final HttpServletRequest req, final HttpServletResponse resp) throws IOException {
 
-        if (allowIp != null) {
-            if (!req.getRemoteAddr().equals(allowIp)) {
-                resp.sendError(401, "IP not authorized");
-                return;
-            }
-        }
+		if (allowIp != null) {
+			if (!req.getRemoteAddr().equals(allowIp)) {
+				resp.sendError(401, "IP not authorized");
+				return;
+			}
+		}
 
-        if (req.getParameter("icon") != null || req.getParameter("resource") != null) {
-            Resources.doGet(this, req, resp);
-            return;
-        }
+		if (req.getParameter("icon") != null || req.getParameter("resource") != null) {
+			Resources.doGet(this, req, resp);
+			return;
+		}
 
-        if (req.getParameter("p") != null && pages.containsKey(req.getParameter("p"))) {
-            pages.get(req.getParameter("p")).doGet(this, req, resp);
+		if (req.getParameter("p") != null && pages.containsKey(req.getParameter("p"))) {
+			pages.get(req.getParameter("p")).doGet(this, req, resp);
 
-        } else {
-            pages.get("status").doGet(this, req, resp);
-        }
-    }
+		} else {
+			pages.get("status").doGet(this, req, resp);
+		}
+	}
 
-    /**
-     * Handle a POST request.
-     *
-     * @param req
-     * @param resp
-     * @throws IOException
-     */
-    public void doPost(final HttpServletRequest req, final HttpServletResponse resp) throws IOException {
-        if (allowIp != null) {
-            if (!req.getRemoteAddr().equals(allowIp)) {
-                resp.sendError(401, "IP not authorized");
-                return;
-            }
-        }
+	/**
+	 * Handle a POST request.
+	 *
+	 * @param req
+	 * @param resp
+	 * @throws IOException
+	 */
+	public void doPost(final HttpServletRequest req, final HttpServletResponse resp) throws IOException {
+		if (allowIp != null) {
+			if (!req.getRemoteAddr().equals(allowIp)) {
+				resp.sendError(401, "IP not authorized");
+				return;
+			}
+		}
 
-        if (req.getParameter("p") != null && pages.containsKey(req.getParameter("p"))) {
-            pages.get(req.getParameter("p")).doPost(this, req, resp);
+		if (req.getParameter("p") != null && pages.containsKey(req.getParameter("p"))) {
+			pages.get(req.getParameter("p")).doPost(this, req, resp);
 
-        } else {
-            pages.get("status").doPost(this, req, resp);
-        }
+		} else {
+			pages.get("status").doPost(this, req, resp);
+		}
 
-        doGet(req, resp);
-    }
+		doGet(req, resp);
+	}
 
-    public String getApplicationName() {
-        return applicationName;
-    }
+	public String getApplicationName() {
+		return applicationName;
+	}
 
-    public AppStatus getAppStatus() {
-        return appStatus;
-    }
+	public AppStatus getAppStatus() {
+		return appStatus;
+	}
 
-    public String getCssLocation() {
-        return cssLocation;
-    }
+	public String getCssLocation() {
+		return cssLocation;
+	}
 
-    public Map<String, IPage> getPages() {
-        return pages;
-    }
+	public Map<String, IPage> getPages() {
+		return pages;
+	}
 
-    /**
-     * Does the initialization work.
-     * <p>
-     * Read configuration from /status-web-conf.properties
-     * <p>
-     * If you need to inject custom objects using these methods, please do it
-     * before calling init.
-     * <ul>
-     * <li>{@link #setPages(Map)}</li>
-     * <li>{@link #setAppStatus(AppStatus)}</li>
-     * <li>{@link #setCssLocation(String)}</li>
-     * </ul>
-     */
-    public void init() {
+	/**
+	 * Does the initialization work.
+	 * <p>
+	 * Read configuration from /status-web-conf.properties
+	 * <p>
+	 * If you need to inject custom objects using these methods, please do it
+	 * before calling init.
+	 * <ul>
+	 * <li>{@link #setPages(Map)}</li>
+	 * <li>{@link #setAppStatus(AppStatus)}</li>
+	 * <li>{@link #setCssLocation(String)}</li>
+	 * </ul>
+	 */
+	public void init() {
 
-        // init AppStatus
-        if (appStatus == null) {
-            // Use default instance if not set
-            appStatus = AppStatusStatic.getInstance();
-        }
+		// init AppStatus
+		if (appStatus == null) {
+			// Use default instance if not set
+			appStatus = AppStatusStatic.getInstance();
+		}
 
-        appStatus.init();
+		appStatus.init();
 
-        // Load specific configuration
-        try {
-            final InputStream is = Thread.currentThread().getContextClassLoader().getResourceAsStream("/status-web-conf.properties");
+		// Load specific configuration
+		try {
+			final InputStream is = Thread.currentThread().getContextClassLoader()
+					.getResourceAsStream("/status-web-conf.properties");
 
-            if (is == null) {
-                logger.warn("/status-web-conf.properties not found in classpath. Using default configuration");
-            } else {
-                final Properties p = new Properties();
-                p.load(is);
-                is.close();
+			if (is == null) {
+				logger.warn("/status-web-conf.properties not found in classpath. Using default configuration");
+			} else {
+				final Properties p = new Properties();
+				p.load(is);
+				is.close();
 
-                if (allowIp == null) {
-                    allowIp = (String) p.get("ip.allow");
-                }
-            }
-        } catch (final Exception e) {
-            logger.error("Error loading configuration from /status-web-conf.properties.", e);
-        }
+				if (allowIp == null) {
+					allowIp = (String) p.get("ip.allow");
+				}
+			}
+		} catch (final Exception e) {
+			logger.error("Error loading configuration from /status-web-conf.properties.", e);
+		}
 
-        // Init css & js
-        if (cssLocation == null) {
-            cssLocation = "?resource=appstatus.css";
-            Resources.addResource("appstatus.css", "/assets/css/appstatus.css", "text/css");
-            Resources.addResource("bootstrap.js", "/assets/js/bootstrap.js", "application/javascript");
-            Resources.addResource("jquery.js", "/assets/js/jquery-2.0.1.min.js", "application/javascript");
-            Resources.addResource("glyphicons-halflings.png", "/assets/img/glyphicons-halflings.png", "image/png");
-            Resources.addResource("glyphicons-halflings-white.png", "/assets/img/glyphicons-halflings-white.png", "image/png");
-        }
-    }
+		// Init css & js
+		if (cssLocation == null) {
+			cssLocation = "?resource=appstatus.css";
+			Resources.addResource("appstatus.css", "/assets/css/appstatus.css", "text/css");
+			Resources.addResource("bootstrap.js", "/assets/js/bootstrap.js", "application/javascript");
+			Resources.addResource("jquery.js", "/assets/js/jquery-2.0.1.min.js", "application/javascript");
+			Resources.addResource("glyphicons-halflings.png", "/assets/img/glyphicons-halflings.png", "image/png");
+			Resources.addResource("glyphicons-halflings-white.png", "/assets/img/glyphicons-halflings-white.png",
+					"image/png");
+		}
+	}
 
-    /**
-     * Restrict access to a single IP.
-     *
-     * @param allowIp
-     */
-    public void setAllowIp(final String allowIp) {
-        this.allowIp = allowIp;
-    }
+	/**
+	 * Restrict access to a single IP.
+	 *
+	 * @param allowIp
+	 */
+	public void setAllowIp(final String allowIp) {
+		this.allowIp = allowIp;
+	}
 
-    public void setApplicationName(final String servletContextName) {
-        this.applicationName = servletContextName;
-    }
+	public void setApplicationName(final String servletContextName) {
+		this.applicationName = servletContextName;
+	}
 
-    /**
-     * Set the AppStatus object to use in the web interface.
-     *
-     * @param appStatus
-     */
-    public void setAppStatus(final AppStatus appStatus) {
-        this.appStatus = appStatus;
-    }
+	/**
+	 * Set the AppStatus object to use in the web interface.
+	 *
+	 * @param appStatus
+	 */
+	public void setAppStatus(final AppStatus appStatus) {
+		this.appStatus = appStatus;
+	}
 
-    /**
-     * Set the location of the css to use.
-     *
-     * @param cssLocation
-     */
-    public void setCssLocation(final String cssLocation) {
-        this.cssLocation = cssLocation;
-    }
+	/**
+	 * Set the location of the css to use.
+	 *
+	 * @param cssLocation
+	 */
+	public void setCssLocation(final String cssLocation) {
+		this.cssLocation = cssLocation;
+	}
 
-    /**
-     * Set the available pages in the web interface.
-     *
-     * @param pages
-     */
-    public void setPages(final Map<String, IPage> pages) {
-        this.pages = pages;
-    }
+	/**
+	 * Set the available pages in the web interface.
+	 *
+	 * @param pages
+	 */
+	public void setPages(final Map<String, IPage> pages) {
+		this.pages = pages;
+	}
 }

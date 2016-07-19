@@ -33,7 +33,7 @@ import net.sf.appstatus.web.IPage;
 import net.sf.appstatus.web.StatusWebHandler;
 
 /**
- * This is an Alpha radiator page. (Alpha version)
+ * This is a radiator page.
  * <p>
  * This page displays a quick overview of the application and reloads every
  * minute.
@@ -43,81 +43,83 @@ import net.sf.appstatus.web.StatusWebHandler;
  */
 public class RadiatorPage implements IPage {
 
-    private static final int STATUS_MAINTENANCE = 3;
-    private static final int STATUS_ERROR = 2;
-    private static final int STATUS_OK = 0;
-    private static final int STATUS_WARN = 1;
+	private static final int STATUS_MAINTENANCE = 3;
+	private static final int STATUS_ERROR = 2;
+	private static final int STATUS_OK = 0;
+	private static final int STATUS_WARN = 1;
 
-    public void doGet(final StatusWebHandler webHandler, final HttpServletRequest req, final HttpServletResponse resp) throws UnsupportedEncodingException, IOException {
+	public void doGet(final StatusWebHandler webHandler, final HttpServletRequest req, final HttpServletResponse resp)
+			throws UnsupportedEncodingException, IOException {
 
-        // Setup response
-        resp.setContentType("text/html");
-        resp.setCharacterEncoding("UTF-8");
+		// Setup response
+		resp.setContentType("text/html");
+		resp.setCharacterEncoding("UTF-8");
 
-        // Get Health checks
-        final List<ICheckResult> results = webHandler.getAppStatus().checkAll(req.getLocale());
-        int status = webHandler.getAppStatus().isMaintenance() ? STATUS_MAINTENANCE : STATUS_OK;
-        for (final ICheckResult r : results) {
+		// Get Health checks
+		final List<ICheckResult> results = webHandler.getAppStatus().checkAll(req.getLocale());
+		int status = webHandler.getAppStatus().isMaintenance() ? STATUS_MAINTENANCE : STATUS_OK;
+		for (final ICheckResult r : results) {
 
-            if (r.getCode() != ICheckResult.OK && !r.isFatal() && status == STATUS_OK) {
-                status = STATUS_WARN;
-            }
+			if (r.getCode() != ICheckResult.OK && !r.isFatal() && status == STATUS_OK) {
+				status = STATUS_WARN;
+			}
 
-            if (r.getCode() != ICheckResult.OK && r.isFatal()) {
-                status = STATUS_ERROR;
-                break;
-            }
-        }
+			if (r.getCode() != ICheckResult.OK && r.isFatal()) {
+				status = STATUS_ERROR;
+				break;
+			}
+		}
 
-        String btnClass;
+		String btnClass;
 
-        switch (status) {
-        case STATUS_WARN:
-            btnClass = "btn-warning";
-            break;
-        case STATUS_ERROR:
-            btnClass = "btn-danger";
-            break;
-        case STATUS_MAINTENANCE:
-            btnClass = "btn-info";
-            break;
-        default:
-            btnClass = "btn-success";
-        }
+		switch (status) {
+		case STATUS_WARN:
+			btnClass = "btn-warning";
+			break;
+		case STATUS_ERROR:
+			btnClass = "btn-danger";
+			break;
+		case STATUS_MAINTENANCE:
+			btnClass = "btn-info";
+			break;
+		default:
+			btnClass = "btn-success";
+		}
 
-        // Get batchs status.
-        final IBatchManager manager = webHandler.getAppStatus().getBatchManager();
+		// Get batchs status.
+		final IBatchManager manager = webHandler.getAppStatus().getBatchManager();
 
-        String batchStatus = " progress-success ";
-        String active = StringUtils.EMPTY;
-        int width = 0;
+		String batchStatus = " progress-success ";
+		String active = StringUtils.EMPTY;
+		int width = 0;
 
-        if (manager != null) {
-            batchStatus = manager.getErrorBatches().size() > 0 ? " progress-danger " : " progress-success ";
-            active = manager.getRunningBatches().size() > 0 ? " progress-striped active " : "";
-            width = manager.getRunningBatches().size() + manager.getFinishedBatches().size() > 0 ? 100 : 0;
-        }
+		if (manager != null) {
+			batchStatus = manager.getErrorBatches().size() > 0 ? " progress-danger " : " progress-success ";
+			active = manager.getRunningBatches().size() > 0 ? " progress-striped active " : "";
+			width = manager.getRunningBatches().size() + manager.getFinishedBatches().size() > 0 ? 100 : 0;
+		}
 
-        final Map<String, String> model = new HashMap<String, String>();
-        model.put("applicationName", webHandler.getApplicationName());
-        model.put("batchBtnClass", btnClass);
-        model.put("batchStatus", batchStatus);
-        model.put("batchActive", active);
-        model.put("batchBarWidth", width + "%");
+		final Map<String, String> model = new HashMap<String, String>();
+		model.put("applicationName", webHandler.getApplicationName());
+		model.put("batchBtnClass", btnClass);
+		model.put("batchStatus", batchStatus);
+		model.put("batchActive", active);
+		model.put("batchBarWidth", width + "%");
 
-        resp.getWriter().append(HtmlUtils.applyLayout(model, "radiatorLayout.html"));
-    }
+		resp.getWriter().append(HtmlUtils.applyLayout(model, "radiatorLayout.html"));
+	}
 
-    public void doPost(final StatusWebHandler webHandler, final HttpServletRequest req, final HttpServletResponse resp) {
-        // Nothing to do
-    }
+	public void doPost(final StatusWebHandler webHandler, final HttpServletRequest req,
+			final HttpServletResponse resp) {
+		// Nothing to do
+	}
 
-    public String getId() {
-        return "radiator";
-    }
+	public String getId() {
+		return "radiator";
+	}
 
-    public String getName() {
-        return "Radiator";
-    }
+	public String getName() {
+		return "Radiator";
+	}
 
 }
