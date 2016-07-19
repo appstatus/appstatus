@@ -76,8 +76,8 @@ public class AppStatus {
     private ExecutorService executorService = null;
     private boolean initDone = false;
     private ILoggersManager loggersManager = null;
-    private boolean maintenanceMode = false;
-    private String maintenanceModeFile = null;
+    private boolean maintenance = false;
+    private String maintenanceFile = null;
     private IObjectInstantiationListener objectInstanciationListener = null;
     private List<IPropertyProvider> propertyProviders;
     private IServiceManager serviceManager = null;
@@ -259,8 +259,8 @@ public class AppStatus {
         return loggersManager;
     }
 
-    public String getMaintenanceModeFile() {
-        return maintenanceModeFile;
+    public String getMaintenanceFile() {
+        return maintenanceFile;
     }
 
     public Map<String, Map<String, String>> getProperties() {
@@ -415,6 +415,15 @@ public class AppStatus {
             getLoggersManager().setConfiguration(newConfiguration);
         }
 
+        if (null == maintenanceFile) {
+            String path = System.getProperty("java.io.tmpdir");
+            if (!path.endsWith(File.separator)) {
+                path += File.separator;
+            }
+            path += "appstatus-maintenance";
+            maintenanceFile = path;
+        }
+
         initDone = true;
 
     }
@@ -426,8 +435,8 @@ public class AppStatus {
         }
     }
 
-    public boolean isMaintenanceMode() {
-        return maintenanceMode || existsAndReadable(maintenanceModeFile);
+    public boolean isMaintenance() {
+        return maintenance || existsAndReadable(maintenanceFile);
     }
 
     /**
@@ -510,18 +519,25 @@ public class AppStatus {
         this.configuration = configuration;
     }
 
-    public void setMaintenanceMode(boolean maintenanceMode) {
-        this.maintenanceMode = maintenanceMode;
+    public void setMaintenance(boolean maintenanceMode) throws IOException {
+        this.maintenance = maintenanceMode;
 
-        try {
-            updateMaintenanceModeFile();
-        } catch (IOException ex) {
-            logger.warn("Eror while updateing maintenance mode file.");
+        if (null == maintenanceFile) {
+            return;
         }
+
+        File modeFile = new File(maintenanceFile);
+
+        if (maintenanceMode) {
+            modeFile.createNewFile();
+        } else if (modeFile.exists() && !modeFile.delete()) {
+            throw new IOException("Unable to delete maintenance file");
+        }
+
     }
 
-    public void setMaintenanceModeFile(String maintenanceModeFile) {
-        this.maintenanceModeFile = maintenanceModeFile;
+    public void setMaintenanceFile(String maintenanceModeFile) {
+        this.maintenanceFile = maintenanceModeFile;
     }
 
     public void setObjectInstanciationListener(IObjectInstantiationListener objectInstanciationListener) {
@@ -538,32 +554,6 @@ public class AppStatus {
 
     public void setServletContextProvider(IServletContextProvider servletContext) {
         this.servletContextProvider = servletContext;
-    }
-
-    private void updateMaintenanceModeFile() throws IOException {
-        if (null == maintenanceModeFile) {
-            return;
-        }
-
-        File modeFile = new File(maintenanceModeFile);
-
-        if (maintenanceMode) {
-            try {
-                modeFile.createNewFile();
-            } catch (IOException ex) {
-                logger.warn("Unable to create maintenance mode file \"{}\"", maintenanceModeFile);
-            }
-        } else {
-            if (modeFile.exists()) {
-                if (modeFile.canWrite()) {
-                    modeFile.delete();
-                } else {
-                    logger.warn("Unable to remove maintenance mode file \"{}\"", maintenanceModeFile);
-                }
-            } else {
-                return;
-            }
-        }
     }
 
 }

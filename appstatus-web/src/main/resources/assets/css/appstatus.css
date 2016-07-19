@@ -7333,6 +7333,9 @@ a.badge:focus {
   }
 }
 
+/*
+ * Maintenance button
+ */
 form#mode {
     margin: 0;
 }

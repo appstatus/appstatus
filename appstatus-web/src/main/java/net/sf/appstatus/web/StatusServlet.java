@@ -15,7 +15,6 @@
  */
 package net.sf.appstatus.web;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -155,15 +154,6 @@ public class StatusServlet extends HttpServlet {
 
         // Radiator at the end.
         addPage(pages, new RadiatorPage());
-
-        if (null == status.getMaintenanceModeFile()) {
-            String path = System.getProperty("java.io.tmpdir");
-            if (!path.endsWith(File.separator)) {
-                path += File.separator;
-            }
-            path += String.format("appstatus-%s-maintenance", config.getServletContext().getContextPath().replaceAll("[/]", ""));
-            status.setMaintenanceModeFile(path);
-        }
 
         // Init
         statusWeb = new StatusWebHandler();
