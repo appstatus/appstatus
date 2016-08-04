@@ -15,6 +15,8 @@
  */
 package net.sf.appstatus.web;
 
+import static org.apache.commons.lang3.StringUtils.defaultString;
+
 import java.io.IOException;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -161,8 +163,7 @@ public class StatusServlet extends HttpServlet {
 		// Init
 		statusWeb = new StatusWebHandler();
 		statusWeb.setAppStatus(status);
-		statusWeb.setApplicationName(
-				StringUtils.defaultString(config.getServletContext().getServletContextName(), "No name"));
+		statusWeb.setApplicationName(defaultString(config.getServletContext().getServletContextName(), "No name"));
 		statusWeb.setPages(pages);
 		statusWeb.init();
 	}

@@ -15,9 +15,15 @@
  */
 package net.sf.appstatus.web.pages;
 
+import static java.util.Collections.sort;
+import static net.sf.appstatus.web.HtmlUtils.applyLayout;
+import static net.sf.appstatus.web.HtmlUtils.generateBeginTable;
+import static net.sf.appstatus.web.HtmlUtils.generateEndTable;
+import static net.sf.appstatus.web.HtmlUtils.generateHeaders;
+import static net.sf.appstatus.web.HtmlUtils.generateRow;
+
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -33,14 +39,13 @@ import org.slf4j.LoggerFactory;
 
 import net.sf.appstatus.core.AppStatus;
 import net.sf.appstatus.core.check.ICheckResult;
-import net.sf.appstatus.web.HtmlUtils;
 import net.sf.appstatus.web.StatusWebHandler;
 
 public class StatusPage extends AbstractPage {
 
-	private static Logger LOGGER = LoggerFactory.getLogger(StatusPage.class);
-
 	private static final String ENCODING = "UTF-8";
+
+	private static Logger LOGGER = LoggerFactory.getLogger(StatusPage.class);
 
 	private static final String PAGECONTENTLAYOUT = "statusContentLayout.html";
 
@@ -85,7 +90,7 @@ public class StatusPage extends AbstractPage {
 
 		final Map<String, String> valuesMap = new HashMap<String, String>();
 		final List<ICheckResult> results = appStatus.checkAll(req.getLocale());
-		Collections.sort(results);
+		sort(results);
 		boolean statusOk = true;
 		int statusCode = 200;
 		for (final ICheckResult r : results) {
@@ -110,37 +115,37 @@ public class StatusPage extends AbstractPage {
 
 		// STATUS TABLE
 		final StrBuilder sbStatusTable = new StrBuilder();
-		if (HtmlUtils.generateBeginTable(sbStatusTable, results.size())) {
+		if (generateBeginTable(sbStatusTable, results.size())) {
 
-			HtmlUtils.generateHeaders(sbStatusTable, "", "Group", "Name", "Description", "Code", "Resolution");
+			generateHeaders(sbStatusTable, "", "Group", "Name", "Description", "Code", "Resolution");
 
 			for (final ICheckResult r : results) {
-				HtmlUtils.generateRow(sbStatusTable, getStatus(r), r.getGroup(), r.getProbeName(), r.getDescription(),
+				generateRow(sbStatusTable, getStatus(r), r.getGroup(), r.getProbeName(), r.getDescription(),
 						String.valueOf(r.getCode()), r.getResolutionSteps());
 			}
-			HtmlUtils.generateEndTable(sbStatusTable, results.size());
+			generateEndTable(sbStatusTable, results.size());
 		}
 		valuesMap.put("statusTable", sbStatusTable.toString());
 
 		// PROPERTIES TABLE
 		final StrBuilder sbPropertiesTable = new StrBuilder();
 		final Map<String, Map<String, String>> properties = appStatus.getProperties();
-		if (HtmlUtils.generateBeginTable(sbPropertiesTable, properties.size())) {
+		if (generateBeginTable(sbPropertiesTable, properties.size())) {
 
-			HtmlUtils.generateHeaders(sbPropertiesTable, "", "Group", "Name", "Value");
+			generateHeaders(sbPropertiesTable, "", "Group", "Name", "Value");
 
 			for (final Entry<String, Map<String, String>> cat : properties.entrySet()) {
 				final String category = cat.getKey();
 
 				for (final Entry<String, String> r : cat.getValue().entrySet()) {
-					HtmlUtils.generateRow(sbPropertiesTable, Resources.STATUS_PROP, category, r.getKey(), r.getValue());
+					generateRow(sbPropertiesTable, Resources.STATUS_PROP, category, r.getKey(), r.getValue());
 				}
 
 			}
-			HtmlUtils.generateEndTable(sbPropertiesTable, properties.size());
+			generateEndTable(sbPropertiesTable, properties.size());
 		}
 		valuesMap.put("propertiesTable", sbPropertiesTable.toString());
-		final String content = HtmlUtils.applyLayout(valuesMap, PAGECONTENTLAYOUT);
+		final String content = applyLayout(valuesMap, PAGECONTENTLAYOUT);
 
 		valuesMap.clear();
 		valuesMap.put("content", content);
@@ -204,16 +209,6 @@ public class StatusPage extends AbstractPage {
 		}
 	}
 
-	private void updateMode(final StatusWebHandler webHandler, final String mode) {
-		if (null != mode) {
-			try {
-				webHandler.getAppStatus().setMaintenance("maintenance".equalsIgnoreCase(mode));
-			} catch (final IOException ex) {
-				throw new RuntimeException("Error while updating maintenance status", ex);
-			}
-		}
-	}
-
 	@Override
 	public String getId() {
 		return "status";
@@ -222,5 +217,15 @@ public class StatusPage extends AbstractPage {
 	@Override
 	public String getName() {
 		return "Status";
+	}
+
+	private void updateMode(final StatusWebHandler webHandler, final String mode) {
+		if (null != mode) {
+			try {
+				webHandler.getAppStatus().setMaintenance("maintenance".equalsIgnoreCase(mode));
+			} catch (final IOException ex) {
+				throw new RuntimeException("Error while updating maintenance status", ex);
+			}
+		}
 	}
 }

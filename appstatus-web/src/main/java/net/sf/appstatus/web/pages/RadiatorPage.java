@@ -15,6 +15,8 @@
  */
 package net.sf.appstatus.web.pages;
 
+import static net.sf.appstatus.web.HtmlUtils.applyLayout;
+
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.util.HashMap;
@@ -28,7 +30,6 @@ import org.apache.commons.lang3.StringUtils;
 
 import net.sf.appstatus.core.batch.IBatchManager;
 import net.sf.appstatus.core.check.ICheckResult;
-import net.sf.appstatus.web.HtmlUtils;
 import net.sf.appstatus.web.IPage;
 import net.sf.appstatus.web.StatusWebHandler;
 
@@ -43,8 +44,8 @@ import net.sf.appstatus.web.StatusWebHandler;
  */
 public class RadiatorPage implements IPage {
 
-	private static final int STATUS_MAINTENANCE = 3;
 	private static final int STATUS_ERROR = 2;
+	private static final int STATUS_MAINTENANCE = 3;
 	private static final int STATUS_OK = 0;
 	private static final int STATUS_WARN = 1;
 
@@ -106,7 +107,7 @@ public class RadiatorPage implements IPage {
 		model.put("batchActive", active);
 		model.put("batchBarWidth", width + "%");
 
-		resp.getWriter().append(HtmlUtils.applyLayout(model, "radiatorLayout.html"));
+		resp.getWriter().append(applyLayout(model, "radiatorLayout.html"));
 	}
 
 	public void doPost(final StatusWebHandler webHandler, final HttpServletRequest req,

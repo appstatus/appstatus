@@ -2,9 +2,9 @@
  * Copyright 2010-2013 Capgemini Licensed under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
@@ -12,6 +12,8 @@
  * the License.
  */
 package net.sf.appstatus.web.pages;
+
+import static org.apache.commons.io.IOUtils.copy;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -22,8 +24,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import net.sf.appstatus.web.StatusWebHandler;
-
-import org.apache.commons.io.IOUtils;
 
 public class Resources {
 
@@ -84,7 +84,7 @@ public class Resources {
 			resp.setContentType(resources.get(id).getMimeType());
 			location = resources.get(id).getLocation();
 			InputStream is = Resources.class.getResourceAsStream(location);
-			IOUtils.copy(is, resp.getOutputStream());
+			copy(is, resp.getOutputStream());
 		} else {
 			resp.sendError(404);
 		}

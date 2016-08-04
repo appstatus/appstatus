@@ -12,6 +12,16 @@
  * the License.
  */package net.sf.appstatus.web.pages;
 
+import static java.lang.Math.round;
+import static net.sf.appstatus.web.HtmlUtils.applyLayout;
+import static net.sf.appstatus.web.HtmlUtils.countAndDetail;
+import static net.sf.appstatus.web.HtmlUtils.generateBeginTable;
+import static net.sf.appstatus.web.HtmlUtils.generateEndTable;
+import static net.sf.appstatus.web.HtmlUtils.generateHeaders;
+import static net.sf.appstatus.web.HtmlUtils.generateRow;
+import static org.apache.commons.collections.CollectionUtils.isEmpty;
+import static org.apache.commons.lang3.StringEscapeUtils.escapeHtml4;
+
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
@@ -23,7 +33,6 @@ import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.text.StrBuilder;
 
 import net.sf.appstatus.core.batch.IBatch;
@@ -49,7 +58,7 @@ public class BatchPage extends AbstractPage {
 	 */
 	private void addExecutionInformations(IBatchConfiguration conf, List<? extends IBatch> listBatchs) {
 
-		if (CollectionUtils.isEmpty(listBatchs)) {
+		if (isEmpty(listBatchs)) {
 			return;
 		}
 
@@ -78,25 +87,26 @@ public class BatchPage extends AbstractPage {
 
 		IBatchManager manager = webHandler.getAppStatus().getBatchManager();
 		List<IBatch> runningBatches = manager.getRunningBatches();
-		if (HtmlUtils.generateBeginTable(sbRunningBatchesBatchesTable, runningBatches.size())) {
+		if (generateBeginTable(sbRunningBatchesBatchesTable, runningBatches.size())) {
 
-			HtmlUtils.generateHeaders(sbRunningBatchesBatchesTable, "", "Id", "Group", "Name", "Start", "Progress", //
+			generateHeaders(sbRunningBatchesBatchesTable, "", "Id", "Group", "Name", "Start", "Progress", //
 					"End (est.)", "Status", "Task", "Last Msg", "Items", "Rejected", "Last Update");
 
 			for (IBatch batch : runningBatches) {
-				HtmlUtils.generateRow(sbRunningBatchesBatchesTable, getIcon(batch), generateId(resp, batch.getUuid()), //
-						batch.getGroup(), batch.getName(), batch.getStartDate(), getProgressBar(batch), //
+				generateRow(sbRunningBatchesBatchesTable, getIcon(batch), generateId(resp, batch.getUuid()), //
+						escapeHtml4(batch.getGroup()), escapeHtml4(batch.getName()), batch.getStartDate(),
+						getProgressBar(batch), //
 						batch.getEndDate(), batch.getStatus(), batch.getCurrentTask(), //
-						batch.getLastMessage(), batch.getItemCount(),
+						escapeHtml4(batch.getLastMessage()), batch.getItemCount(),
 						HtmlUtils.countAndDetail(batch.getRejectedItemsId()), //
 						batch.getLastUpdate(), //
 						batch.getStatus() != IBatch.STATUS_ZOMBIE ? "" //
 								: "<form action='?p=batch' method='post'><input type='submit' name='" + CLEAR_ITEM //
 										+ "' value='Delete'  class='btn btn-small' /><input type=hidden name='" //
-										+ ITEM_UUID + "' value='" + batch.getUuid() + "'/></form>");
+										+ ITEM_UUID + "' value='" + escapeHtml4(batch.getUuid()) + "'/></form>");
 			}
 
-			HtmlUtils.generateEndTable(sbRunningBatchesBatchesTable, runningBatches.size());
+			generateEndTable(sbRunningBatchesBatchesTable, runningBatches.size());
 		}
 
 		// Batch Schedule
@@ -112,51 +122,56 @@ public class BatchPage extends AbstractPage {
 
 			for (IBatchConfiguration batch : batchConfigurations) {
 				addExecutionInformations(batch, manager.getBatches(batch.getGroup(), batch.getName()));
-				HtmlUtils.generateRow(sbConfBatchesBatchesTable, Resources.STATUS_JOB, batch.getGroup(),
-						batch.getName(), batch.getLastExecution(), batch.getNextExecution(), batch.getSchedule());
+				generateRow(sbConfBatchesBatchesTable, Resources.STATUS_JOB, escapeHtml4(batch.getGroup()),
+						escapeHtml4(batch.getName()), batch.getLastExecution(), batch.getNextExecution(),
+						batch.getSchedule());
 			}
 
-			HtmlUtils.generateEndTable(sbConfBatchesBatchesTable, runningBatches.size());
+			generateEndTable(sbConfBatchesBatchesTable, runningBatches.size());
 		}
 
 		List<IBatch> finishedBatches = manager.getFinishedBatches();
 
-		if (HtmlUtils.generateBeginTable(sbFinishedBatchesBatchesTable, finishedBatches.size())) {
+		if (generateBeginTable(sbFinishedBatchesBatchesTable, finishedBatches.size())) {
 
-			HtmlUtils.generateHeaders(sbFinishedBatchesBatchesTable, "", "Id", "Group", "Name", "Start", "Progress", //
+			generateHeaders(sbFinishedBatchesBatchesTable, "", "Id", "Group", "Name", "Start", "Progress", //
 					"End", "Status", "Task", "Last Msg", "Items", "Rejected", "Last Update", "");
 			for (IBatch batch : finishedBatches) {
-				HtmlUtils.generateRow(sbFinishedBatchesBatchesTable, getIcon(batch), generateId(resp, batch.getUuid()), //
-						batch.getGroup(), batch.getName(), batch.getStartDate(), getProgressBar(batch), //
-						batch.getEndDate(), batch.getStatus(), batch.getCurrentTask(), batch.getLastMessage(), //
-						batch.getItemCount(), HtmlUtils.countAndDetail(batch.getRejectedItemsId()), //
+				generateRow(sbFinishedBatchesBatchesTable, getIcon(batch), generateId(resp, batch.getUuid()), //
+						escapeHtml4(batch.getGroup()), escapeHtml4(batch.getName()), batch.getStartDate(),
+						getProgressBar(batch), //
+						batch.getEndDate(), batch.getStatus(), batch.getCurrentTask(),
+						escapeHtml4(batch.getLastMessage()), //
+						batch.getItemCount(), countAndDetail(batch.getRejectedItemsId()), //
 						batch.getLastUpdate(), //
 						"<form action='?p=batch' method='post'><input type='submit' name='" //
 								+ CLEAR_ITEM + "' value='Delete'  class='btn btn-small' /><input type=hidden name='" //
-								+ ITEM_UUID + "' value='" + batch.getUuid() + "'/></form>");
+								+ ITEM_UUID + "' value='" + escapeHtml4(batch.getUuid()) + "'/></form>");
 			}
 
-			HtmlUtils.generateEndTable(sbFinishedBatchesBatchesTable, finishedBatches.size());
+			generateEndTable(sbFinishedBatchesBatchesTable, finishedBatches.size());
 		}
 
 		List<IBatch> errorBatches = manager.getErrorBatches();
 
-		if (HtmlUtils.generateBeginTable(sbErrorsBatchesBatchesTable, errorBatches.size())) {
+		if (generateBeginTable(sbErrorsBatchesBatchesTable, errorBatches.size())) {
 
-			HtmlUtils.generateHeaders(sbErrorsBatchesBatchesTable, "", "Id", "Group", "Name", "Start", "Progress", //
+			generateHeaders(sbErrorsBatchesBatchesTable, "", "Id", "Group", "Name", "Start", "Progress", //
 					"End", "Status", "Task", "Last Msg", "Items", "Rejected", "Last Update", "");
 
 			for (IBatch batch : errorBatches) {
-				HtmlUtils.generateRow(sbErrorsBatchesBatchesTable, getIcon(batch), generateId(resp, batch.getUuid()), //
-						batch.getGroup(), batch.getName(), batch.getStartDate(), getProgressBar(batch), //
-						batch.getEndDate(), batch.getStatus(), batch.getCurrentTask(), batch.getLastMessage(), //
+				generateRow(sbErrorsBatchesBatchesTable, getIcon(batch), generateId(resp, batch.getUuid()), //
+						escapeHtml4(batch.getGroup()), escapeHtml4(batch.getName()), batch.getStartDate(),
+						getProgressBar(batch), //
+						batch.getEndDate(), batch.getStatus(), batch.getCurrentTask(),
+						escapeHtml4(batch.getLastMessage()), //
 						batch.getItemCount(), HtmlUtils.countAndDetail(batch.getRejectedItemsId()), //
 						batch.getLastUpdate(), //
 						"<form action='?p=batch' method='post'><input type='submit' name='" //
 								+ CLEAR_ITEM + "' value='Delete' class='btn btn-small'/><input type=hidden name='" //
-								+ ITEM_UUID + "' value='" + batch.getUuid() + "'/></form>");
+								+ ITEM_UUID + "' value='" + escapeHtml4(batch.getUuid()) + "'/></form>");
 			}
-			HtmlUtils.generateEndTable(sbErrorsBatchesBatchesTable, errorBatches.size());
+			generateEndTable(sbErrorsBatchesBatchesTable, errorBatches.size());
 		}
 
 		valuesMap.put("confBatchesBatchesTable", sbConfBatchesBatchesTable.toString());
@@ -165,7 +180,7 @@ public class BatchPage extends AbstractPage {
 		valuesMap.put("errorsBatchesBatchesTable", sbErrorsBatchesBatchesTable.toString());
 		valuesMap.put("clearActions", generateClearActions());
 
-		String content = HtmlUtils.applyLayout(valuesMap, PAGECONTENTLAYOUT);
+		String content = applyLayout(valuesMap, PAGECONTENTLAYOUT);
 
 		valuesMap.clear();
 		valuesMap.put("content", content);
@@ -202,7 +217,7 @@ public class BatchPage extends AbstractPage {
 		if (id.length() < 15) {
 			return id;
 		} else {
-			return "<span title='" + id + "'>" + id.substring(0, 10) + "...</span";
+			return "<span title='" + escapeHtml4(id) + "'>" + escapeHtml4(id.substring(0, 10)) + "...</span";
 		}
 
 	}
@@ -247,7 +262,7 @@ public class BatchPage extends AbstractPage {
 			color = "danger";
 		}
 
-		int percent = Math.round(batch.getProgressStatus());
+		int percent = round(batch.getProgressStatus());
 
 		String status = "progress-" + color;
 		String active = "active";

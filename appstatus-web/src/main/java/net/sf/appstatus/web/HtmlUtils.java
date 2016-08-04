@@ -1,5 +1,8 @@
 package net.sf.appstatus.web;
 
+import static java.text.DateFormat.getDateTimeInstance;
+import static org.apache.commons.lang3.StringEscapeUtils.escapeHtml4;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringWriter;
@@ -13,17 +16,17 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import net.sf.appstatus.web.pages.Resources;
-
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.text.StrBuilder;
 import org.apache.commons.lang3.text.StrSubstitutor;
 
+import net.sf.appstatus.web.pages.Resources;
+
 /**
  * Support class for generating Html tables.
- * 
+ *
  * @author Nicolas
- * 
+ *
  */
 public class HtmlUtils {
 	private static final String ENCODING = "UTF-8";
@@ -67,13 +70,13 @@ public class HtmlUtils {
 
 	public static String countAndDetail(List<String> items) {
 		String itemsList = collectionToDelimitedString(items, ", ", "", "");
-		return "<a href='#' title='" + itemsList + "'>" + items.size() + "</a>" + "<span style=\"display:none\" >"
-				+ itemsList + "</span>";
+		return "<a href='#' title='" + escapeHtml4(itemsList) + "'>" + items.size() + "</a>"
+				+ "<span style=\"display:none\" >" + itemsList + "</span>";
 	}
 
 	/**
 	 * Prints table start tag, or a message if table is empty.
-	 * 
+	 *
 	 * @param size
 	 * @return true if we can go on with table generation.
 	 * @throws IOException
@@ -97,50 +100,60 @@ public class HtmlUtils {
 	}
 
 	/**
-	 * Outputs table headers
-	 * 
-	 * @param os
+	 * Outputs table headers.
+	 *
+	 * <p>
+	 * <b>WARNING</b> : this method accepts HTML content as table headers. Any
+	 * sensitive value must be encoded before calling this method.
+	 *
+	 * @param sb
+	 *            The target string builder.
 	 * @param cols
-	 * @throws IOException
+	 *            Column titles (HTML).
 	 */
-	public static void generateHeaders(StrBuilder sb, Object... cols) throws IOException {
+	public static void generateHeaders(StrBuilder sb, Object... cols) {
 		sb.append("<thead><tr>");
 		for (Object obj : cols) {
 			sb.append("<th>");
 			if (obj != null) {
 
 				if (obj instanceof Long) {
-					Long l = (Long) obj;
-
+					sb.append(((Long) obj).longValue());
 				} else {
 					sb.append(obj.toString());
 				}
 			}
 			sb.append("</th>");
-
 		}
 		sb.append("</tr></thead><tbody>");
 	}
 
 	/**
-	 * Outputs one table row
-	 * 
-	 * @param os
+	 * Outputs one table row.
+	 * <p>
+	 * <b>WARNING</b> : this method accepts HTML content as row content. Any
+	 * sensitive value must be encoded before calling this method.
+	 *
+	 *
+	 * @param sb
+	 *            The target string builder.
 	 * @param status
+	 *            status class name.
 	 * @param cols
+	 *            Column titles (HTML).
 	 * @throws IOException
 	 */
 	public static void generateRow(StrBuilder sb, String status, Object... cols) throws IOException {
 		sb.append("<tr>");
 
-		sb.append(("<td class='icon'><img src='?icon=" + status + "'></td>"));
+		sb.append(("<td class='icon'><img src='?icon=" + escapeHtml4(status) + "'></td>"));
 
 		for (Object obj : cols) {
 			sb.append("<td>");
 			if (obj != null) {
 
 				if (obj instanceof Date) {
-					DateFormat dateFormat = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.MEDIUM);
+					DateFormat dateFormat = getDateTimeInstance(DateFormat.SHORT, DateFormat.MEDIUM);
 					sb.append(dateFormat.format((Date) obj));
 				} else {
 					sb.append(obj.toString());
@@ -154,11 +167,12 @@ public class HtmlUtils {
 
 	/**
 	 * Null-safe empty test for Collections.
-	 * 
+	 *
 	 * @param collection
 	 * @return
 	 */
 	public static boolean isEmpty(Collection<?> collection) {
 		return (collection == null || collection.isEmpty());
 	}
+
 }
