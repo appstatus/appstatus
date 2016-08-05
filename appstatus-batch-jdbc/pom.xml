@@ -3,7 +3,7 @@
 	<parent>
 		<groupId>net.sf.appstatus</groupId>
 		<artifactId>appstatus-parent</artifactId>
-		<version>1.0.1-SNAPSHOT</version>
+		<version>1.5</version>
 	</parent>
 	<artifactId>appstatus-batch-jdbc</artifactId>
 
@@ -12,7 +12,7 @@
 			<groupId>net.sf.appstatus</groupId>
 			<artifactId>appstatus-core</artifactId>
 			<scope>compile</scope>
-			<version>1.0.1-SNAPSHOT</version>
+			<version>1.5</version>
 		</dependency>
 		<dependency>
 			<groupId>org.slf4j</groupId>

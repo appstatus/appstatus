@@ -4,7 +4,7 @@
   <parent>
     <artifactId>appstatus-parent</artifactId>
     <groupId>net.sf.appstatus</groupId>
-    <version>1.0.1-SNAPSHOT</version>
+    <version>1.5</version>
   </parent>
   <artifactId>appstatus-jmx</artifactId>
   <name>JMX Endpoint</name>
@@ -20,7 +20,7 @@
     <dependency>
     	<groupId>net.sf.appstatus</groupId>
     	<artifactId>appstatus-core</artifactId>
-    	<version>1.0.1-SNAPSHOT</version>
+    	<version>1.5</version>
     	<type>jar</type>
     	<scope>compile</scope>
     </dependency>
