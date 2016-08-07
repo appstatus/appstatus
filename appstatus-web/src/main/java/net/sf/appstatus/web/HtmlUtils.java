@@ -2,6 +2,7 @@ package net.sf.appstatus.web;
 
 import static java.text.DateFormat.getDateTimeInstance;
 import static org.apache.commons.lang3.StringEscapeUtils.escapeHtml4;
+import static org.apache.commons.lang3.StringEscapeUtils.escapeJson;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -175,4 +176,21 @@ public class HtmlUtils {
 		return (collection == null || collection.isEmpty());
 	}
 
+	public static String json(String name, Object o) {
+		String result = "\"" + escapeJson(name) + "\" :";
+
+		if (o == null) {
+			result = result + "null";
+		} else if (o instanceof String) {
+			result = result + "\"" + escapeJson((String) o) + "\"";
+		} else if (o instanceof Integer) {
+			result = result + ((Integer) o).intValue();
+		} else if (o instanceof Double) {
+			result = result + ((Double) o).doubleValue();
+		} else if (o instanceof Long) {
+			result = result + ((Long) o).longValue();
+		}
+
+		return result + "\n";
+	}
 }

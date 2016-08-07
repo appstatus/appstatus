@@ -20,7 +20,9 @@ import static net.sf.appstatus.web.HtmlUtils.generateBeginTable;
 import static net.sf.appstatus.web.HtmlUtils.generateEndTable;
 import static net.sf.appstatus.web.HtmlUtils.generateHeaders;
 import static net.sf.appstatus.web.HtmlUtils.generateRow;
+import static net.sf.appstatus.web.HtmlUtils.json;
 import static org.apache.commons.lang3.StringEscapeUtils.escapeHtml4;
+import static org.apache.commons.lang3.StringUtils.join;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
@@ -41,8 +43,24 @@ public class ServicesPage extends AbstractPage {
 	private static final String ENCODING = "UTF-8";
 	private static final String PAGECONTENTLAYOUT = "servicesContentLayout.html";
 
+	public ServicesPage() {
+		Resources.addResource("sparkline.js", "/assets/js/jquery.sparkline.min.js", "application/javascript");
+		Resources.addResource("services.js", "/assets/js/services.js", "application/javascript");
+	}
+
 	@Override
-	public void doGet(StatusWebHandler webHandler, HttpServletRequest req, HttpServletResponse resp)
+	public void doGet(final StatusWebHandler webHandler, final HttpServletRequest req, final HttpServletResponse resp)
+			throws UnsupportedEncodingException, IOException {
+
+		if (req.getParameter("json") != null) {
+			doGetJSON(webHandler, req, resp);
+		} else {
+			doGetHTML(webHandler, req, resp);
+		}
+
+	}
+
+	public void doGetHTML(StatusWebHandler webHandler, HttpServletRequest req, HttpServletResponse resp)
 			throws UnsupportedEncodingException, IOException {
 
 		setup(resp, "text/html");
@@ -58,19 +76,21 @@ public class ServicesPage extends AbstractPage {
 		if (generateBeginTable(sbServicesTable, services.size())) {
 
 			generateHeaders(sbServicesTable, "", "Group", "Name", "Hits", "Cache", "Running", "min", "max", "avg",
-					"nested", "min (c)", "max (c)", "avg (c)", "nested (c)", "Errors", "Failures", "Hit rate");
+					"nested", "min (c)", "max (c)", "avg (c)", "nested (c)", "Status", "Hit rate");
 
 			for (IService service : services) {
 				generateRow(sbServicesTable, Resources.STATUS_JOB, escapeHtml4(service.getGroup()),
 						escapeHtml4(service.getName()), service.getHits(),
-						service.getCacheHits() + getPercent(service.getCacheHits(), service.getHits()),
+						getCountAndPercent("pie-cache",
+								new Long[] { service.getCacheHits(), service.getHits() - service.getCacheHits() }),
 						service.getRunning(), service.getMinResponseTime(), service.getMaxResponseTime(),
 						round(service.getAvgResponseTime()), round(service.getAvgNestedCalls()),
 						service.getMinResponseTimeWithCache(), service.getMaxResponseTimeWithCache(),
 						round(service.getAvgResponseTimeWithCache()), round(service.getAvgNestedCallsWithCache()),
-						service.getErrors() + getPercent(service.getErrors(), service.getHits()),
-						service.getFailures() + getPercent(service.getFailures(), service.getHits()),
-						getRate(service.getCurrentRate()));
+						getCountAndPercent("pie-status",
+								new Long[] { service.getHits() - service.getErrors() - service.getFailures(),
+										service.getFailures(), service.getErrors() }),
+						"<span class='graph-rate' values=\"\"></span>");
 			}
 
 			generateEndTable(sbServicesTable, services.size());
@@ -82,13 +102,51 @@ public class ServicesPage extends AbstractPage {
 
 		valuesMap.clear();
 		valuesMap.put("content", content);
+		valuesMap.put("js", "<script type='text/javascript' src='?resource=services.js'></script>");
 		// generating page
 		os.write(getPage(webHandler, valuesMap).getBytes(ENCODING));
+	}
+
+	private void doGetJSON(StatusWebHandler webHandler, HttpServletRequest req, HttpServletResponse resp)
+			throws UnsupportedEncodingException, IOException {
+
+		List<IService> services = webHandler.getAppStatus().getServices();
+		sort(services);
+
+		final ServletOutputStream os = resp.getOutputStream();
+		os.write("[".getBytes(ENCODING));
+
+		boolean first = true;
+		for (IService service : services) {
+			if (!first) {
+				os.write((",").getBytes(ENCODING));
+			}
+
+			os.write(("{ " + join(new String[] { json("group", service.getGroup()), json("name", service.getName()),
+					json("hits", service.getHits()), json("cacheHits", service.getCacheHits()),
+					json("running", service.getRunning()), json("minResponseTime", service.getMinResponseTime()),
+					json("maxResponseTime", service.getMaxResponseTime()),
+					json("avgResponseTime", service.getAvgResponseTime()),
+					json("avgNestedCalls", service.getAvgNestedCalls()),
+					json("minResponseTimeWithCache", service.getMinResponseTimeWithCache()),
+					json("rate", service.getCurrentRate()) }, ", ") + "}").getBytes(ENCODING));
+
+			if (first) {
+				first = false;
+			}
+		}
+
+		os.write("]".getBytes(ENCODING));
+
 	}
 
 	@Override
 	public void doPost(StatusWebHandler webHandler, HttpServletRequest req, HttpServletResponse resp) {
 
+	}
+
+	private String getCountAndPercent(String cssClass, Long[] values) {
+		return "<span class='" + cssClass + "' values='" + join(values, ",") + "' ></span>";
 	}
 
 	@Override

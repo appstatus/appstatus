@@ -70,6 +70,10 @@ public abstract class AbstractPage implements IPage {
 		valueMap.put("menu", menu.toString());
 		valueMap.put("applicationName", webHandler.getApplicationName());
 
+		if (!valueMap.containsKey("js")) {
+			valueMap.put("js", "");
+		}
+
 		return applyLayout(valueMap, PAGELAYOUT);
 
 	}

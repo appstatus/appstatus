@@ -21,6 +21,8 @@ import static net.sf.appstatus.web.HtmlUtils.generateBeginTable;
 import static net.sf.appstatus.web.HtmlUtils.generateEndTable;
 import static net.sf.appstatus.web.HtmlUtils.generateHeaders;
 import static net.sf.appstatus.web.HtmlUtils.generateRow;
+import static net.sf.appstatus.web.HtmlUtils.json;
+import static org.apache.commons.lang3.StringUtils.join;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
@@ -177,8 +179,8 @@ public class StatusPage extends AbstractPage {
 
 		os.write("{".getBytes(ENCODING));
 
-		os.write(("\"code\" : " + statusCode + ",").getBytes(ENCODING));
-		os.write(("\"status\" : {").getBytes(ENCODING));
+		os.write((json("code", statusCode) + ",").getBytes(ENCODING));
+		os.write(("\"status\" : [").getBytes(ENCODING));
 
 		boolean first = true;
 		for (final ICheckResult r : results) {
@@ -186,14 +188,16 @@ public class StatusPage extends AbstractPage {
 				os.write((",").getBytes(ENCODING));
 			}
 
-			os.write(("\"" + r.getProbeName() + "\" : " + r.getCode()).getBytes(ENCODING));
+			os.write(("{" + join(new String[] { json("name", r.getProbeName()), json("group", r.getGroup()),
+					json("description", r.getDescription()), json("resolution", r.getResolutionSteps()),
+					json("code", r.getCode()) }, ",") + "}").getBytes(ENCODING));
 
 			if (first) {
 				first = false;
 			}
 		}
 
-		os.write("}".getBytes(ENCODING));
+		os.write("]".getBytes(ENCODING));
 		os.write("}".getBytes(ENCODING));
 
 	}

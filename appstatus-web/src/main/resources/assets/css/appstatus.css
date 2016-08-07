@@ -51,7 +51,20 @@ td form {
 	color: #DDDDDD;
 }
 
+# Sparkline
 
+.pie-status {
+	text-align: center;
+}
+
+.pie-cache {
+	text-align: center;
+}
+
+.graph-rate {
+	width: 49px;
+	display:block;
+}
 
 #Bootstrap
 
