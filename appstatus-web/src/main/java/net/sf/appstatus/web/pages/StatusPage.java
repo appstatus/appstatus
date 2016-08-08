@@ -198,6 +198,30 @@ public class StatusPage extends AbstractPage {
 		}
 
 		os.write("]".getBytes(ENCODING));
+
+		final Map<String, Map<String, String>> properties = appStatus.getProperties();
+
+		os.write((", \"properties\" : [").getBytes(ENCODING));
+
+		first = true;
+		for (Entry<String, Map<String, String>> cat : properties.entrySet()) {
+
+			for (final Entry<String, String> r : cat.getValue().entrySet()) {
+				if (!first) {
+					os.write((",").getBytes(ENCODING));
+				}
+
+				os.write(("{" + join(new String[] { json("group", cat.getKey()), json("name", r.getKey()),
+						json("value", r.getValue()) }, ",") + "}").getBytes(ENCODING));
+
+				if (first) {
+					first = false;
+				}
+			}
+		}
+
+		os.write("]".getBytes(ENCODING));
+
 		os.write("}".getBytes(ENCODING));
 
 	}
