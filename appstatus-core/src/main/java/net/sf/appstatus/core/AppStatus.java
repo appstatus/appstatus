@@ -15,6 +15,7 @@
  */
 package net.sf.appstatus.core;
 
+import java.io.Closeable;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -55,16 +56,19 @@ import net.sf.appstatus.core.services.IServiceMonitor;
  * This is the entry point for every feature of AppStatus.
  *
  * <p>
- * Must be initialized once before calling other methods.
+ * Must be initialized once before calling other methods and closed when
+ * application is stopping.
  * <p>
  * AppStatus status = new AppStatus(); <br/>
- * status.init();
+ * status.init(); <br/>
+ * ... <br/>
+ * status.close();
  * </p>
  *
  * @author Nicolas Richeton
  *
  */
-public class AppStatus {
+public class AppStatus implements Closeable {
 
     private static final String CONFIG_LOCATION = "status-check.properties";
     private static Logger logger = LoggerFactory.getLogger(AppStatus.class);
@@ -73,7 +77,7 @@ public class AppStatus {
     private IBatchScheduleManager batchScheduleManager;
     protected List<ICheck> checkers;
     private Properties configuration = null;
-    private ExecutorService executorService = null;
+    protected ExecutorService executorService = null;
     private boolean initDone = false;
     private ILoggersManager loggersManager = null;
     private boolean maintenance = false;
@@ -166,6 +170,12 @@ public class AppStatus {
         if (!initDone) {
             logger.warn("Not initialized. Starting init");
             init();
+        }
+    }
+
+    public synchronized void close() {
+        if (executorService != null) {
+            executorService.shutdownNow();
         }
     }
 

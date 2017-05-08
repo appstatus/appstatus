@@ -9,7 +9,7 @@
 	 http://www.springframework.org/schema/aop  http://www.springframework.org/schema/aop/spring-aop.xsd">
 
 	<bean id="appstatus" class="net.sf.appstatus.core.AppStatus"
-		init-method="init" scope="singleton">
+		init-method="init" destroy-method="close" scope="singleton">
 		<property name="objectInstanciationListener">
 			<bean
 				class="net.sf.appstatus.support.spring.SpringObjectInstantiationListener" />
