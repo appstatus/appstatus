@@ -30,6 +30,7 @@ public class CheckResultBuilder {
 	private Locale locale;
 	String name, group, description, resolutionSteps, bundle = null;
 	private Object[] resolutionStepArgs;
+	private boolean resettable = false;
 
 	public CheckResultBuilder() {
 	}
@@ -47,6 +48,7 @@ public class CheckResultBuilder {
 		result.setProbeName(resBundle != null ? resBundle.getString(name) : name);
 		result.setCode(code);
 		result.setFatal(code == ICheckResult.OK ? false : fatal);
+		result.setResettable(resettable);
 
 		if ((resolutionStepArgs != null || descriptionArgs != null) && bundle == null) {
 			throw new IllegalStateException("messageBundle() must be set when using messages with args.");
@@ -95,9 +97,19 @@ public class CheckResultBuilder {
 		return this;
 	}
 
+	public CheckResultBuilder resettable() {
+		this.resettable = true;
+		return this;
+	}
+
 	public CheckResultBuilder from(ICheck check) {
 		this.name = check.getName();
 		this.group = check.getGroup();
+
+		if (check instanceof IResettableCheck) {
+			this.resettable = true;
+		}
+
 		return this;
 	}
 

@@ -34,6 +34,8 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -46,6 +48,7 @@ import net.sf.appstatus.core.check.IAppStatusAware;
 import net.sf.appstatus.core.check.ICheck;
 import net.sf.appstatus.core.check.ICheckResult;
 import net.sf.appstatus.core.check.IConfigurationAware;
+import net.sf.appstatus.core.check.IResettableCheck;
 import net.sf.appstatus.core.loggers.ILoggersManager;
 import net.sf.appstatus.core.property.IPropertyProvider;
 import net.sf.appstatus.core.services.IService;
@@ -507,6 +510,25 @@ public class AppStatus implements Closeable {
         p.load(is);
         is.close();
         return p;
+    }
+
+    /**
+     * Reset checker status.
+     * 
+     * @param checkName
+     *            checker's name to reset
+     */
+    public void resetCheck(String checkName) {
+        if (CollectionUtils.isEmpty(checkers)) {
+            return;
+        }
+
+        for (ICheck checker : checkers) {
+            if (StringUtils.equals(checkName, checker.getName())) {
+                ((IResettableCheck) checker).reset();
+                break;
+            }
+        }
     }
 
     public void setBatchManager(IBatchManager batchManager) {

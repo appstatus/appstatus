@@ -24,6 +24,7 @@ public class DummyStatusChecker extends AbstractHttpCheck {
 		StatusResultImpl result = new StatusResultImpl();
 
 		result.setProbeName(getName());
+		result.setGroup(getGroup());
 		result.setCode(Math.random() > 0.5 ? ICheckResult.OK
 				: ICheckResult.ERROR);
 		if (result.getCode() == ICheckResult.OK) {

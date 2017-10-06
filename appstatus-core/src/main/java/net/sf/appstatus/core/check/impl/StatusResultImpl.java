@@ -32,6 +32,7 @@ public class StatusResultImpl implements ICheckResult {
 	private String group;
 	private String probeName;
 	private String resolutionSteps;
+	private boolean resettable;
 
 	public int compareTo(ICheckResult otherResult) {
 		int groupCompare = ObjectUtils.compare(group, otherResult.getGroup());
@@ -66,6 +67,10 @@ public class StatusResultImpl implements ICheckResult {
 		return fatal;
 	}
 
+	public boolean isResettable() {
+		return resettable;
+	}
+
 	public void setCode(int code) {
 		this.code = code;
 	}
@@ -89,4 +94,9 @@ public class StatusResultImpl implements ICheckResult {
 	public void setResolutionSteps(String resolutionSteps) {
 		this.resolutionSteps = resolutionSteps;
 	}
+
+	public void setResettable(boolean resettable) {
+		this.resettable = resettable;
+	}
+
 }

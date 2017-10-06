@@ -49,6 +49,8 @@ public interface ICheckResult extends Comparable<ICheckResult> {
 	 */
 	boolean isFatal();
 
+	boolean isResettable();
+
 	void setDescription(String description);
 
 	void setResolutionSteps(String resolutionSteps);
