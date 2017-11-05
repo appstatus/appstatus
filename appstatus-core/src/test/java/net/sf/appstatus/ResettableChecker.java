@@ -10,33 +10,37 @@ import net.sf.appstatus.core.check.IResettableCheck;
 
 public class ResettableChecker extends AbstractCheck implements IResettableCheck {
 
-    public static final String NAME = "resettable";
+	public static final String NAME = "resettable";
 
-    private AtomicBoolean error = new AtomicBoolean(true);
+	private AtomicBoolean error = new AtomicBoolean(true);
 
-    @Override
-    public ICheckResult checkStatus(Locale locale) {
-        CheckResultBuilder result = result(this);
+	@Override
+	public ICheckResult checkStatus(Locale locale) {
+		CheckResultBuilder result = result(this);
 
-        if (error.get()) {
-            result.code(ICheckResult.ERROR).fatal();
-        } else {
-            result.code(ICheckResult.OK);
-        }
+		if (error.get()) {
+			result.code(ICheckResult.ERROR).fatal();
+		} else {
+			result.code(ICheckResult.OK);
+		}
 
-        return result.build();
-    }
+		return result.build();
+	}
 
-    public void reset() {
-        error.set(!error.get());
-    }
+	public void reset() {
+		error.set(!error.get());
+	}
 
-    public String getGroup() {
-        return NAME;
-    }
+	public String getGroup() {
+		return NAME;
+	}
 
-    public String getName() {
-        return NAME;
-    }
+	public String getName() {
+		return NAME;
+	}
+
+	public String getId() {
+		return "ResettableCheckerId";
+	}
 
 }

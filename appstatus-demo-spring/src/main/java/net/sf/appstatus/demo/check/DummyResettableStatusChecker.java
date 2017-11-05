@@ -37,4 +37,8 @@ public class DummyResettableStatusChecker extends AbstractCheck implements IRese
         return "DummyResettableStatusChecker";
     }
 
+    public String getId() {
+        return "DummyResettableStatusCheckerId";
+    }
+
 }

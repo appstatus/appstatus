@@ -231,7 +231,7 @@ public class StatusPage extends AbstractPage {
 	public void doPost(final StatusWebHandler webHandler, final HttpServletRequest req,
 			final HttpServletResponse resp) {
 		updateMode(webHandler, req.getParameter("mode"));
-		resetCheck(webHandler, req.getParameter("checkerName"));
+		resetCheck(webHandler, req.getParameter("resetCheckerId"));
 		try {
 			resp.sendRedirect(req.getRequestURI());
 		} catch (final IOException ex) {
@@ -251,19 +251,19 @@ public class StatusPage extends AbstractPage {
 
 	private String getResetForm(ICheckResult checkResult) {
 		if (checkResult.isResettable()) {
-			return "<form name=\"mode\" action=\"?checkerName=" + checkResult.getProbeName() + "\" method=\"post\">"
+			return "<form name=\"mode\" action=\"?resetCheckerId=" + checkResult.getCheckerId() + "\" method=\"post\">"
 					+ "<button type=\"submit\" class=\"btn btn-mini btn-primary\">reset</button></form>";
 		}
 
 		return "-";
 	}
 
-	private void resetCheck(final StatusWebHandler webHandler, final String checkName) {
-		if (StringUtils.isBlank(checkName)) {
+	private void resetCheck(final StatusWebHandler webHandler, final String checkerId) {
+		if (StringUtils.isBlank(checkerId)) {
 			return;
 		}
 
-		webHandler.getAppStatus().resetCheck(checkName);
+		webHandler.getAppStatus().resetCheck(checkerId);
 	}
 
 	private void updateMode(final StatusWebHandler webHandler, final String mode) {

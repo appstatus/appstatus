@@ -26,13 +26,14 @@ import net.sf.appstatus.core.check.ICheckResult;
  *
  */
 public class StatusResultImpl implements ICheckResult {
+	private String checkerId;
 	private int code;
 	private String description;
 	private boolean fatal;
 	private String group;
 	private String probeName;
-	private String resolutionSteps;
 	private boolean resettable;
+	private String resolutionSteps;
 
 	public int compareTo(ICheckResult otherResult) {
 		int groupCompare = ObjectUtils.compare(group, otherResult.getGroup());
@@ -41,6 +42,10 @@ public class StatusResultImpl implements ICheckResult {
 		}
 
 		return ObjectUtils.compare(probeName, otherResult.getProbeName());
+	}
+
+	public String getCheckerId() {
+		return checkerId;
 	}
 
 	public int getCode() {
@@ -71,6 +76,10 @@ public class StatusResultImpl implements ICheckResult {
 		return resettable;
 	}
 
+	public void setCheckerId(String checkerId) {
+		this.checkerId = checkerId;
+	}
+
 	public void setCode(int code) {
 		this.code = code;
 	}
@@ -91,12 +100,12 @@ public class StatusResultImpl implements ICheckResult {
 		this.probeName = probeName;
 	}
 
-	public void setResolutionSteps(String resolutionSteps) {
-		this.resolutionSteps = resolutionSteps;
-	}
-
 	public void setResettable(boolean resettable) {
 		this.resettable = resettable;
+	}
+
+	public void setResolutionSteps(String resolutionSteps) {
+		this.resolutionSteps = resolutionSteps;
 	}
 
 }

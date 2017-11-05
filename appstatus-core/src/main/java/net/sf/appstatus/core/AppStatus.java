@@ -144,7 +144,13 @@ public class AppStatus implements Closeable {
                     if (check instanceof IConfigurationAware) {
                         ((IConfigurationAware) check).setConfiguration(getConfiguration());
                     }
-                    return check.checkStatus(locale);
+
+                    ICheckResult result = check.checkStatus(locale);
+                    if (check instanceof IResettableCheck) {
+                        result.setCheckerId(((IResettableCheck) check).getId());
+                    }
+
+                    return result;
                 }
             }));
         }
@@ -514,19 +520,22 @@ public class AppStatus implements Closeable {
 
     /**
      * Reset checker status.
-     * 
-     * @param checkName
+     *
+     * @param checkerId
      *            checker's name to reset
      */
-    public void resetCheck(String checkName) {
+    public void resetCheck(String checkerId) {
         if (CollectionUtils.isEmpty(checkers)) {
             return;
         }
 
-        for (ICheck checker : checkers) {
-            if (StringUtils.equals(checkName, checker.getName())) {
-                ((IResettableCheck) checker).reset();
-                break;
+        for (ICheck c : checkers) {
+            if (c instanceof IResettableCheck) {
+                IResettableCheck checker = (IResettableCheck) c;
+                if (StringUtils.equals(checkerId, checker.getId())) {
+                    checker.reset();
+                    break;
+                }
             }
         }
     }

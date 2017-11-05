@@ -9,6 +9,8 @@ package net.sf.appstatus.core.check;
  */
 public interface IResettableCheck extends ICheck {
 
-    void reset();
+	void reset();
+
+	String getId();
 
 }
