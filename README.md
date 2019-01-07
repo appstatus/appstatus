@@ -48,7 +48,7 @@ pom.xml
 <dependency>
 	<groupId>net.sf.appstatus</groupId>
     	<artifactId>appstatus-services-inprocess</artifactId>
-    	<version>0.7.0-SNAPSHOT</version>
+    	<version>2.0</version>
     	<type>jar</type>
 </dependency>
 
@@ -56,14 +56,14 @@ pom.xml
 <dependency>
     	<groupId>net.sf.appstatus</groupId>
     	<artifactId>appstatus-batch-inprocess</artifactId>
-    	<version>0.7.0-SNAPSHOT</version>
+    	<version>2.0</version>
 </dependency>
     
 <!-- Web console -->    
 <dependency>
     	<groupId>net.sf.appstatus </groupId>
     	<artifactId>appstatus-web</artifactId>
-    	<version>0.7.0-SNAPSHOT</version>
+    	<version>2.0</version>
 </dependency>
 ``` 
 
