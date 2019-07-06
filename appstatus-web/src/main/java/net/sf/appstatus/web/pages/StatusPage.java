@@ -35,6 +35,7 @@ import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.text.StrBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -119,11 +120,11 @@ public class StatusPage extends AbstractPage {
 		final StrBuilder sbStatusTable = new StrBuilder();
 		if (generateBeginTable(sbStatusTable, results.size())) {
 
-			generateHeaders(sbStatusTable, "", "Group", "Name", "Description", "Code", "Resolution");
+			generateHeaders(sbStatusTable, "", "Group", "Name", "Description", "Code", "Resolution", "Reset ?");
 
 			for (final ICheckResult r : results) {
 				generateRow(sbStatusTable, getStatus(r), r.getGroup(), r.getProbeName(), r.getDescription(),
-						String.valueOf(r.getCode()), r.getResolutionSteps());
+						String.valueOf(r.getCode()), r.getResolutionSteps(), getResetForm(r));
 			}
 			generateEndTable(sbStatusTable, results.size());
 		}
@@ -230,6 +231,7 @@ public class StatusPage extends AbstractPage {
 	public void doPost(final StatusWebHandler webHandler, final HttpServletRequest req,
 			final HttpServletResponse resp) {
 		updateMode(webHandler, req.getParameter("mode"));
+		resetCheck(webHandler, req.getParameter("resetCheckerId"));
 		try {
 			resp.sendRedirect(req.getRequestURI());
 		} catch (final IOException ex) {
@@ -245,6 +247,23 @@ public class StatusPage extends AbstractPage {
 	@Override
 	public String getName() {
 		return "Status";
+	}
+
+	private String getResetForm(ICheckResult checkResult) {
+		if (checkResult.isResettable()) {
+			return "<form name=\"mode\" action=\"?resetCheckerId=" + checkResult.getCheckerId() + "\" method=\"post\">"
+					+ "<button type=\"submit\" class=\"btn btn-mini btn-primary\">reset</button></form>";
+		}
+
+		return "-";
+	}
+
+	private void resetCheck(final StatusWebHandler webHandler, final String checkerId) {
+		if (StringUtils.isBlank(checkerId)) {
+			return;
+		}
+
+		webHandler.getAppStatus().resetCheck(checkerId);
 	}
 
 	private void updateMode(final StatusWebHandler webHandler, final String mode) {

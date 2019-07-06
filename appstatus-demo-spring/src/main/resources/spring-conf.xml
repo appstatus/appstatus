@@ -25,6 +25,7 @@
 				<bean class="net.sf.appstatus.demo.check.DummyStatusChecker" />
 				<bean class="net.sf.appstatus.demo.check.GoogleHttpStatusChecker" />
 				<bean class="net.sf.appstatus.demo.check.GooglePingStatusChecker" />
+				<bean class="net.sf.appstatus.demo.check.DummyResettableStatusChecker" />
 				<bean class="net.sf.appstatus.core.check.impl.JvmCheck" />
 				<bean class="net.sf.appstatus.core.check.impl.ServicesPerformanceCheck" />
 				<bean class="net.sf.appstatus.core.check.impl.ServicesFailureCheck" />

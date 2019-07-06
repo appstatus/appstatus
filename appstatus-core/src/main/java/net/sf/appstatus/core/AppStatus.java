@@ -34,6 +34,8 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -46,6 +48,7 @@ import net.sf.appstatus.core.check.IAppStatusAware;
 import net.sf.appstatus.core.check.ICheck;
 import net.sf.appstatus.core.check.ICheckResult;
 import net.sf.appstatus.core.check.IConfigurationAware;
+import net.sf.appstatus.core.check.IResettableCheck;
 import net.sf.appstatus.core.loggers.ILoggersManager;
 import net.sf.appstatus.core.property.IPropertyProvider;
 import net.sf.appstatus.core.services.IService;
@@ -141,7 +144,13 @@ public class AppStatus implements Closeable {
                     if (check instanceof IConfigurationAware) {
                         ((IConfigurationAware) check).setConfiguration(getConfiguration());
                     }
-                    return check.checkStatus(locale);
+
+                    ICheckResult result = check.checkStatus(locale);
+                    if (check instanceof IResettableCheck) {
+                        result.setCheckerId(((IResettableCheck) check).getId());
+                    }
+
+                    return result;
                 }
             }));
         }
@@ -507,6 +516,28 @@ public class AppStatus implements Closeable {
         p.load(is);
         is.close();
         return p;
+    }
+
+    /**
+     * Reset checker status.
+     *
+     * @param checkerId
+     *            checker's name to reset
+     */
+    public void resetCheck(String checkerId) {
+        if (CollectionUtils.isEmpty(checkers)) {
+            return;
+        }
+
+        for (ICheck c : checkers) {
+            if (c instanceof IResettableCheck) {
+                IResettableCheck checker = (IResettableCheck) c;
+                if (StringUtils.equals(checkerId, checker.getId())) {
+                    checker.reset();
+                    break;
+                }
+            }
+        }
     }
 
     public void setBatchManager(IBatchManager batchManager) {

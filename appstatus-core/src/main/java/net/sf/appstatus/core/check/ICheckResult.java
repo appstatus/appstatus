@@ -25,6 +25,8 @@ public interface ICheckResult extends Comparable<ICheckResult> {
 	int ERROR = -1;
 	int OK = 0;
 
+	String getCheckerId();
+	
 	int getCode();
 
 	String getDescription();
@@ -48,6 +50,10 @@ public interface ICheckResult extends Comparable<ICheckResult> {
 	 * @return
 	 */
 	boolean isFatal();
+
+	boolean isResettable();
+
+	void setCheckerId(String checkerId);
 
 	void setDescription(String description);
 
