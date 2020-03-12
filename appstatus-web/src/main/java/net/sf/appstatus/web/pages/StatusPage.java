@@ -165,7 +165,7 @@ public class StatusPage extends AbstractPage {
 		int statusCode = 200;
 		final List<ICheckResult> results = appStatus.checkAll(req.getLocale());
 		for (final ICheckResult r : results) {
-			if (r.isFatal()) {
+			if (r.getCode() != ICheckResult.OK && r.isFatal()) {
 				resp.setStatus(500);
 				statusCode = 500;
 				break;
